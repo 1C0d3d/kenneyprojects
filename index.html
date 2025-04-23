@@ -14,60 +14,88 @@
       font-family: Arial, sans-serif;
       background: linear-gradient(to bottom right, #d1f7c4, #a0e6a3);
       color: #2e7d32;
+      overflow-x: hidden;
     }
     header {
       background-color: #4caf50;
       color: white;
-      padding: 1rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      padding: 1.5rem 2rem;
+      text-align: center;
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
     }
     header h1 {
-      font-size: 1.8rem;
-    }
-    nav a {
-      color: white;
-      text-decoration: none;
-      margin-left: 1.5rem;
-      font-weight: bold;
-      transition: opacity 0.3s;
-    }
-    nav a:hover {
-      opacity: 0.8;
+      font-size: 2.2rem;
     }
     .hero {
-      height: 80vh;
+      height: 70vh;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-direction: column;
       text-align: center;
+      padding: 2rem;
     }
     .hero h2 {
       font-size: 3rem;
       margin-bottom: 1rem;
+      animation: fadeInUp 1s ease-in-out;
     }
     .hero p {
+      font-size: 1.4rem;
+      max-width: 700px;
+      animation: fadeInUp 1.2s ease-in-out;
+    }
+    .button-group {
+      margin-top: 3rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1.5rem;
+      animation: fadeInUp 1.4s ease-in-out;
+    }
+    .bubble-button {
+      background-color: white;
+      border: none;
+      border-radius: 2rem;
+      padding: 1rem 2rem;
       font-size: 1.2rem;
-      max-width: 600px;
+      color: #2e7d32;
+      font-weight: bold;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+      cursor: pointer;
+      transition: transform 0.3s ease, background-color 0.3s ease;
+      text-decoration: none;
+    }
+    .bubble-button:hover {
+      transform: scale(1.05);
+      background-color: #d0f0d0;
+    }
+    @keyframes fadeInUp {
+      0% {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
   </style>
 </head>
 <body>
   <header>
     <h1>First Step Lawn Mowing</h1>
-    <nav>
-      <a href="pricing.html">Pricing</a>
-      <a href="#hire">Hire Us</a>
-      <a href="contact.html">Contact Us</a>
-      <a href="about-us.html">About Us</a>
-    </nav>
   </header>
   <div class="hero">
     <h2>Welcome to First Step Lawn Mowing</h2>
     <p>The best, most affordable, and reliable lawn mowing in Rapid City, SD.</p>
+
+    <div class="button-group">
+      <a href="pricing.html" class="bubble-button">Pricing</a>
+      <a href="hire.html" class="bubble-button">Hire Us</a>
+      <a href="contact.html" class="bubble-button">Contact Us</a>
+      <a href="about-us.html" class="bubble-button">About Us</a>
+    </div>
   </div>
 </body>
 </html>
