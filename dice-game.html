@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Dice Game to 16</title>
+  <title>Dice Game to 21</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -59,10 +59,6 @@
       margin: 10px 0;
     }
 
-    .hidden-dice {
-      color: #aaa;
-    }
-
     #restart {
       position: fixed;
       bottom: 20px;
@@ -97,6 +93,12 @@
       color: #fff;
     }
 
+    .suggestion {
+      color: #ff6f6f;
+      font-style: italic;
+      margin-top: 8px;
+    }
+
     h2, h3, label, strong {
       color: #ff3b3b;
     }
@@ -109,9 +111,9 @@
     <strong>How to Play:</strong><br>
     - Start with a balance of $100.<br>
     - Place a bet using the slider (max 95% of balance).<br>
-    - Roll your dice. Goal is to get close to 16 without going over.<br>
+    - Roll your dice. Goal is to get close to <strong>21</strong> without going over.<br>
     - After rolling, you can "Hit" to roll one more die or "Stand" to stop.<br>
-    - Dealer rolls to try to beat your total (without going over 16).<br>
+    - Dealer rolls to try to beat your total (without going over 21).<br>
     - If your total is higher or the dealer busts, you win!<br>
     - Restart anytime with the button in the bottom-right.
   </div>
@@ -144,6 +146,7 @@
     </div>
 
     <h3 id="result"></h3>
+    <div class="suggestion" id="suggestion"></div>
   </div>
 
   <button id="restart" class="bubble-btn" onclick="resetGame()">Restart</button>
@@ -158,7 +161,7 @@
     let gameActive = false;
     let bet = 10;
 
-    const GOAL = 16;
+    const GOAL = 21;
 
     const balanceDisplay = document.getElementById('balance');
     const betSlider = document.getElementById('bet');
@@ -169,6 +172,7 @@
     const dealerTotalDisplay = document.getElementById('dealerTotal');
     const resultDisplay = document.getElementById('result');
     const buttons = document.getElementById('buttons');
+    const suggestionDisplay = document.getElementById('suggestion');
 
     betSlider.addEventListener('input', () => {
       const maxBet = Math.floor(balance * 0.95);
@@ -218,10 +222,10 @@
     function startGame() {
       userDice = [];
       dealerDice = [];
-
       bet = parseInt(betSlider.value);
       gameActive = true;
       resultDisplay.textContent = '';
+      suggestionDisplay.textContent = '';
       buttons.innerHTML = `
         <button class="bubble-btn" onclick="hit()">Hit</button>
         <button class="bubble-btn" onclick="stand()">Stand</button>
@@ -230,6 +234,7 @@
       rollWithAnimation(userDice, 2, () => {
         rollWithAnimation(dealerDice, 2, () => {
           updateDisplay();
+          showSuggestion();
         });
       });
     }
@@ -240,6 +245,8 @@
           updateDisplay();
           if (sumDice(userDice) > GOAL) {
             endGame("You busted! Dealer wins.");
+          } else {
+            showSuggestion();
           }
         });
       }
@@ -247,11 +254,12 @@
 
     function stand() {
       gameActive = false;
+      suggestionDisplay.textContent = '';
       function dealerTurn() {
         const dealerTotal = sumDice(dealerDice);
         const userTotal = sumDice(userDice);
 
-        if (dealerTotal < 13 || (dealerTotal < userTotal && dealerTotal < GOAL)) {
+        if (dealerTotal < 17 || (dealerTotal < userTotal && dealerTotal < GOAL)) {
           rollWithAnimation(dealerDice, 1, dealerTurn);
         } else {
           evaluateWinner();
@@ -282,6 +290,7 @@
       gameActive = false;
       resultDisplay.textContent = message;
       updateDisplay();
+      suggestionDisplay.textContent = '';
       buttons.innerHTML = `<button class="bubble-btn" onclick="startGame()">Play Again</button>`;
     }
 
@@ -308,6 +317,21 @@
       }, 50);
     }
 
+    function showSuggestion() {
+      const total = sumDice(userDice);
+      let suggestion = "";
+
+      if (total <= 15) {
+        suggestion = "You should hit.";
+      } else if (total >= 18) {
+        suggestion = "You should stand.";
+      } else {
+        suggestion = "It's risky. Your call!";
+      }
+
+      suggestionDisplay.textContent = suggestion;
+    }
+
     function resetGame() {
       localStorage.removeItem('diceBalance');
       location.reload();
@@ -320,6 +344,5 @@
 
     updateDisplay();
   </script>
-
 </body>
 </html>
