@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dice Blackjack</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f4f8;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 30px;
+    }
+    .game-container {
+      background: white;
+      padding: 25px;
+      border-radius: 20px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      width: 90%;
+      max-width: 400px;
+    }
+    .bubble-btn {
+      background: linear-gradient(to right, #6cc1ff, #3a8dff);
+      border: none;
+      color: white;
+      padding: 12px 24px;
+      margin: 10px 5px 0;
+      font-size: 16px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+    .bubble-btn:hover {
+      transform: scale(1.05);
+      background: linear-gradient(to right, #5ab0f7, #337fe6);
+    }
+    .slider-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 10px 0;
+    }
+    input[type="range"] {
+      flex: 1;
+    }
+    .label-group {
+      margin: 10px 0;
+    }
+    .hidden-dice {
+      color: #999;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="game-container">
+    <h2>Balance: $<span id="balance">100</span></h2>
+
+    <div class="label-group">
+      <label for="bet">Bet Amount:</label>
+      <div class="slider-container">
+        <input type="range" id="bet" min="1" max="95" value="10">
+        <span id="betValue">10</span>
+      </div>
+    </div>
+
+    <div class="label-group">
+      <strong>User Dice:</strong>
+      <div id="userDice">-</div>
+      Total: <span id="userTotal">-</span>
+    </div>
+
+    <div class="label-group">
+      <strong>Dealer Dice:</strong>
+      <div id="dealerDice">?, ?</div>
+      Total: <span id="dealerTotal">?</span>
+    </div>
+
+    <div id="buttons">
+      <button class="bubble-btn" onclick="startGame()">Roll</button>
+    </div>
+
+    <h3 id="result"></h3>
+  </div>
+
+  <script>
+    let balance = localStorage.getItem('diceBalance') 
+      ? parseInt(localStorage.getItem('diceBalance')) 
+      : 100;
+
+    let userDice = [];
+    let dealerDice = [];
+    let gameActive = false;
+    let bet = 10;
+
+    const balanceDisplay = document.getElementById('balance');
+    const betSlider = document.getElementById('bet');
+    const betValue = document.getElementById('betValue');
+    const userDiceDisplay = document.getElementById('userDice');
+    const userTotalDisplay = document.getElementById('userTotal');
+    const dealerDiceDisplay = document.getElementById('dealerDice');
+    const dealerTotalDisplay = document.getElementById('dealerTotal');
+    const resultDisplay = document.getElementById('result');
+    const buttons = document.getElementById('buttons');
+
+    betSlider.addEventListener('input', () => {
+      const maxBet = Math.floor(balance * 0.95);
+      if (betSlider.value > maxBet) betSlider.value = maxBet;
+      betValue.textContent = betSlider.value;
+    });
+
+    function rollDie() {
+      return Math.floor(Math.random() * 6) + 1;
+    }
+
+    function sumDice(arr) {
+      return arr.reduce((a, b) => a + b, 0);
+    }
+
+    function saveBalance() {
+      localStorage.setItem('diceBalance', balance);
+    }
+
+    function updateDisplay() {
+      userDiceDisplay.textContent = userDice.join(', ') || "-";
+      userTotalDisplay.textContent = sumDice(userDice) || "-";
+
+      if (!gameActive) {
+        dealerDiceDisplay.textContent = dealerDice.join(', ') || "-";
+        dealerTotalDisplay.textContent = sumDice(dealerDice) || "-";
+      } else {
+        dealerDiceDisplay.textContent = "?, ?";
+        dealerTotalDisplay.textContent = "?";
+      }
+
+      balanceDisplay.textContent = balance;
+      saveBalance();
+    }
+
+    function startGame() {
+      userDice = [];
+      dealerDice = [];
+
+      bet = parseInt(betSlider.value);
+      gameActive = true;
+      resultDisplay.textContent = '';
+      buttons.innerHTML = `
+        <button class="bubble-btn" onclick="hit()">Hit</button>
+        <button class="bubble-btn" onclick="stand()">Stand</button>
+      `;
+
+      rollWithAnimation(userDice, 2, updateDisplay);
+      rollWithAnimation(dealerDice, 2, () => {});
+    }
+
+    function hit() {
+      if (userDice.length < 5) {
+        rollWithAnimation(userDice, 1, () => {
+          updateDisplay();
+          if (sumDice(userDice) > 21) {
+            endGame("You busted! Dealer wins.");
+          }
+        });
+      }
+    }
+
+    function stand() {
+      gameActive = false;
+
+      function dealerTurn() {
+        if (sumDice(dealerDice) < 17) {
+          rollWithAnimation(dealerDice, 1, dealerTurn);
+        } else {
+          const userTotal = sumDice(userDice);
+          const dealerTotal = sumDice(dealerDice);
+
+          if (dealerTotal > 21 || userTotal > dealerTotal) {
+            balance += bet;
+            endGame("You win!");
+          } else if (userTotal < dealerTotal) {
+            balance -= bet;
+            endGame("Dealer wins!");
+          } else {
+            endGame("It's a tie!");
+          }
+        }
+      }
+
+      dealerTurn();
+    }
+
+    function endGame(message) {
+      gameActive = false;
+      resultDisplay.textContent = message;
+      updateDisplay();
+      buttons.innerHTML = `<button class="bubble-btn" onclick="startGame()">Play Again</button>`;
+    }
+
+    function rollWithAnimation(targetArray, count, callback) {
+      let rolls = [];
+
+      for (let i = 0; i < count; i++) {
+        rolls.push(rollDie());
+      }
+
+      let index = 0;
+      let interval = setInterval(() => {
+        const fakeRolls = [];
+        for (let i = 0; i < count; i++) {
+          fakeRolls.push(Math.floor(Math.random() * 6) + 1);
+        }
+        targetArray.splice(targetArray.length - count, count, ...fakeRolls);
+        updateDisplay();
+        index++;
+        if (index >= 10) {
+          clearInterval(interval);
+          targetArray.splice(targetArray.length - count, count, ...rolls);
+          updateDisplay();
+          callback();
+        }
+      }, 50);
+    }
+
+    updateDisplay();
+  </script>
+
+</body>
+</html>
