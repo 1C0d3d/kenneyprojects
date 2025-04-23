@@ -8,23 +8,22 @@
     body {
       font-family: 'Segoe UI', sans-serif;
       background: #1a1a1a;
-      color: white;
+      color: #fff;
       display: flex;
       flex-direction: column;
       align-items: center;
       padding: 30px;
-      position: relative;
     }
     .game-container {
-      background: #2a2a2a;
+      background: #2b0000;
       padding: 25px;
       border-radius: 20px;
-      box-shadow: 0 4px 20px rgba(255,0,0,0.4);
+      box-shadow: 0 0 20px rgba(255, 0, 0, 0.4);
       width: 90%;
       max-width: 400px;
     }
     .bubble-btn {
-      background: linear-gradient(to right, #ff4b4b, #aa0000);
+      background: #ff1a1a;
       border: none;
       color: white;
       padding: 12px 24px;
@@ -33,14 +32,21 @@
       border-radius: 999px;
       cursor: pointer;
       transition: 0.3s ease;
+      box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
     }
     .bubble-btn:hover {
       transform: scale(1.05);
-      background: linear-gradient(to right, #ff3333, #990000);
+      background: #e60000;
     }
     .suggestion {
-      color: #ff9999;
-      font-style: italic;
+      background: #991f1f;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 14px;
+      margin-top: 10px;
+      display: inline-block;
+      color: white;
+      opacity: 0.9;
     }
     .slider-container {
       display: flex;
@@ -66,40 +72,20 @@
     #restart:hover {
       background: #e44747;
     }
-    .rules-box {
-      background: #333;
-      padding: 10px 15px;
-      border-radius: 10px;
-      margin-bottom: 20px;
-      cursor: pointer;
-      user-select: none;
-    }
-    .rules-content {
-      display: none;
-      margin-top: 10px;
-    }
-    .rules-box.open .rules-content {
-      display: block;
-    }
   </style>
 </head>
 <body>
 
-  <div class="rules-box" onclick="this.classList.toggle('open')">
-    <strong>How to Play:</strong> (click to expand)
-    <div class="rules-content">
-      - Start with a balance of $100.<br>
-      - Place a bet using the slider (max 95% of balance).<br>
-      - Dealer rolls first.<br>
-      - Your goal is to get close to 21 without going over.<br>
-      - Roll your dice after dealer reveals theirs.<br>
-      - You may "Hit" for more dice or "Stand".<br>
-      - If your total is higher and ≤ 21, or dealer busts, you win!<br>
-      - Dealer stands if their total is 17 or more.<br>
-      - Restart anytime using the button in the bottom-right.
-    </div>
+  <div class="rules-box">
+    <strong>How to Play:</strong><br>
+    - Start with a balance of $100.<br>
+    - Bet up to 95% of balance using the slider.<br>
+    - Dealer rolls first. Dealer must hit until 17 or more.<br>
+    - Then you roll. Try to reach 21 without going over.<br>
+    - After rolling, choose to “Hit” or “Stand”.<br>
+    - If your total is higher and ≤ 21, you win!<br>
   </div>
-
+  
   <div class="game-container">
     <h2>Balance: $<span id="balance">100</span></h2>
 
@@ -112,22 +98,22 @@
     </div>
 
     <div class="label-group">
-      <strong>User Dice:</strong>
-      <div id="userDice">-</div>
-      Total: <span id="userTotal">-</span>
-      <div id="suggestion" class="suggestion"></div>
-    </div>
-
-    <div class="label-group">
       <strong>Dealer Dice:</strong>
       <div id="dealerDice">-</div>
       Total: <span id="dealerTotal">-</span>
     </div>
 
-    <div id="buttons">
-      <button class="bubble-btn" onclick="startGame()">Start</button>
+    <div class="label-group">
+      <strong>User Dice:</strong>
+      <div id="userDice">-</div>
+      Total: <span id="userTotal">-</span>
     </div>
 
+    <div id="buttons">
+      <button class="bubble-btn" onclick="beginGame()">Start</button>
+    </div>
+
+    <div id="suggestionBox" class="suggestion" style="display: none;"></div>
     <h3 id="result"></h3>
   </div>
 
@@ -138,10 +124,9 @@
       ? parseInt(localStorage.getItem('diceBalance')) 
       : 100;
 
-    let userDice = [];
-    let dealerDice = [];
+    let userDice = [], dealerDice = [];
     let gameActive = false;
-    let bet = 10;
+    let bet = 10, gamesPlayed = 0;
     const GOAL = 21;
 
     const balanceDisplay = document.getElementById('balance');
@@ -152,13 +137,15 @@
     const dealerDiceDisplay = document.getElementById('dealerDice');
     const dealerTotalDisplay = document.getElementById('dealerTotal');
     const resultDisplay = document.getElementById('result');
-    const suggestionDisplay = document.getElementById('suggestion');
+    const suggestionBox = document.getElementById('suggestionBox');
     const buttons = document.getElementById('buttons');
 
     betSlider.addEventListener('input', () => {
       const maxBet = Math.floor(balance * 0.95);
       betSlider.max = maxBet;
-      if (parseInt(betSlider.value) > maxBet) betSlider.value = maxBet;
+      if (parseInt(betSlider.value) > maxBet) {
+        betSlider.value = maxBet;
+      }
       betValue.textContent = betSlider.value;
     });
 
@@ -183,49 +170,46 @@
       saveBalance();
     }
 
-    function startGame() {
+    function beginGame() {
       userDice = [];
       dealerDice = [];
       bet = parseInt(betSlider.value);
-      gameActive = true;
       resultDisplay.textContent = '';
-      suggestionDisplay.textContent = '';
-      buttons.innerHTML = `<button class="bubble-btn" onclick="roll()">Roll</button>`;
+      suggestionBox.style.display = "none";
 
-      rollWithAnimation(dealerDice, 2, () => {
-        while (sumDice(dealerDice) < 17) {
-          dealerDice.push(rollDie());
-        }
-        updateDisplay();
-      });
+      // Dealer rolls first
+      rollWithAnimation(dealerDice, 2, dealerTurn);
     }
 
-    function roll() {
-      userDice = [];
+    function dealerTurn() {
+      if (sumDice(dealerDice) < 17) {
+        rollWithAnimation(dealerDice, 1, dealerTurn);
+      } else {
+        startGame();
+      }
+    }
+
+    function startGame() {
+      gameActive = true;
+      buttons.innerHTML = `
+        <button class="bubble-btn" onclick="hit()">Hit</button>
+        <button class="bubble-btn" onclick="stand()">Stand</button>
+      `;
       rollWithAnimation(userDice, 2, () => {
         updateDisplay();
-        suggestionDisplay.textContent = suggestAction(sumDice(userDice));
-        buttons.innerHTML = `
-          <button class="bubble-btn" onclick="hit()">Hit</button>
-          <button class="bubble-btn" onclick="stand()">Stand</button>
-        `;
+        showSuggestion();
       });
     }
 
     function hit() {
-      if (!gameActive) return;
-      userDice.push(rollDie());
-      updateDisplay();
-
-      if (sumDice(userDice) > GOAL) {
-        endGame("You busted! Dealer wins.");
-      } else {
-        suggestionDisplay.textContent = suggestAction(sumDice(userDice));
-      }
-
-      if (userDice.length > 3 && dealerDice.length < 5 && sumDice(dealerDice) < 21) {
-        dealerDice.push(rollDie());
-        updateDisplay();
+      if (userDice.length < 5 && gameActive) {
+        rollWithAnimation(userDice, 1, () => {
+          updateDisplay();
+          showSuggestion();
+          if (sumDice(userDice) > GOAL) {
+            endGame("You busted! Dealer wins.");
+          }
+        });
       }
     }
 
@@ -239,10 +223,7 @@
       const dealerTotal = sumDice(dealerDice);
 
       let message = "";
-      if (userTotal > GOAL) {
-        balance -= bet;
-        message = "You busted! Dealer wins.";
-      } else if (dealerTotal > GOAL || userTotal > dealerTotal) {
+      if (dealerTotal > GOAL || userTotal > dealerTotal) {
         balance += bet;
         message = "You win!";
       } else if (userTotal < dealerTotal) {
@@ -252,20 +233,29 @@
         message = "It's a tie!";
       }
 
+      gamesPlayed++;
+      if (gamesPlayed % 15 === 0) {
+        showAd();
+      }
+
       endGame(message);
+    }
+
+    function showSuggestion() {
+      const total = sumDice(userDice);
+      if (total < 16) {
+        suggestionBox.textContent = "Suggestion: Hit";
+      } else {
+        suggestionBox.textContent = "Suggestion: Stand";
+      }
+      suggestionBox.style.display = "inline-block";
     }
 
     function endGame(message) {
       gameActive = false;
       resultDisplay.textContent = message;
-      buttons.innerHTML = `<button class="bubble-btn" onclick="startGame()">Play Again</button>`;
       updateDisplay();
-    }
-
-    function suggestAction(total) {
-      if (total <= 11) return "You should probably Hit.";
-      if (total >= 17) return "You should probably Stand.";
-      return "Up to you, but Hit may help.";
+      buttons.innerHTML = `<button class="bubble-btn" onclick="beginGame()">Try Again</button>`;
     }
 
     function rollWithAnimation(targetArray, count, callback) {
@@ -296,7 +286,25 @@
       location.reload();
     }
 
+    function showAd() {
+      const ad = document.createElement('div');
+      ad.style.position = 'fixed';
+      ad.style.bottom = '20px';
+      ad.style.left = '20px';
+      ad.style.background = '#2b0000';
+      ad.style.padding = '10px 20px';
+      ad.style.borderRadius = '12px';
+      ad.style.boxShadow = '0 0 10px red';
+      ad.innerHTML = `
+        <span>Interested in cheap lawn mowing?</span>
+        <button onclick="this.parentElement.remove()" style="margin-left:10px;background:none;border:none;color:white;font-size:16px;cursor:pointer;">×</button>
+      `;
+      ad.onclick = () => window.location.href = "index.html";
+      document.body.appendChild(ad);
+    }
+
     updateDisplay();
   </script>
+
 </body>
 </html>
