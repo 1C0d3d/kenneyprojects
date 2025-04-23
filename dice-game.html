@@ -102,6 +102,28 @@
     h2, h3, label, strong {
       color: #ff3b3b;
     }
+
+    #lawn-btn {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #006400;
+      color: white;
+      padding: 12px 20px;
+      font-size: 14px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 0 15px #00ff00;
+      transition: 0.3s ease;
+      z-index: 99;
+    }
+
+    #lawn-btn:hover {
+      background-color: #00aa00;
+      box-shadow: 0 0 20px #00ff00;
+    }
   </style>
 </head>
 <body>
@@ -116,6 +138,7 @@
     - You can "Hit" to roll again or "Stand" to end your turn.<br>
     - Closest to 21 without going over wins.<br>
     - If the dealer gets 17 or more, they will stand automatically.<br>
+    - Dealer may roll again if you pass 3 dice and they have <17.<br>
     - Restart anytime with the button in the bottom-right.
   </div>
 
@@ -151,6 +174,7 @@
   </div>
 
   <button id="restart" class="bubble-btn" onclick="resetGame()">Restart</button>
+  <a href="index.html"><button id="lawn-btn">Interested in cheap lawn mowing?</button></a>
 
   <script>
     let balance = localStorage.getItem('diceBalance') 
@@ -245,6 +269,10 @@
       if (userDice.length < 5 && gameActive) {
         rollWithAnimation(userDice, 1, () => {
           updateDisplay();
+          if (userDice.length > 3 && sumDice(dealerDice) < 17) {
+            dealerDice.push(rollDie());
+            updateDisplay();
+          }
           if (sumDice(userDice) > GOAL) {
             endGame("You busted! Dealer wins.");
           } else {
