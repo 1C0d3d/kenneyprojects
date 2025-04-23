@@ -61,11 +61,27 @@
     #restart:hover {
       background: #e44747;
     }
+    #how-to-play {
+      cursor: pointer;
+      padding: 10px;
+      background-color: #3a8dff;
+      color: white;
+      border-radius: 5px;
+      margin-bottom: 20px;
+    }
+    #how-to-play-content {
+      display: none;
+      background: #e7f1fc;
+      padding: 10px;
+      border-radius: 5px;
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
 
-  <div class="rules-box">
+  <div id="how-to-play" onclick="toggleHowToPlay()">How to Play</div>
+  <div id="how-to-play-content">
     <strong>How to Play:</strong><br>
     - Start with a balance of $100.<br>
     - Place a bet using the slider (max 95% of balance).<br>
@@ -75,7 +91,7 @@
     - If your total is higher or the dealer busts, you win!<br>
     - Restart anytime with the button in the bottom-right.
   </div>
-  
+
   <div class="game-container">
     <h2>Balance: $<span id="balance">100</span></h2>
 
@@ -271,6 +287,11 @@
     function resetGame() {
       localStorage.removeItem('diceBalance');
       location.reload();
+    }
+
+    function toggleHowToPlay() {
+      const content = document.getElementById('how-to-play-content');
+      content.style.display = content.style.display === 'none' || content.style.display === '' ? 'block' : 'none';
     }
 
     updateDisplay();
