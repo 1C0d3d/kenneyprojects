@@ -54,9 +54,6 @@
     .label-group {
       margin: 10px 0;
     }
-    .hidden-dice {
-      color: #999;
-    }
     #restart {
       position: fixed;
       bottom: 20px;
@@ -80,6 +77,35 @@
     }
     .rules-box.open .rules-content {
       display: block;
+    }
+
+    /* Ad Button Styles */
+    .ad-button {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      background: linear-gradient(to right, #44cc44, #228822);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 12px;
+      font-weight: bold;
+      box-shadow: 0 0 10px #44ff44;
+      cursor: pointer;
+      display: none;
+    }
+    .ad-button .close {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background: #111;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      text-align: center;
+      line-height: 18px;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
     }
   </style>
 </head>
@@ -133,10 +159,35 @@
 
   <button id="restart" class="bubble-btn" onclick="resetGame()">Restart</button>
 
+  <!-- Ad Button -->
+  <div class="ad-button" id="adButton" onclick="location.href='index.html'">
+    <div class="close" onclick="event.stopPropagation(); hideAd();">×</div>
+    Interested in cheap lawn mowing?
+  </div>
+
   <script>
     let balance = localStorage.getItem('diceBalance') 
       ? parseInt(localStorage.getItem('diceBalance')) 
       : 100;
+
+    let gameCount = parseInt(localStorage.getItem('gameCount') || "0");
+    let showAdAfter = parseInt(localStorage.getItem('showAdAfter') || (15 + Math.floor(Math.random() * 6)));
+    const ad = document.getElementById('adButton');
+
+    function maybeShowAd() {
+      gameCount++;
+      localStorage.setItem('gameCount', gameCount);
+      if (gameCount >= showAdAfter) {
+        ad.style.display = 'block';
+        localStorage.setItem('gameCount', 0);
+        showAdAfter = 15 + Math.floor(Math.random() * 6);
+        localStorage.setItem('showAdAfter', showAdAfter);
+      }
+    }
+
+    function hideAd() {
+      ad.style.display = 'none';
+    }
 
     let userDice = [];
     let dealerDice = [];
@@ -198,6 +249,8 @@
         }
         updateDisplay();
       });
+
+      maybeShowAd();
     }
 
     function roll() {
@@ -293,6 +346,8 @@
 
     function resetGame() {
       localStorage.removeItem('diceBalance');
+      localStorage.removeItem('gameCount');
+      localStorage.removeItem('showAdAfter');
       location.reload();
     }
 
