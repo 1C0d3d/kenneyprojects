@@ -65,7 +65,7 @@
 </head>
 <body>
 
-    <div class="rules-box">
+  <div class="rules-box">
     <strong>How to Play:</strong><br>
     - Start with a balance of $100.<br>
     - Place a bet using the slider (max 95% of balance).<br>
@@ -132,7 +132,9 @@
 
     betSlider.addEventListener('input', () => {
       const maxBet = Math.floor(balance * 0.95);
-      if (betSlider.value > maxBet) betSlider.value = maxBet;
+      if (parseInt(betSlider.value) > maxBet) {
+        betSlider.value = maxBet;
+      }
       betValue.textContent = betSlider.value;
     });
 
@@ -149,6 +151,15 @@
     }
 
     function updateDisplay() {
+      const maxBet = Math.floor(balance * 0.95);
+      betSlider.max = maxBet > 0 ? maxBet : 1;
+
+      if (parseInt(betSlider.value) > maxBet) {
+        betSlider.value = maxBet;
+      }
+
+      betValue.textContent = betSlider.value;
+
       userDiceDisplay.textContent = userDice.join(', ') || "-";
       userTotalDisplay.textContent = sumDice(userDice) || "-";
 
