@@ -12,6 +12,7 @@
       flex-direction: column;
       align-items: center;
       padding: 30px;
+      position: relative;
     }
     .game-container {
       background: white;
@@ -51,6 +52,15 @@
     .hidden-dice {
       color: #999;
     }
+    #restart {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #ff5c5c;
+    }
+    #restart:hover {
+      background: #e44747;
+    }
   </style>
 </head>
 <body>
@@ -84,6 +94,8 @@
 
     <h3 id="result"></h3>
   </div>
+
+  <button id="restart" class="bubble-btn" onclick="resetGame()">Restart</button>
 
   <script>
     let balance = localStorage.getItem('diceBalance') 
@@ -174,8 +186,10 @@
     function stand() {
       gameActive = false;
       function dealerTurn() {
-        let total = sumDice(dealerDice);
-        if (total < GOAL) {
+        const dealerTotal = sumDice(dealerDice);
+        const userTotal = sumDice(userDice);
+
+        if (dealerTotal < 13 || (dealerTotal < userTotal && dealerTotal < GOAL)) {
           rollWithAnimation(dealerDice, 1, dealerTurn);
         } else {
           evaluateWinner();
@@ -215,17 +229,7 @@
       const animationLength = 10;
 
       const interval = setInterval(() => {
-        const fakeRolls = Array.from({length: count}, () => Math.floor(Math.random() * 6) + 1);
-        if (targetArray === userDice || !gameActive) {
-          for (let i = 0; i < count; i++) {
-            targetArray.push(fakeRolls[i]);
-          }
-          targetArray.splice(-count); // temporarily fake it
-        }
-
-        updateDisplay();
         animationIndex++;
-
         if (animationIndex >= animationLength) {
           clearInterval(interval);
           for (let i = 0; i < count; i++) {
@@ -233,8 +237,18 @@
           }
           updateDisplay();
           callback();
+        } else {
+          for (let i = 0; i < count; i++) {
+            targetArray[targetArray.length - i - 1] = rollDie();
+          }
+          updateDisplay();
         }
       }, 50);
+    }
+
+    function resetGame() {
+      localStorage.removeItem('diceBalance');
+      location.reload();
     }
 
     updateDisplay();
