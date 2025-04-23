@@ -111,10 +111,11 @@
     <strong>How to Play:</strong><br>
     - Start with a balance of $100.<br>
     - Place a bet using the slider (max 95% of balance).<br>
-    - Roll your dice. Goal is to get close to <strong>21</strong> without going over.<br>
-    - After rolling, you can "Hit" to roll one more die or "Stand" to stop.<br>
-    - Dealer rolls to try to beat your total (without going over 21).<br>
-    - If your total is higher or the dealer busts, you win!<br>
+    - Click "Start" to let the dealer roll first.<br>
+    - Then click "Roll" to roll your own dice.<br>
+    - You can "Hit" to roll again or "Stand" to end your turn.<br>
+    - Closest to 21 without going over wins.<br>
+    - If the dealer gets 17 or more, they will stand automatically.<br>
     - Restart anytime with the button in the bottom-right.
   </div>
 
@@ -130,19 +131,19 @@
     </div>
 
     <div class="label-group">
-      <strong>User Dice:</strong>
+      <strong>Dealer Dice:</strong>
+      <div id="dealerDice">-</div>
+      Total: <span id="dealerTotal">-</span>
+    </div>
+
+    <div class="label-group">
+      <strong>Your Dice:</strong>
       <div id="userDice">-</div>
       Total: <span id="userTotal">-</span>
     </div>
 
-    <div class="label-group">
-      <strong>Dealer Dice:</strong>
-      <div id="dealerDice">?, ?</div>
-      Total: <span id="dealerTotal">?</span>
-    </div>
-
     <div id="buttons">
-      <button class="bubble-btn" onclick="startGame()">Roll</button>
+      <button class="bubble-btn" onclick="startDealer()">Start</button>
     </div>
 
     <h3 id="result"></h3>
@@ -156,20 +157,20 @@
       ? parseInt(localStorage.getItem('diceBalance')) 
       : 100;
 
-    let userDice = [];
-    let dealerDice = [];
-    let gameActive = false;
-    let bet = 10;
-
     const GOAL = 21;
+    let bet = 10;
+    let dealerDice = [];
+    let userDice = [];
+    let gameActive = false;
+    let dealerRolled = false;
 
     const balanceDisplay = document.getElementById('balance');
     const betSlider = document.getElementById('bet');
     const betValue = document.getElementById('betValue');
-    const userDiceDisplay = document.getElementById('userDice');
-    const userTotalDisplay = document.getElementById('userTotal');
     const dealerDiceDisplay = document.getElementById('dealerDice');
     const dealerTotalDisplay = document.getElementById('dealerTotal');
+    const userDiceDisplay = document.getElementById('userDice');
+    const userTotalDisplay = document.getElementById('userTotal');
     const resultDisplay = document.getElementById('result');
     const buttons = document.getElementById('buttons');
     const suggestionDisplay = document.getElementById('suggestion');
@@ -197,45 +198,46 @@
     function updateDisplay() {
       const maxBet = Math.floor(balance * 0.95);
       betSlider.max = maxBet > 0 ? maxBet : 1;
-
       if (parseInt(betSlider.value) > maxBet) {
         betSlider.value = maxBet;
       }
-
       betValue.textContent = betSlider.value;
 
+      dealerDiceDisplay.textContent = dealerDice.join(', ') || "-";
+      dealerTotalDisplay.textContent = sumDice(dealerDice) || "-";
       userDiceDisplay.textContent = userDice.join(', ') || "-";
       userTotalDisplay.textContent = sumDice(userDice) || "-";
-
-      if (!gameActive) {
-        dealerDiceDisplay.textContent = dealerDice.join(', ') || "-";
-        dealerTotalDisplay.textContent = sumDice(dealerDice) || "-";
-      } else {
-        dealerDiceDisplay.textContent = dealerDice.map(() => "?").join(', ');
-        dealerTotalDisplay.textContent = "?";
-      }
-
       balanceDisplay.textContent = balance;
       saveBalance();
     }
 
-    function startGame() {
-      userDice = [];
-      dealerDice = [];
+    function startDealer() {
       bet = parseInt(betSlider.value);
+      dealerDice = [];
+      userDice = [];
       gameActive = true;
       resultDisplay.textContent = '';
       suggestionDisplay.textContent = '';
-      buttons.innerHTML = `
-        <button class="bubble-btn" onclick="hit()">Hit</button>
-        <button class="bubble-btn" onclick="stand()">Stand</button>
-      `;
+      dealerRolled = false;
 
+      rollWithAnimation(dealerDice, 2, () => {
+        if (sumDice(dealerDice) < 17) {
+          dealerDice.push(rollDie());
+        }
+        dealerRolled = true;
+        updateDisplay();
+        buttons.innerHTML = `<button class="bubble-btn" onclick="startUser()">Roll</button>`;
+      });
+    }
+
+    function startUser() {
       rollWithAnimation(userDice, 2, () => {
-        rollWithAnimation(dealerDice, 2, () => {
-          updateDisplay();
-          showSuggestion();
-        });
+        updateDisplay();
+        showSuggestion();
+        buttons.innerHTML = `
+          <button class="bubble-btn" onclick="hit()">Hit</button>
+          <button class="bubble-btn" onclick="stand()">Stand</button>
+        `;
       });
     }
 
@@ -255,24 +257,14 @@
     function stand() {
       gameActive = false;
       suggestionDisplay.textContent = '';
-      function dealerTurn() {
-        const dealerTotal = sumDice(dealerDice);
-        const userTotal = sumDice(userDice);
-
-        if (dealerTotal < 17 || (dealerTotal < userTotal && dealerTotal < GOAL)) {
-          rollWithAnimation(dealerDice, 1, dealerTurn);
-        } else {
-          evaluateWinner();
-        }
-      }
-      dealerTurn();
+      evaluateWinner();
     }
 
     function evaluateWinner() {
       const userTotal = sumDice(userDice);
       const dealerTotal = sumDice(dealerDice);
-
       let message = "";
+
       if (dealerTotal > GOAL || userTotal > dealerTotal) {
         balance += bet;
         message = "You win!";
@@ -291,7 +283,7 @@
       resultDisplay.textContent = message;
       updateDisplay();
       suggestionDisplay.textContent = '';
-      buttons.innerHTML = `<button class="bubble-btn" onclick="startGame()">Play Again</button>`;
+      buttons.innerHTML = `<button class="bubble-btn" onclick="startDealer()">Play Again</button>`;
     }
 
     function rollWithAnimation(targetArray, count, callback) {
