@@ -54,6 +54,9 @@
     .label-group {
       margin: 10px 0;
     }
+    .hidden-dice {
+      color: #999;
+    }
     #restart {
       position: fixed;
       bottom: 20px;
@@ -77,27 +80,6 @@
     }
     .rules-box.open .rules-content {
       display: block;
-    }
-    .ad-popup {
-      position: fixed;
-      bottom: 10px;
-      left: 10px;
-      background: #222;
-      color: white;
-      padding: 10px 15px;
-      border: 1px solid #ff4b4b;
-      border-radius: 10px;
-      box-shadow: 0 0 10px red;
-    }
-    .ad-popup .close-btn {
-      background: transparent;
-      color: white;
-      border: none;
-      font-size: 16px;
-      position: absolute;
-      top: 5px;
-      right: 10px;
-      cursor: pointer;
     }
   </style>
 </head>
@@ -150,20 +132,16 @@
   </div>
 
   <button id="restart" class="bubble-btn" onclick="resetGame()">Restart</button>
-  <div id="adPopup" class="ad-popup" style="display:none;">
-    <button class="close-btn" onclick="closeAd()">×</button>
-    <strong>Need lawn mowing?</strong> Check out our deals!
-  </div>
 
   <script>
     let balance = localStorage.getItem('diceBalance') 
       ? parseInt(localStorage.getItem('diceBalance')) 
       : 100;
 
-    let userDice = [], dealerDice = [];
+    let userDice = [];
+    let dealerDice = [];
     let gameActive = false;
     let bet = 10;
-    let gamesPlayed = 0;
     const GOAL = 21;
 
     const balanceDisplay = document.getElementById('balance');
@@ -176,7 +154,6 @@
     const resultDisplay = document.getElementById('result');
     const suggestionDisplay = document.getElementById('suggestion');
     const buttons = document.getElementById('buttons');
-    const adPopup = document.getElementById('adPopup');
 
     betSlider.addEventListener('input', () => {
       const maxBet = Math.floor(balance * 0.95);
@@ -283,10 +260,6 @@
       resultDisplay.textContent = message;
       buttons.innerHTML = `<button class="bubble-btn" onclick="startGame()">Play Again</button>`;
       updateDisplay();
-      gamesPlayed++;
-      if (gamesPlayed % (Math.floor(Math.random() * 6) + 15) === 0) {
-        adPopup.style.display = 'block';
-      }
     }
 
     function suggestAction(total) {
@@ -321,10 +294,6 @@
     function resetGame() {
       localStorage.removeItem('diceBalance');
       location.reload();
-    }
-
-    function closeAd() {
-      adPopup.style.display = 'none';
     }
 
     updateDisplay();
