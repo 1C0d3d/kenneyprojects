@@ -274,17 +274,19 @@
     }
   }
 
-  function stand() {
-    gameActive = false;
-    suggestionDisplay.textContent = '';
+function stand() {
+  gameActive = false;
+  suggestionDisplay.textContent = '';
 
-    while (sumDice(dealerDice) < 17) {
-      dealerDice.push(rollDie());
-    }
-
-    updateDisplay();
-    evaluateWinner();
+  // Dealer rolls until 17 or higher, but not more times than the user rolled
+  const maxDealerRolls = userDice.length;
+  while (sumDice(dealerDice) < 17 && dealerDice.length < maxDealerRolls) {
+    dealerDice.push(rollDie());
   }
+
+  updateDisplay();
+  evaluateWinner();
+}
 
   function evaluateWinner() {
     const userTotal = sumDice(userDice);
