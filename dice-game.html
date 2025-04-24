@@ -178,197 +178,199 @@
   <button id="restart" class="bubble-btn" onclick="resetGame()">Restart</button>
   <a href="index.html"><button id="lawn-btn">Cheap Yard Work (Click)</button></a>
 
-  <script>
-    let balance = localStorage.getItem('diceBalance') 
-      ? parseInt(localStorage.getItem('diceBalance')) 
-      : 100;
+<script>
+  let balance = localStorage.getItem('diceBalance') 
+    ? parseInt(localStorage.getItem('diceBalance')) 
+    : 100;
 
-    const GOAL = 21;
-    let bet = 10;
-    let dealerDice = [];
-    let userDice = [];
-    let gameActive = false;
-    let dealerRolled = false;
+  const GOAL = 21;
+  let bet = 10;
+  let dealerDice = [];
+  let userDice = [];
+  let gameActive = false;
+  let dealerRolled = false;
 
-    const balanceDisplay = document.getElementById('balance');
-    const betSlider = document.getElementById('bet');
-    const betValue = document.getElementById('betValue');
-    const dealerDiceDisplay = document.getElementById('dealerDice');
-    const dealerTotalDisplay = document.getElementById('dealerTotal');
-    const userDiceDisplay = document.getElementById('userDice');
-    const userTotalDisplay = document.getElementById('userTotal');
-    const resultDisplay = document.getElementById('result');
-    const buttons = document.getElementById('buttons');
-    const suggestionDisplay = document.getElementById('suggestion');
+  const balanceDisplay = document.getElementById('balance');
+  const betSlider = document.getElementById('bet');
+  const betValue = document.getElementById('betValue');
+  const dealerDiceDisplay = document.getElementById('dealerDice');
+  const dealerTotalDisplay = document.getElementById('dealerTotal');
+  const userDiceDisplay = document.getElementById('userDice');
+  const userTotalDisplay = document.getElementById('userTotal');
+  const resultDisplay = document.getElementById('result');
+  const buttons = document.getElementById('buttons');
+  const suggestionDisplay = document.getElementById('suggestion');
 
-    betSlider.addEventListener('input', () => {
-      const maxBet = Math.floor(balance * 1);
-      if (parseInt(betSlider.value) > maxBet) {
-        betSlider.value = maxBet;
+  betSlider.addEventListener('input', () => {
+    const maxBet = Math.floor(balance * 1);
+    if (parseInt(betSlider.value) > maxBet) {
+      betSlider.value = maxBet;
+    }
+    betValue.textContent = betSlider.value;
+  });
+
+  function rollDie() {
+    return Math.floor(Math.random() * 6) + 1;
+  }
+
+  function sumDice(arr) {
+    return arr.reduce((a, b) => a + b, 0);
+  }
+
+  function saveBalance() {
+    localStorage.setItem('diceBalance', balance);
+  }
+
+  function updateDisplay() {
+    const maxBet = Math.floor(balance * 1);
+    betSlider.max = maxBet > 0 ? maxBet : 1;
+    if (parseInt(betSlider.value) > maxBet) {
+      betSlider.value = maxBet;
+    }
+    betValue.textContent = betSlider.value;
+
+    dealerDiceDisplay.textContent = dealerDice.join(', ') || "-";
+    dealerTotalDisplay.textContent = sumDice(dealerDice) || "-";
+    userDiceDisplay.textContent = userDice.join(', ') || "-";
+    userTotalDisplay.textContent = sumDice(userDice) || "-";
+    balanceDisplay.textContent = balance;
+    saveBalance();
+  }
+
+  function startDealer() {
+    bet = parseInt(betSlider.value);
+    dealerDice = [];
+    userDice = [];
+    gameActive = true;
+    resultDisplay.textContent = '';
+    suggestionDisplay.textContent = '';
+    dealerRolled = false;
+
+    rollWithAnimation(dealerDice, 2, () => {
+      let dealerTotal = sumDice(dealerDice);
+      if (dealerTotal < 17) {
+        dealerDice.push(rollDie());
       }
-      betValue.textContent = betSlider.value;
-    });
-
-    function rollDie() {
-      return Math.floor(Math.random() * 6) + 1;
-    }
-
-    function sumDice(arr) {
-      return arr.reduce((a, b) => a + b, 0);
-    }
-
-    function saveBalance() {
-      localStorage.setItem('diceBalance', balance);
-    }
-
-    function updateDisplay() {
-      const maxBet = Math.floor(balance * 1);
-       betSlider.max = maxBet > 0 ? maxBet : 1;
-      if (parseInt(betSlider.value) > maxBet) {
-        betSlider.value = maxBet;
-      }
-      betValue.textContent = betSlider.value;
-
-      dealerDiceDisplay.textContent = dealerDice.join(', ') || "-";
-      dealerTotalDisplay.textContent = sumDice(dealerDice) || "-";
-      userDiceDisplay.textContent = userDice.join(', ') || "-";
-      userTotalDisplay.textContent = sumDice(userDice) || "-";
-      balanceDisplay.textContent = balance;
-      saveBalance();
-      updateAchievementDisplay();
-    }
-
-    function startDealer() {
-      bet = parseInt(betSlider.value);
-      dealerDice = [];
-      userDice = [];
-      gameActive = true;
-      resultDisplay.textContent = '';
-      suggestionDisplay.textContent = '';
-      dealerRolled = false;
-
-      rollWithAnimation(dealerDice, 2, () => {
-        if (sumDice(dealerDice) < 17) {
-          dealerDice.push(rollDie());
-        }
-        dealerRolled = true;
-        updateDisplay();
-        buttons.innerHTML = `<button class="bubble-btn" onclick="startUser()">Roll</button>`;
-      });
-    }
-
-    function startUser() {
-      rollWithAnimation(userDice, 2, () => {
-        updateDisplay();
-        showSuggestion();
-        buttons.innerHTML = `
-          <button class="bubble-btn" onclick="hit()">Hit</button>
-          <button class="bubble-btn" onclick="stand()">Stand</button>
-        `;
-      });
-    }
-
-    function hit() {
-      if (userDice.length < 10 && gameActive) {
-        rollWithAnimation(userDice, 1, () => {
-          updateDisplay();
-          if (userDice.length > 3 && sumDice(dealerDice) < 17) {
-            dealerDice.push(rollDie());
-            updateDisplay();
-          }
-          if (sumDice(userDice) > GOAL) {
-            endGame("You busted! Dealer wins.");
-          } else {
-            showSuggestion();
-          }
-        });
-      }
-    }
-
-    function stand() {
-      gameActive = false;
-      suggestionDisplay.textContent = '';
-      evaluateWinner();
-    }
-
-    function evaluateWinner() {
-      const userTotal = sumDice(userDice);
-      const dealerTotal = sumDice(dealerDice);
-      let message = "";
-
-      if (dealerTotal > GOAL || userTotal > dealerTotal) {
-        balance += bet;
-        message = "You win!";
-      } else if (userTotal < dealerTotal) {
-        balance -= bet;
-        message = "Dealer wins!";
-      } else {
-        balance -= bet;
-        message = "It's a tie!";
-      }
-
-      endGame(message);
-    }
-
-    function endGame(message) {
-      gameActive = false;
-      resultDisplay.textContent = message;
+      dealerRolled = true;
       updateDisplay();
-      suggestionDisplay.textContent = '';
-      buttons.innerHTML = `<button class="bubble-btn" onclick="startDealer()">Play Again</button>`;
-    }
+      buttons.innerHTML = `<button class="bubble-btn" onclick="startUser()">Roll</button>`;
+    });
+  }
 
-    function rollWithAnimation(targetArray, count, callback) {
-      let finalRolls = Array.from({length: count}, rollDie);
-      let animationIndex = 0;
-      const animationLength = 10;
+  function startUser() {
+    rollWithAnimation(userDice, 2, () => {
+      updateDisplay();
+      showSuggestion();
+      buttons.innerHTML = `
+        <button class="bubble-btn" onclick="hit()">Hit</button>
+        <button class="bubble-btn" onclick="stand()">Stand</button>
+      `;
+    });
+  }
 
-      const interval = setInterval(() => {
-        animationIndex++;
-        if (animationIndex >= animationLength) {
-          clearInterval(interval);
-          for (let i = 0; i < count; i++) {
-            targetArray.push(finalRolls[i]);
-          }
-          updateDisplay();
-          callback();
-        } else {
-          for (let i = 0; i < count; i++) {
-            targetArray[targetArray.length - i - 1] = rollDie();
-          }
+  function hit() {
+    if (userDice.length < 10 && gameActive) {
+      rollWithAnimation(userDice, 1, () => {
+        updateDisplay();
+        if (userDice.length > 3 && sumDice(dealerDice) < 17) {
+          dealerDice.push(rollDie());
           updateDisplay();
         }
-      }, 50);
+        if (sumDice(userDice) > GOAL) {
+          endGame("You busted! Dealer wins.");
+        } else {
+          showSuggestion();
+        }
+      });
+    }
+  }
+
+  function stand() {
+    gameActive = false;
+    suggestionDisplay.textContent = '';
+    evaluateWinner();
+  }
+
+  function evaluateWinner() {
+    const userTotal = sumDice(userDice);
+    let dealerTotal = sumDice(dealerDice);
+
+    while (dealerTotal <= userTotal && dealerTotal < GOAL) {
+      dealerDice.push(rollDie());
+      dealerTotal = sumDice(dealerDice);
     }
 
-    function showSuggestion() {
-      const total = sumDice(userDice);
-      let suggestion = "";
+    let message = "";
 
-      if (total <= 15) {
-        suggestion = "You should hit.";
-      } else if (total >= 18) {
-        suggestion = "You should stand.";
-      } else {
-        suggestion = "It's risky. Your call!";
-      }
-
-      suggestionDisplay.textContent = suggestion;
+    if (dealerTotal > GOAL || userTotal > dealerTotal) {
+      balance += bet;
+      message = "You win!";
+    } else {
+      balance -= bet;
+      message = "Dealer wins!";
     }
 
-    function resetGame() {
-      localStorage.removeItem('diceBalance');
-      localStorage.removeItem('highRoller');
-      location.reload();
-    }
+    endGame(message);
+  }
 
-    function toggleHowToPlay() {
-      const content = document.getElementById('how-to-play-content');
-      content.style.display = content.style.display === 'none' || content.style.display === '' ? 'block' : 'none';
-    }
-
-
+  function endGame(message) {
+    gameActive = false;
+    resultDisplay.textContent = message;
     updateDisplay();
-  </script>
+    suggestionDisplay.textContent = '';
+    buttons.innerHTML = `<button class="bubble-btn" onclick="startDealer()">Play Again</button>`;
+  }
+
+  function rollWithAnimation(targetArray, count, callback) {
+    let finalRolls = Array.from({length: count}, rollDie);
+    let animationIndex = 0;
+    const animationLength = 10;
+
+    const interval = setInterval(() => {
+      animationIndex++;
+      if (animationIndex >= animationLength) {
+        clearInterval(interval);
+        for (let i = 0; i < count; i++) {
+          targetArray.push(finalRolls[i]);
+        }
+        updateDisplay();
+        callback();
+      } else {
+        for (let i = 0; i < count; i++) {
+          targetArray[targetArray.length - i - 1] = rollDie();
+        }
+        updateDisplay();
+      }
+    }, 50);
+  }
+
+  function showSuggestion() {
+    const total = sumDice(userDice);
+    let suggestion = "";
+
+    if (total <= 15) {
+      suggestion = "You should hit.";
+    } else if (total >= 18) {
+      suggestion = "You should stand.";
+    } else {
+      suggestion = "It's risky. Your call!";
+    }
+
+    suggestionDisplay.textContent = suggestion;
+  }
+
+  function resetGame() {
+    localStorage.removeItem('diceBalance');
+    localStorage.removeItem('highRoller');
+    location.reload();
+  }
+
+  function toggleHowToPlay() {
+    const content = document.getElementById('how-to-play-content');
+    content.style.display = content.style.display === 'none' || content.style.display === '' ? 'block' : 'none';
+  }
+
+  updateDisplay();
+</script>
 </body>
 </html>
