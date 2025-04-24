@@ -6,218 +6,136 @@
   <title>Dice Game to 21</title>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #111;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #111;
       color: #fff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 30px;
+      text-align: center;
+      margin: 0;
+      padding: 20px;
     }
 
-    .game-container {
-      background: #1c1c1c;
-      padding: 25px;
-      border-radius: 15px;
-      box-shadow: 0 0 20px #ff0000;
-      width: 90%;
-      max-width: 420px;
-      text-align: center;
+    h1 {
+      font-size: 36px;
+      margin-bottom: 10px;
+      color: red;
+      text-shadow: 0 0 10px red;
+    }
+
+    #dice {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 20px;
+    }
+
+    .section {
+      background-color: #222;
+      border-radius: 10px;
+      padding: 20px;
+      margin: 10px;
+      width: 45%;
+      box-shadow: 0 0 10px red;
+    }
+
+    .dice-display {
+      font-size: 24px;
+      margin-top: 10px;
     }
 
     .bubble-btn {
-      background: #c00000;
+      background-color: red;
       border: none;
-      color: #fff;
-      padding: 12px 24px;
-      margin: 10px 5px 0;
-      font-size: 16px;
-      border-radius: 10px;
+      border-radius: 20px;
+      color: white;
+      padding: 10px 20px;
+      margin: 10px;
       cursor: pointer;
-      transition: 0.3s ease;
-      box-shadow: 0 0 10px #ff0000;
+      font-size: 16px;
+      box-shadow: 0 0 10px red;
+      transition: all 0.2s ease;
     }
 
     .bubble-btn:hover {
-      background: #ff0000;
-      transform: scale(1.05);
+      background-color: #ff4d4d;
+      box-shadow: 0 0 15px red;
     }
 
-    .slider-container {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin: 10px 0;
+    #result {
+      font-size: 24px;
+      margin-top: 20px;
+      color: red;
+      text-shadow: 0 0 10px red;
     }
 
-    input[type="range"] {
-      flex: 1;
-      accent-color: #ff0000;
+    #suggestion {
+      font-size: 18px;
+      color: #ffcccc;
+      margin-top: 10px;
     }
 
-    .label-group {
-      margin: 10px 0;
+    #balance-display, #bet-display {
+      font-size: 20px;
+      margin-top: 10px;
     }
 
-    #restart {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: #900;
+    #bet-slider {
+      width: 200px;
+      margin-top: 10px;
     }
 
-    #restart:hover {
-      background: #c00;
-    }
-
-    #how-to-play {
-      cursor: pointer;
-      padding: 10px;
-      background-color: #c00000;
-      color: white;
-      border-radius: 5px;
-      margin-bottom: 20px;
-      box-shadow: 0 0 10px #ff0000;
-    }
-
-    #how-to-play:hover {
-      background-color: #ff0000;
+    .achievement {
+      font-size: 18px;
+      color: gold;
+      text-shadow: 0 0 5px gold;
+      margin-top: 10px;
     }
 
     #how-to-play-content {
       display: none;
-      background: #2b0000;
+      margin-top: 15px;
+      font-size: 16px;
+      color: #ccc;
       padding: 10px;
-      border-radius: 5px;
-      margin-top: 10px;
-      color: #fff;
-    }
-
-    .suggestion {
-      color: #ff6f6f;
-      font-style: italic;
-      margin-top: 8px;
-    }
-
-    h2, h3, label, strong {
-      color: #ff3b3b;
-    }
-
-    #lawn-btn {
-      position: fixed;
-      bottom: 20px;
-      left: 28%;
-      transform: translateX(-50%);
-      background-color: #006400;
-      color: white;
-      padding: 12px 20px;
-      font-size: 14px;
-      border: none;
+      border: 1px solid red;
       border-radius: 10px;
-      cursor: pointer;
-      box-shadow: 0 0 15px #00ff00;
-      transition: 0.3s ease;
-      z-index: 99;
-    }
-
-    #lawn-btn:hover {
-      background-color: #00aa00;
-      box-shadow: 0 0 20px #00ff00;
-    }
-
-    .achievement-store {
-      margin-top: 20px;
-      background-color: #222;
-      padding: 15px;
-      border-radius: 10px;
-      box-shadow: 0 0 15px #ff0000;
-      width: 100%;
-      max-width: 420px;
-      display: none;
-    }
-
-    .achievement {
-      margin-top: 10px;
-    }
-
-    .owned {
-      color: #00ff00;
-      font-weight: bold;
-    }
-
-    #toggleAchievements {
-      margin-top: 20px;
-      cursor: pointer;
-      padding: 10px;
-      background-color: #c00000;
-      color: white;
-      border-radius: 5px;
-      box-shadow: 0 0 10px #ff0000;
-    }
-
-    #toggleAchievements:hover {
-      background-color: #ff0000;
     }
   </style>
 </head>
 <body>
-
-  <div id="how-to-play" onclick="toggleHowToPlay()">How to Play</div>
-  <div id="how-to-play-content">
-    <strong>How to Play:</strong><br>
-    - Start with a balance of $100.<br>
-    - Place a bet using the slider (max 95% of balance).<br>
-    - Click "Start" to let the dealer roll first.<br>
-    - Then click "Roll" to roll your own dice.<br>
-    - You can "Hit" to roll again or "Stand" to end your turn.<br>
-    - Closest to 21 without going over wins.<br>
-    - Dealer always tries to beat your score. If tied, dealer gets one extra roll.<br>
-    - Restart anytime with the button in the bottom-right.
-  </div>
-
-  <div class="game-container">
-    <h2>Balance: $<span id="balance">100</span></h2>
-
-    <div class="label-group">
-      <label for="bet">Bet Amount:</label>
-      <div class="slider-container">
-        <input type="range" id="bet" min="1" max="95" value="10">
-        <span id="betValue">10</span>
-      </div>
+  <h1>Dice Game to 21</h1>
+  <div id="balance-display"></div>
+  <div id="bet-display">Bet: $<span id="bet-value">10</span></div>
+  <input type="range" id="bet-slider" min="10" max="100" step="10" value="10">
+  <div id="dice">
+    <div class="section">
+      <h2>Dealer</h2>
+      <div id="dealer-dice" class="dice-display">-</div>
     </div>
-
-    <div class="label-group">
-      <strong>Dealer Dice:</strong>
-      <div id="dealerDice">-</div>
-      Total: <span id="dealerTotal">-</span>
-    </div>
-
-    <div class="label-group">
-      <strong>Your Dice:</strong>
-      <div id="userDice">-</div>
-      Total: <span id="userTotal">-</span>
-    </div>
-
-    <div id="buttons">
-      <button class="bubble-btn" onclick="startDealer()">Start</button>
-    </div>
-
-    <h3 id="result"></h3>
-    <div class="suggestion" id="suggestion"></div>
-
-    <div id="toggleAchievements" onclick="toggleAchievements()">Show Achievements</div>
-    <div class="achievement-store" id="achievementStore">
-      <h3>Achievement Store</h3>
-      <div class="achievement">
-        <span>Gambler($10,000): </span>
-        <button onclick="buyAchievement()" id="achievementBtn">Purchase</button>
-        <span class="owned" id="achievementOwned" style="display:none;">(Owned)</span>
-      </div>
+    <div class="section">
+      <h2>You</h2>
+      <div id="user-dice" class="dice-display">-</div>
     </div>
   </div>
-
-  <button id="restart" class="bubble-btn" onclick="resetGame()">Restart</button>
-  <a href="index.html"><button id="lawn-btn">Cheap Yard Work (Click)</button></a>
+  <div id="suggestion"></div>
+  <div id="result"></div>
+  <div id="buttons" style="margin-top: 20px;">
+    <button class="bubble-btn" onclick="startDealer()">Play</button>
+  </div>
+  <div class="achievement" id="achievement-section">
+    <button class="bubble-btn" onclick="toggleAchievements()">Achievements</button>
+    <div id="achievement-info" style="display:none;">
+      <p>Get $1000 to unlock the Millionaire Achievement!</p>
+      <button class="bubble-btn" onclick="buyAchievement()">Buy ($1000)</button>
+    </div>
+  </div>
+  <div>
+    <button class="bubble-btn" onclick="toggleHowToPlay()">How to Play</button>
+    <div id="how-to-play-content">
+      <p>Get as close to 21 as possible without going over. Roll the dice by clicking Hit. You can only roll up to 5 dice. When you're ready, click Stand. The dealer will try to beat your score without going over 21. Ties will result in the dealer rerolling once. First to win each round earns or loses money based on your bet.</p>
+    </div>
+  </div>
+  <div style="margin-top: 20px;">
+    <button class="bubble-btn" onclick="resetGame()">Reset Game</button>
+  </div>
 
   <script>
     let balance = localStorage.getItem('diceBalance') 
@@ -232,31 +150,19 @@
     let dealerRolled = false;
     const achievementPurchased = localStorage.getItem('millionaireAchievement') === 'true';
 
-    const balanceDisplay = document.getElementById('balance');
-    const betSlider = document.getElementById('bet');
-    const betValue = document.getElementById('betValue');
-    const dealerDiceDisplay = document.getElementById('dealerDice');
-    const dealerTotalDisplay = document.getElementById('dealerTotal');
-    const userDiceDisplay = document.getElementById('userDice');
-    const userTotalDisplay = document.getElementById('userTotal');
+    const dealerDiceDisplay = document.getElementById('dealer-dice');
+    const userDiceDisplay = document.getElementById('user-dice');
     const resultDisplay = document.getElementById('result');
-    const buttons = document.getElementById('buttons');
     const suggestionDisplay = document.getElementById('suggestion');
-    const achievementBtn = document.getElementById('achievementBtn');
-    const achievementOwned = document.getElementById('achievementOwned');
-    const achievementStore = document.getElementById('achievementStore');
-
-    if (achievementPurchased) {
-      achievementOwned.style.display = 'inline';
-      achievementBtn.style.display = 'none';
-    }
+    const balanceDisplay = document.getElementById('balance-display');
+    const betDisplay = document.getElementById('bet-value');
+    const betSlider = document.getElementById('bet-slider');
+    const buttons = document.getElementById('buttons');
+    const achievementInfo = document.getElementById('achievement-info');
 
     betSlider.addEventListener('input', () => {
-      const maxBet = Math.floor(balance * 0.95);
-      if (parseInt(betSlider.value) > maxBet) {
-        betSlider.value = maxBet;
-      }
-      betValue.textContent = betSlider.value;
+      bet = parseInt(betSlider.value);
+      betDisplay.textContent = bet;
     });
 
     function rollDie() {
@@ -272,42 +178,24 @@
     }
 
     function updateDisplay() {
-      const maxBet = Math.floor(balance * 0.95);
-      betSlider.max = maxBet > 0 ? maxBet : 1;
-      if (parseInt(betSlider.value) > maxBet) {
-        betSlider.value = maxBet;
-      }
-      betValue.textContent = betSlider.value;
-      dealerDiceDisplay.textContent = dealerDice.join(', ') || "-";
-      dealerTotalDisplay.textContent = sumDice(dealerDice) || "-";
-      userDiceDisplay.textContent = userDice.join(', ') || "-";
-      userTotalDisplay.textContent = sumDice(userDice) || "-";
-      balanceDisplay.textContent = balance;
+      dealerDiceDisplay.textContent = dealerDice.join(', ') + " (Total: " + sumDice(dealerDice) + ")";
+      userDiceDisplay.textContent = userDice.join(', ') + " (Total: " + sumDice(userDice) + ")";
+      balanceDisplay.textContent = "Balance: $" + balance;
       saveBalance();
-
-      if (!achievementPurchased && balance < 10000) {
-        achievementBtn.disabled = true;
-        achievementBtn.textContent = 'Requires $10,000';
-      } else if (!achievementPurchased) {
-        achievementBtn.disabled = false;
-        achievementBtn.textContent = 'Purchase';
-      }
     }
 
     function buyAchievement() {
-      if (balance >= 10000 && !achievementPurchased) {
-        balance = 100;
-        localStorage.setItem('Gambler', 'true');
-        achievementOwned.style.display = 'inline';
-        achievementBtn.style.display = 'none';
+      if (balance >= 1000 && !achievementPurchased) {
+        balance -= 1000;
+        localStorage.setItem('millionaireAchievement', 'true');
+        alert("Achievement Unlocked: Millionaire!");
         updateDisplay();
+        achievementInfo.style.display = 'none';
       }
     }
 
     function toggleAchievements() {
-      achievementStore.style.display = achievementStore.style.display === 'none' ? 'block' : 'none';
-      document.getElementById('toggleAchievements').textContent =
-        achievementStore.style.display === 'none' ? 'Show Achievements' : 'Hide Achievements';
+      achievementInfo.style.display = achievementInfo.style.display === 'none' ? 'block' : 'none';
     }
 
     function startDealer() {
@@ -359,8 +247,17 @@
       suggestionDisplay.textContent = '';
       const userTotal = sumDice(userDice);
 
-      while (sumDice(dealerDice) <= userTotal && sumDice(dealerDice) < GOAL) {
+      // Dealer logic
+      while (sumDice(dealerDice) < 17) {
         dealerDice.push(rollDie());
+      }
+
+      let dealerTotal = sumDice(dealerDice);
+
+      // Reroll once if dealer ties
+      if (dealerTotal === userTotal && dealerTotal <= GOAL) {
+        dealerDice.push(rollDie());
+        dealerTotal = sumDice(dealerDice);
       }
 
       updateDisplay();
