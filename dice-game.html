@@ -188,7 +188,6 @@
   let dealerDice = [];
   let userDice = [];
   let gameActive = false;
-  let dealerRolled = false;
 
   const balanceDisplay = document.getElementById('balance');
   const betSlider = document.getElementById('bet');
@@ -244,14 +243,8 @@
     gameActive = true;
     resultDisplay.textContent = '';
     suggestionDisplay.textContent = '';
-    dealerRolled = false;
 
     rollWithAnimation(dealerDice, 2, () => {
-      let dealerTotal = sumDice(dealerDice);
-      if (dealerTotal < 17) {
-        dealerDice.push(rollDie());
-      }
-      dealerRolled = true;
       updateDisplay();
       buttons.innerHTML = `<button class="bubble-btn" onclick="startUser()">Roll</button>`;
     });
@@ -272,10 +265,6 @@
     if (userDice.length < 10 && gameActive) {
       rollWithAnimation(userDice, 1, () => {
         updateDisplay();
-        if (userDice.length > 3 && sumDice(dealerDice) < 17) {
-          dealerDice.push(rollDie());
-          updateDisplay();
-        }
         if (sumDice(userDice) > GOAL) {
           endGame("You busted! Dealer wins.");
         } else {
@@ -288,26 +277,35 @@
   function stand() {
     gameActive = false;
     suggestionDisplay.textContent = '';
+
+    while (sumDice(dealerDice) < 17) {
+      dealerDice.push(rollDie());
+    }
+
+    updateDisplay();
     evaluateWinner();
   }
 
   function evaluateWinner() {
     const userTotal = sumDice(userDice);
-    let dealerTotal = sumDice(dealerDice);
-
-    while (dealerTotal <= userTotal && dealerTotal < GOAL) {
-      dealerDice.push(rollDie());
-      dealerTotal = sumDice(dealerDice);
-    }
+    const dealerTotal = sumDice(dealerDice);
 
     let message = "";
 
-    if (dealerTotal > GOAL || userTotal > dealerTotal) {
+    if (userTotal > GOAL) {
+      balance -= bet;
+      message = "You busted! Dealer wins.";
+    } else if (dealerTotal > GOAL) {
+      balance += bet;
+      message = "Dealer busted! You win.";
+    } else if (userTotal > dealerTotal) {
       balance += bet;
       message = "You win!";
-    } else {
+    } else if (dealerTotal > userTotal) {
       balance -= bet;
       message = "Dealer wins!";
+    } else {
+      message = "It's a tie!";
     }
 
     endGame(message);
@@ -317,7 +315,6 @@
     gameActive = false;
     resultDisplay.textContent = message;
     updateDisplay();
-    suggestionDisplay.textContent = '';
     buttons.innerHTML = `<button class="bubble-btn" onclick="startDealer()">Play Again</button>`;
   }
 
