@@ -180,16 +180,28 @@
 
   <button class="bubble-btn" onclick="toggleStore()">Achievement Store</button>
 
-  <div id="achievement-store" style="display:none; background:#1c1c1c; padding:20px; border-radius:10px; box-shadow:0 0 20px #ff0000; margin-top:20px;">
-    <h3>Achievements</h3>
-    <div id="achievements">
-      <div style="margin-bottom:10px;">
-        <strong>Gambler</strong> – Costs $10,000<br>
-        <button class="bubble-btn" onclick="buyGambler()">Buy</button>
-        <span id="GamblerStatus" style="margin-left:10px;"></span>
-      </div>
-    </div>
+<div id="achievements">
+  <div style="margin-bottom:10px;">
+    <strong>High Roller</strong> – Costs $10,000<br>
+    <button class="bubble-btn" onclick="buyHighRoller()">Buy</button>
+    <span id="highRollerStatus" style="margin-left:10px;"></span>
   </div>
+  <div style="margin-bottom:10px;">
+    <strong>Real Deal</strong> – Costs $100,000<br>
+    <button class="bubble-btn" onclick="buyRealDeal()">Buy</button>
+    <span id="realDealStatus" style="margin-left:10px;"></span>
+  </div>
+  <div style="margin-bottom:10px;">
+    <strong>Big Bucks</strong> – Costs $1,000,000<br>
+    <button class="bubble-btn" onclick="buyBigBucks()">Buy</button>
+    <span id="bigBucksStatus" style="margin-left:10px;"></span>
+  </div>
+  <div style="margin-bottom:10px;">
+    <strong>Multi Millionaire</strong> – Costs $10,000,000<br>
+    <button class="bubble-btn" onclick="buyMultiMillionaire()">Buy</button>
+    <span id="multiMillionaireStatus" style="margin-left:10px;"></span>
+  </div>
+</div>
 
   <button id="restart" class="bubble-btn" onclick="resetGame()">Restart</button>
   <a href="index.html"><button id="lawn-btn">Cheap Yard Work (Click)</button></a>
@@ -415,13 +427,61 @@ function animateNewDie(targetArray, callback) {
         alert("Not enough money for this achievement.");
       }
     }
+function buyRealDeal() {
+  if (balance >= 100000 && !localStorage.getItem('realDeal')) {
+    balance = 100;
+    localStorage.setItem('realDeal', 'unlocked');
+    updateDisplay();
+    updateAchievementDisplay();
+    alert("Achievement unlocked: Real Deal!");
+  } else if (localStorage.getItem('realDeal')) {
+    alert("You already unlocked this achievement.");
+  } else {
+    alert("Not enough money for this achievement.");
+  }
+}
 
+function buyBigBucks() {
+  if (balance >= 1000000 && !localStorage.getItem('bigBucks')) {
+    balance = 100;
+    localStorage.setItem('bigBucks', 'unlocked');
+    updateDisplay();
+    updateAchievementDisplay();
+    alert("Achievement unlocked: Big Bucks!");
+  } else if (localStorage.getItem('bigBucks')) {
+    alert("You already unlocked this achievement.");
+  } else {
+    alert("Not enough money for this achievement.");
+  }
+}
+
+function buyMultiMillionaire() {
+  if (balance >= 10000000 && !localStorage.getItem('multiMillionaire')) {
+    balance = 100;
+    localStorage.setItem('multiMillionaire', 'unlocked');
+    updateDisplay();
+    updateAchievementDisplay();
+    alert("Achievement unlocked: Multi Millionaire!");
+  } else if (localStorage.getItem('multiMillionaire')) {
+    alert("You already unlocked this achievement.");
+  } else {
+    alert("Not enough money for this achievement.");
+  }
+}
     function updateAchievementDisplay() {
       const status = document.getElementById('Gambler');
       const unlocked = localStorage.getItem('Gambler') === 'unlocked';
       status.textContent = unlocked ? "Unlocked" : "Locked";
       status.style.color = unlocked ? "#00ff00" : "#ff3b3b";
-    }
+   document.getElementById('realDealStatus').textContent = localStorage.getItem('realDeal') === 'unlocked' ? 'Unlocked' : 'Locked';
+  document.getElementById('realDealStatus').style.color = localStorage.getItem('realDeal') === 'unlocked' ? '#00ff00' : '#ff3b3b';
+
+  document.getElementById('bigBucksStatus').textContent = localStorage.getItem('bigBucks') === 'unlocked' ? 'Unlocked' : 'Locked';
+  document.getElementById('bigBucksStatus').style.color = localStorage.getItem('bigBucks') === 'unlocked' ? '#00ff00' : '#ff3b3b';
+
+  document.getElementById('multiMillionaireStatus').textContent = localStorage.getItem('multiMillionaire') === 'unlocked' ? 'Unlocked' : 'Locked';
+  document.getElementById('multiMillionaireStatus').style.color = localStorage.getItem('multiMillionaire') === 'unlocked' ? '#00ff00' : '#ff3b3b';
+     }
 
     updateDisplay();
   </script>
