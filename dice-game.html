@@ -372,4 +372,75 @@
       const dealerTotal = sumDice(dealerDice);
       let message = "";
 
-      if (dealerTotal > GOAL ||
+      if (dealerTotal > GOAL || userTotal > dealerTotal) {
+        balance += bet;
+        message = "You win!";
+      } else {
+        balance -= bet;
+        message = "Dealer wins!";
+      }
+
+      endGame(message);
+    }
+
+    function endGame(message) {
+      gameActive = false;
+      resultDisplay.textContent = message;
+      updateDisplay();
+      suggestionDisplay.textContent = '';
+      buttons.innerHTML = `<button class="bubble-btn" onclick="startDealer()">Play Again</button>`;
+    }
+
+    function rollWithAnimation(targetArray, count, callback) {
+      let finalRolls = Array.from({length: count}, rollDie);
+      let animationIndex = 0;
+      const animationLength = 10;
+
+      const interval = setInterval(() => {
+        animationIndex++;
+        if (animationIndex >= animationLength) {
+          clearInterval(interval);
+          for (let i = 0; i < count; i++) {
+            targetArray.push(finalRolls[i]);
+          }
+          updateDisplay();
+          callback();
+        } else {
+          for (let i = 0; i < count; i++) {
+            targetArray[targetArray.length - i - 1] = rollDie();
+          }
+          updateDisplay();
+        }
+      }, 50);
+    }
+
+    function showSuggestion() {
+      const total = sumDice(userDice);
+      let suggestion = "";
+
+      if (total <= 15) {
+        suggestion = "You should hit.";
+      } else if (total >= 18) {
+        suggestion = "You should stand.";
+      } else {
+        suggestion = "It's risky. Your call!";
+      }
+
+      suggestionDisplay.textContent = suggestion;
+    }
+
+    function resetGame() {
+      localStorage.removeItem('diceBalance');
+      localStorage.removeItem('millionaireAchievement');
+      location.reload();
+    }
+
+    function toggleHowToPlay() {
+      const content = document.getElementById('how-to-play-content');
+      content.style.display = content.style.display === 'none' || content.style.display === '' ? 'block' : 'none';
+    }
+
+    updateDisplay();
+  </script>
+</body>
+</html>
