@@ -124,6 +124,11 @@
       background-color: #00aa00;
       box-shadow: 0 0 20px #00ff00;
     }
+
+    #achievement-store h3 {
+      color: #ff3b3b;
+      margin-bottom: 10px;
+    }
   </style>
 </head>
 <body>
@@ -138,7 +143,7 @@
     - You can "Hit" to roll again or "Stand" to end your turn.<br>
     - Closest to 21 without going over wins.<br>
     - If the dealer gets 17 or more, they will stand automatically.<br>
-    - Dealer may roll again if you pass 3 dice and they have <17.<br>
+    - Dealer may roll again if you pass 3 dice and they have 17+.<br>
     - Restart anytime with the button in the bottom-right.
   </div>
 
@@ -171,6 +176,19 @@
 
     <h3 id="result"></h3>
     <div class="suggestion" id="suggestion"></div>
+  </div>
+
+  <button class="bubble-btn" onclick="toggleStore()">Achievement Store</button>
+
+  <div id="achievement-store" style="display:none; background:#1c1c1c; padding:20px; border-radius:10px; box-shadow:0 0 20px #ff0000; margin-top:20px;">
+    <h3>Achievements</h3>
+    <div id="achievements">
+      <div style="margin-bottom:10px;">
+        <strong>Gambler</strong> – Costs $10,000<br>
+        <button class="bubble-btn" onclick="buyHighRoller()">Buy</button>
+        <span id="highRollerStatus" style="margin-left:10px;"></span>
+      </div>
+    </div>
   </div>
 
   <button id="restart" class="bubble-btn" onclick="resetGame()">Restart</button>
@@ -233,6 +251,7 @@
       userTotalDisplay.textContent = sumDice(userDice) || "-";
       balanceDisplay.textContent = balance;
       saveBalance();
+      updateAchievementDisplay();
     }
 
     function startDealer() {
@@ -354,12 +373,39 @@
 
     function resetGame() {
       localStorage.removeItem('diceBalance');
+      localStorage.removeItem('highRoller');
       location.reload();
     }
 
     function toggleHowToPlay() {
       const content = document.getElementById('how-to-play-content');
       content.style.display = content.style.display === 'none' || content.style.display === '' ? 'block' : 'none';
+    }
+
+    function toggleStore() {
+      const store = document.getElementById('achievement-store');
+      store.style.display = store.style.display === 'none' || store.style.display === '' ? 'block' : 'none';
+    }
+
+    function buyHighRoller() {
+      if (balance >= 10000 && !localStorage.getItem('highRoller')) {
+        balance = 100;
+        localStorage.setItem('highRoller', 'unlocked');
+        updateDisplay();
+        updateAchievementDisplay();
+        alert("Achievement unlocked: High Roller!");
+      } else if (localStorage.getItem('highRoller')) {
+        alert("You already unlocked this achievement.");
+      } else {
+        alert("Not enough money for this achievement.");
+      }
+    }
+
+    function updateAchievementDisplay() {
+      const status = document.getElementById('highRollerStatus');
+      const unlocked = localStorage.getItem('highRoller') === 'unlocked';
+      status.textContent = unlocked ? "Unlocked" : "Locked";
+      status.style.color = unlocked ? "#00ff00" : "#ff3b3b";
     }
 
     updateDisplay();
