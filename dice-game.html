@@ -137,7 +137,7 @@
   <div id="how-to-play-content">
     <strong>How to Play:</strong><br>
     - Start with a balance of $100.<br>
-    - Place a bet using the slider (max 95% of balance).<br>
+    - Place a bet using the slider (max 100% of balance).<br>
     - Click "Start" to let the dealer roll first.<br>
     - Then click "Roll" to roll your own dice.<br>
     - You can "Hit" to roll again or "Stand" to end your turn.<br>
@@ -218,7 +218,7 @@
     const suggestionDisplay = document.getElementById('suggestion');
 
     betSlider.addEventListener('input', () => {
-      const maxBet = Math.floor(balance * 0.95);
+      const maxBet = Math.floor(balance * 1);
       if (parseInt(betSlider.value) > maxBet) {
         betSlider.value = maxBet;
       }
@@ -238,8 +238,8 @@
     }
 
     function updateDisplay() {
-      const maxBet = Math.floor(balance * 0.95);
-      betSlider.max = maxBet > 0 ? maxBet : 1;
+      const maxBet = Math.floor(balance * 1);
+       betSlider.max = maxBet > 0 ? maxBet : 1;
       if (parseInt(betSlider.value) > maxBet) {
         betSlider.value = maxBet;
       }
@@ -285,7 +285,7 @@
     }
 
     function hit() {
-      if (userDice.length < 5 && gameActive) {
+      if (userDice.length < 10 && gameActive) {
         rollWithAnimation(userDice, 1, () => {
           updateDisplay();
           if (userDice.length > 3 && sumDice(dealerDice) < 17) {
