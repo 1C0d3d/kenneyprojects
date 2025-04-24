@@ -124,11 +124,7 @@
       background-color: #00aa00;
       box-shadow: 0 0 20px #00ff00;
     }
-
-    #achievement-store h3 {
-      color: #ff3b3b;
-      margin-bottom: 10px;
-    }
+    
   </style>
 </head>
 <body>
@@ -178,18 +174,6 @@
     <div class="suggestion" id="suggestion"></div>
   </div>
 
-  <button class="bubble-btn" onclick="toggleStore()">Achievement Store</button>
-
-  <div id="achievement-store" style="display:none; background:#1c1c1c; padding:20px; border-radius:10px; box-shadow:0 0 20px #ff0000; margin-top:20px;">
-    <h3>Achievements</h3>
-    <div id="achievements">
-      <div style="margin-bottom:10px;">
-        <strong>Gambler</strong> – Costs $1,000,000<br>
-        <button class="bubble-btn" onclick="buyGambler()">Buy</button>
-        <span id="GamblerStatus" style="margin-left:10px;"></span>
-      </div>
-    </div>
-  </div>
 
   <button id="restart" class="bubble-btn" onclick="resetGame()">Restart</button>
   <a href="index.html"><button id="lawn-btn">Cheap Yard Work (Click)</button></a>
@@ -319,6 +303,7 @@
         balance -= bet;
         message = "Dealer wins!";
       } else {
+        balance -*.5 bet;
         message = "It's a tie!";
       }
 
@@ -382,31 +367,6 @@
       content.style.display = content.style.display === 'none' || content.style.display === '' ? 'block' : 'none';
     }
 
-    function toggleStore() {
-      const store = document.getElementById('achievement-store');
-      store.style.display = store.style.display === 'none' || store.style.display === '' ? 'block' : 'none';
-    }
-
-    function buyGambler() {
-      if (balance >= 1000000 && !localStorage.getItem('Gambler')) {
-        balance = 100;
-        localStorage.setItem('Gambler', 'unlocked');
-        updateDisplay();
-        updateAchievementDisplay();
-        alert("Achievement unlocked: Gambler!");
-      } else if (localStorage.getItem('Gambler')) {
-        alert("You already unlocked this achievement.");
-      } else {
-        alert("Not enough money for this achievement.");
-      }
-    }
-
-    function updateAchievementDisplay() {
-      const status = document.getElementById('GamblerStatus');
-      const unlocked = localStorage.getItem('Gambler') === 'unlocked';
-      status.textContent = unlocked ? "Unlocked" : "Locked";
-      status.style.color = unlocked ? "#00ff00" : "#008080";
-    }
 
     updateDisplay();
   </script>
