@@ -153,7 +153,7 @@
     <div class="label-group">
       <label for="bet">Bet Amount:</label>
       <div class="slider-container">
-        <input type="range" id="bet" min="1" max="95" value="10">
+        <input type="range" id="bet" min="1" max="98" value="10">
         <span id="betValue">10</span>
       </div>
     </div>
@@ -218,7 +218,7 @@
     const suggestionDisplay = document.getElementById('suggestion');
 
     betSlider.addEventListener('input', () => {
-      const maxBet = Math.floor(balance * 0.95);
+      const maxBet = Math.floor(balance * 0.98);
       if (parseInt(betSlider.value) > maxBet) {
         betSlider.value = maxBet;
       }
@@ -238,7 +238,7 @@
     }
 
     function updateDisplay() {
-      const maxBet = Math.floor(balance * 0.95);
+      const maxBet = Math.floor(balance * 0.98);
       betSlider.max = maxBet > 0 ? maxBet : 1;
       if (parseInt(betSlider.value) > maxBet) {
         betSlider.value = maxBet;
@@ -285,10 +285,10 @@
     }
 
     function hit() {
-      if (userDice.length < 5 && gameActive) {
+      if (userDice.length < 10 && gameActive) {
         rollWithAnimation(userDice, 1, () => {
           updateDisplay();
-          if (userDice.length > 3 && sumDice(dealerDice) < 17) {
+          if (userDice.length > 10 && sumDice(dealerDice) < 17) {
             dealerDice.push(rollDie());
             updateDisplay();
           }
@@ -336,7 +336,7 @@
     function rollWithAnimation(targetArray, count, callback) {
       let finalRolls = Array.from({length: count}, rollDie);
       let animationIndex = 0;
-      const animationLength = 10;
+      const animationLength = 15;
 
       const interval = setInterval(() => {
         animationIndex++;
@@ -365,7 +365,7 @@
       } else if (total >= 18) {
         suggestion = "You should stand.";
       } else {
-        suggestion = "It's risky. Your call!";
+        suggestion = "It's risky. You chose!";
       }
 
       suggestionDisplay.textContent = suggestion;
