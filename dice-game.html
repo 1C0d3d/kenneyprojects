@@ -184,9 +184,9 @@
     <h3>Achievements</h3>
     <div id="achievements">
       <div style="margin-bottom:10px;">
-        <strong>High Roller</strong> – Costs $10,000<br>
-        <button class="bubble-btn" onclick="buyHighRoller()">Buy</button>
-        <span id="highRollerStatus" style="margin-left:10px;"></span>
+        <strong>Gambler</strong> – Costs $1,000,000<br>
+        <button class="bubble-btn" onclick="buyGambler()">Buy</button>
+        <span id="GamblerStatus" style="margin-left:10px;"></span>
       </div>
     </div>
   </div>
@@ -387,14 +387,14 @@
       store.style.display = store.style.display === 'none' || store.style.display === '' ? 'block' : 'none';
     }
 
-    function buyHighRoller() {
-      if (balance >= 10000 && !localStorage.getItem('highRoller')) {
+    function buyGambler() {
+      if (balance >= 1000000 && !localStorage.getItem('Gambler')) {
         balance = 100;
-        localStorage.setItem('highRoller', 'unlocked');
+        localStorage.setItem('Gambler', 'unlocked');
         updateDisplay();
         updateAchievementDisplay();
-        alert("Achievement unlocked: High Roller!");
-      } else if (localStorage.getItem('highRoller')) {
+        alert("Achievement unlocked: Gambler!");
+      } else if (localStorage.getItem('Gambler')) {
         alert("You already unlocked this achievement.");
       } else {
         alert("Not enough money for this achievement.");
@@ -402,10 +402,10 @@
     }
 
     function updateAchievementDisplay() {
-      const status = document.getElementById('highRollerStatus');
-      const unlocked = localStorage.getItem('highRoller') === 'unlocked';
+      const status = document.getElementById('GamblerStatus');
+      const unlocked = localStorage.getItem('Gambler') === 'unlocked';
       status.textContent = unlocked ? "Unlocked" : "Locked";
-      status.style.color = unlocked ? "#00ff00" : "#ff3b3b";
+      status.style.color = unlocked ? "#00ff00" : "#008080";
     }
 
     updateDisplay();
