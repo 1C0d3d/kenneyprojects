@@ -1,480 +1,119 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
   <title>Dice Game to 21</title>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #111;
+      background-color: #1c1c1c;
       color: #fff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 30px;
-    }
-
-    .game-container {
-      background: #1c1c1c;
-      padding: 25px;
-      border-radius: 15px;
-      box-shadow: 0 0 20px #ff0000;
-      width: 90%;
-      max-width: 420px;
+      font-family: Arial, sans-serif;
       text-align: center;
+      padding: 40px;
     }
 
-    .bubble-btn {
-      background: #c00000;
-      border: none;
-      color: #fff;
-      padding: 12px 24px;
-      margin: 10px 5px 0;
-      font-size: 16px;
+    h1 {
+      color: #ff3333;
+      text-shadow: 0 0 10px #ff3333;
+    }
+
+    #game-container {
+      background-color: #2c2c2c;
       border-radius: 10px;
-      cursor: pointer;
-      transition: 0.3s ease;
-      box-shadow: 0 0 10px #ff0000;
+      padding: 20px;
+      display: inline-block;
+      box-shadow: 0 0 15px #ff3333;
     }
 
-    .bubble-btn:hover {
-      background: #ff0000;
+    button {
+      background-color: #ff3333;
+      border: none;
+      color: white;
+      padding: 12px 24px;
+      margin: 10px;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      text-shadow: 0 0 5px #000;
+      box-shadow: 0 0 10px #ff3333;
+      transition: transform 0.1s ease-in-out;
+    }
+
+    button:hover {
       transform: scale(1.05);
     }
 
-    .slider-container {
-      display: flex;
-      align-items: center;
-      gap: 10px;
+    #result {
+      margin-top: 20px;
+      font-size: 20px;
+    }
+
+    .score {
       margin: 10px 0;
-    }
-
-    input[type="range"] {
-      flex: 1;
-      accent-color: #ff0000;
-    }
-
-    .label-group {
-      margin: 10px 0;
-    }
-
-    #restart {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: #900;
-    }
-
-    #restart:hover {
-      background: #c00;
-    }
-
-    #how-to-play {
-      cursor: pointer;
-      padding: 10px;
-      background-color: #c00000;
-      color: white;
-      border-radius: 5px;
-      margin-bottom: 20px;
-      box-shadow: 0 0 10px #ff0000;
-    }
-
-    #how-to-play:hover {
-      background-color: #ff0000;
-    }
-
-    #how-to-play-content {
-      display: none;
-      background: #2b0000;
-      padding: 10px;
-      border-radius: 5px;
-      margin-top: 10px;
-      color: #fff;
-    }
-
-    .suggestion {
-      color: #ff6f6f;
-      font-style: italic;
-      margin-top: 8px;
-    }
-
-    h2, h3, label, strong {
-      color: #ff3b3b;
-    }
-
-    #lawn-btn {
-      position: fixed;
-      bottom: 20px;
-      left: 28%;
-      transform: translateX(-50%);
-      background-color: #006400;
-      color: white;
-      padding: 12px 20px;
-      font-size: 14px;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      box-shadow: 0 0 15px #00ff00;
-      transition: 0.3s ease;
-      z-index: 99;
-    }
-
-    #lawn-btn:hover {
-      background-color: #00aa00;
-      box-shadow: 0 0 20px #00ff00;
-    }
-
-    #achievement-store h3 {
-      color: #ff3b3b;
-      margin-bottom: 10px;
+      font-size: 18px;
     }
   </style>
 </head>
 <body>
-
-  <div id="how-to-play" onclick="toggleHowToPlay()">How to Play</div>
-  <div id="how-to-play-content">
-    <strong>How to Play:</strong><br>
-    - Start with a balance of $100.<br>
-    - Place a bet using the slider (max 98% of balance).<br>
-    - Click "Start" to let the dealer roll first.<br>
-    - Then click "Roll" to roll your own dice.<br>
-    - You can "Hit" to roll again or "Stand" to end your turn.<br>
-    - Closest to 21 without going over wins.<br>
-    - If the dealer gets 17 or more, they will stand automatically.<br>
-    - Dealer may roll again if you pass 3 dice and they have <17.<br>
-    - Restart anytime with the button in the bottom-right.
+  <h1>Dice Game to 21</h1>
+  <div id="game-container">
+    <div class="score">Your Score: <span id="player-score">0</span></div>
+    <div class="score">Dealer's Score: <span id="dealer-score">0</span></div>
+    <div id="result"></div>
+    <button onclick="rollDice()">Roll Dice</button>
+    <button onclick="stay()">Stay</button>
+    <button onclick="resetGame()">Reset</button>
   </div>
-
-  <div class="game-container">
-    <h2>Balance: $<span id="balance">100</span></h2>
-
-    <div class="label-group">
-      <label for="bet">Bet Amount:</label>
-      <div class="slider-container">
-        <input type="range" id="bet" min="1" max="98" value="10">
-        <span id="betValue">10</span>
-      </div>
-    </div>
-
-    <div class="label-group">
-      <strong>Dealer Dice:</strong>
-      <div id="dealerDice">-</div>
-      Total: <span id="dealerTotal">-</span>
-    </div>
-
-    <div class="label-group">
-      <strong>Your Dice:</strong>
-      <div id="userDice">-</div>
-      Total: <span id="userTotal">-</span>
-    </div>
-
-    <div id="buttons">
-      <button class="bubble-btn" onclick="startDealer()">Start</button>
-    </div>
-
-    <h3 id="result"></h3>
-    <div class="suggestion" id="suggestion"></div>
-  </div>
-
-  <button class="bubble-btn" onclick="toggleStore()">Achievement Store</button>
-
-<div id="achievements">
-  <div style="margin-bottom:10px;">
-    <strong>High Roller</strong> – Costs $10,000<br>
-    <button class="bubble-btn" onclick="buyHighRoller()">Buy</button>
-    <span id="highRollerStatus" style="margin-left:10px;"></span>
-  </div>
-  <div style="margin-bottom:10px;">
-    <strong>Real Deal</strong> – Costs $100,000<br>
-    <button class="bubble-btn" onclick="buyRealDeal()">Buy</button>
-    <span id="realDealStatus" style="margin-left:10px;"></span>
-  </div>
-  <div style="margin-bottom:10px;">
-    <strong>Big Bucks</strong> – Costs $1,000,000<br>
-    <button class="bubble-btn" onclick="buyBigBucks()">Buy</button>
-    <span id="bigBucksStatus" style="margin-left:10px;"></span>
-  </div>
-  <div style="margin-bottom:10px;">
-    <strong>Multimillionaire</strong> – Costs $10,000,000<br>
-    <button class="bubble-btn" onclick="buyMultimillionaire()">Buy</button>
-    <span id="multiStatus" style="margin-left:10px;"></span>
-  </div>
-</div>
-
-  <button id="restart" class="bubble-btn" onclick="resetGame()">Restart</button>
-  <a href="index.html"><button id="lawn-btn">Cheap Yard Work (Click)</button></a>
 
   <script>
-    let balance = localStorage.getItem('diceBalance') 
-      ? parseInt(localStorage.getItem('diceBalance')) 
-      : 100;
+    let playerScore = 0;
+    let dealerScore = 0;
+    let gameOver = false;
 
-    const GOAL = 21;
-    let bet = 10;
-    let dealerDice = [];
-    let userDice = [];
-    let gameActive = false;
-    let dealerRolled = false;
+    function rollDice() {
+      if (gameOver) return;
 
-    const balanceDisplay = document.getElementById('balance');
-    const betSlider = document.getElementById('bet');
-    const betValue = document.getElementById('betValue');
-    const dealerDiceDisplay = document.getElementById('dealerDice');
-    const dealerTotalDisplay = document.getElementById('dealerTotal');
-    const userDiceDisplay = document.getElementById('userDice');
-    const userTotalDisplay = document.getElementById('userTotal');
-    const resultDisplay = document.getElementById('result');
-    const buttons = document.getElementById('buttons');
-    const suggestionDisplay = document.getElementById('suggestion');
+      const roll = Math.floor(Math.random() * 6) + 1;
+      playerScore += roll;
+      document.getElementById("player-score").textContent = playerScore;
 
-    betSlider.addEventListener('input', () => {
-      const maxBet = Math.floor(balance * 0.98);
-      if (parseInt(betSlider.value) > maxBet) {
-        betSlider.value = maxBet;
+      if (playerScore > 21) {
+        document.getElementById("result").textContent = "You busted! Dealer wins.";
+        gameOver = true;
       }
-      betValue.textContent = betSlider.value;
-    });
-
-    function rollDie() {
-      return Math.floor(Math.random() * 6) + 1;
     }
 
-    function sumDice(arr) {
-      return arr.reduce((a, b) => a + b, 0);
+    function stay() {
+      if (gameOver) return;
+
+      dealerTurn();
     }
 
-    function saveBalance() {
-      localStorage.setItem('diceBalance', balance);
-    }
-
-    function updateDisplay() {
-      const maxBet = Math.floor(balance * 0.98);
-      betSlider.max = maxBet > 0 ? maxBet : 1;
-      if (parseInt(betSlider.value) > maxBet) {
-        betSlider.value = maxBet;
-      }
-      betValue.textContent = betSlider.value;
-
-      dealerDiceDisplay.textContent = dealerDice.join(', ') || "-";
-      dealerTotalDisplay.textContent = sumDice(dealerDice) || "-";
-      userDiceDisplay.textContent = userDice.join(', ') || "-";
-      userTotalDisplay.textContent = sumDice(userDice) || "-";
-      balanceDisplay.textContent = balance;
-      saveBalance();
-      updateAchievementDisplay();
-    }
-
-    function startDealer() {
-      bet = parseInt(betSlider.value);
-      dealerDice = [];
-      userDice = [];
-      gameActive = true;
-      resultDisplay.textContent = '';
-      suggestionDisplay.textContent = '';
-      dealerRolled = false;
-
-      rollMultipleDice(dealerDice, 2, () => {
-        if (sumDice(dealerDice) < 17) {
-          dealerDice.push(rollDie());
-        }
-        dealerRolled = true;
-        updateDisplay();
-        buttons.innerHTML = `<button class="bubble-btn" onclick="startUser()">Roll</button>`;
-      });
-    }
-
-    function startUser() {
-      rollMultipleDice(userDice, 2, () => {
-        updateDisplay();
-        showSuggestion();
-        buttons.innerHTML = `
-          <button class="bubble-btn" onclick="hit()">Hit</button>
-          <button class="bubble-btn" onclick="stand()">Stand</button>
-        `;
-      });
-    }
-
-function hit() {
-  if (userDice.length < 10 && gameActive) {
-    animateNewDie(userDice, () => {
-      updateDisplay();
-      const userTotal = sumDice(userDice);
-      if (userTotal > GOAL) {
-        endGame("You busted! Dealer wins.");
-      } else {
-        showSuggestion();
-        // Optional: dealer rolls one more if needed
-        if (userDice.length > 3 && sumDice(dealerDice) < 17) {
-          dealerDice.push(rollDie());
-          updateDisplay();
-        }
-      }
-    });
-  }
-}
-
-function animateNewDie(targetArray, callback) {
-  let rollIndex = 0;
-  const animationLength = 15;
-  let placeholder = rollDie();
-  targetArray.push(placeholder); // Temporary number to hold space
-
-  const interval = setInterval(() => {
-    rollIndex++;
-    placeholder = rollDie();
-    targetArray[targetArray.length - 1] = placeholder;
-    updateDisplay();
-
-    if (rollIndex >= animationLength) {
-      clearInterval(interval);
-      targetArray[targetArray.length - 1] = rollDie(); // Final actual roll
-      updateDisplay();
-      callback();
-    }
-  }, 50);
-}
-    function stand() {
-      gameActive = false;
-      suggestionDisplay.textContent = '';
-      evaluateWinner();
-    }
-
-    function evaluateWinner() {
-      const userTotal = sumDice(userDice);
-      const dealerTotal = sumDice(dealerDice);
-      let message = "";
-
-      if (dealerTotal > GOAL || userTotal > dealerTotal) {
-        balance += bet;
-        message = "You win!";
-      } else if (userTotal < dealerTotal) {
-        balance -= bet;
-        message = "Dealer wins!";
-      } else {
-        message = "It's a tie!";
+    function dealerTurn() {
+      while (dealerScore <= playerScore && dealerScore <= 21) {
+        const roll = Math.floor(Math.random() * 6) + 1;
+        dealerScore += roll;
       }
 
-      endGame(message);
-    }
+      document.getElementById("dealer-score").textContent = dealerScore;
 
-    function endGame(message) {
-      gameActive = false;
-      resultDisplay.textContent = message;
-      updateDisplay();
-      suggestionDisplay.textContent = '';
-      buttons.innerHTML = `<button class="bubble-btn" onclick="startDealer()">Play Again</button>`;
-    }
-
-    function rollMultipleDice(targetArray, count, callback) {
-      const rolls = Array.from({ length: count }, rollDie);
-      let index = 0;
-      const interval = setInterval(() => {
-        if (index >= rolls.length) {
-          clearInterval(interval);
-          callback();
-        } else {
-          targetArray.push(rolls[index]);
-          updateDisplay();
-          index++;
-        }
-      }, 150);
-    }
-
-    function showSuggestion() {
-      const total = sumDice(userDice);
-      let suggestion = "";
-
-      if (total <= 15) {
-        suggestion = "You should hit.";
-      } else if (total >= 18) {
-        suggestion = "You should stand.";
-      } else {
-        suggestion = "It's risky. You choose!";
+      if (dealerScore > 21) {
+        document.getElementById("result").textContent = "Dealer busted! You win!";
+      } else if (dealerScore > playerScore) {
+        document.getElementById("result").textContent = "Dealer wins!";
       }
 
-      suggestionDisplay.textContent = suggestion;
+      gameOver = true;
     }
 
     function resetGame() {
-      localStorage.removeItem('diceBalance');
-      localStorage.removeItem('highRoller');
-      location.reload();
+      playerScore = 0;
+      dealerScore = 0;
+      gameOver = false;
+      document.getElementById("player-score").textContent = playerScore;
+      document.getElementById("dealer-score").textContent = dealerScore;
+      document.getElementById("result").textContent = "";
     }
-
-    function toggleHowToPlay() {
-      const content = document.getElementById('how-to-play-content');
-      content.style.display = content.style.display === 'none' || content.style.display === '' ? 'block' : 'none';
-    }
-
-    function toggleStore() {
-      const store = document.getElementById('achievement-store');
-      store.style.display = store.style.display === 'none' || store.style.display === '' ? 'block' : 'none';
-    }
-
-    function buyHighRoller() {
-      if (balance >= 10000 && !localStorage.getItem('highRoller')) {
-        balance = 100;
-        localStorage.setItem('highRoller', 'unlocked');
-        updateDisplay();
-        updateAchievementDisplay();
-        alert("Achievement unlocked: High Roller!");
-      } else if (localStorage.getItem('highRoller')) {
-        alert("You already unlocked this achievement.");
-      } else {
-        alert("Not enough money for this achievement.");
-      }
-    }
-    function buyRealDeal() {
-      if (balance >= 100000 && !localStorage.getItem('realDeal')) {
-        balance = 100;
-        localStorage.setItem('realDeal', 'unlocked');
-        updateDisplay();
-        updateAchievementDisplay();
-        alert("Achievement unlocked: Real Deal!");
-      } else if (localStorage.getItem('realDeal')) {
-        alert("You already unlocked this achievement.");
-      } else {
-        alert("Not enough money for this achievement.");
-      }
-    }
-
-    function buyBigBucks() {
-      if (balance >= 1000000 && !localStorage.getItem('bigBucks')) {
-        balance = 100;
-        localStorage.setItem('bigBucks', 'unlocked');
-        updateDisplay();
-        updateAchievementDisplay();
-        alert("Achievement unlocked: Big Bucks!");
-      } else if (localStorage.getItem('bigBucks')) {
-        alert("You already unlocked this achievement.");
-      } else {
-        alert("Not enough money for this achievement.");
-      }
-    }
-    
-    function buyMultimillionaire() {
-      if (balance >= 10000000 && !localStorage.getItem('multimillionaire')) {
-        balance = 100;
-        localStorage.setItem('multimillionaire', 'unlocked');
-        updateDisplay();
-        updateAchievementDisplay();
-        alert("Achievement unlocked: Multimillionaire!");
-      } else if (localStorage.getItem('multimillionaire')) {
-        alert("You already unlocked this achievement.");
-      } else {
-        alert("Not enough money for this achievement.");
-      }
-    }
-    function updateAchievementDisplay() {
-      const status = document.getElementById('highRollerStatus');
-      const unlocked = localStorage.getItem('highRoller') === 'unlocked';
-      status.textContent = unlocked ? "Unlocked" : "Locked";
-      status.style.color = unlocked ? "#00ff00" : "#ff3b3b";
-    }
-    
-    updateDisplay();
   </script>
 </body>
 </html>
