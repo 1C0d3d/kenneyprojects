@@ -263,7 +263,7 @@
       suggestionDisplay.textContent = '';
       dealerRolled = false;
 
-      rollWithAnimation(dealerDice, 2, () => {
+      rollMultipleDice(dealerDice, 2, () => {
         if (sumDice(dealerDice) < 17) {
           dealerDice.push(rollDie());
         }
@@ -274,7 +274,7 @@
     }
 
     function startUser() {
-      rollWithAnimation(userDice, 2, () => {
+      rollMultipleDice(userDice, 2, () => {
         updateDisplay();
         showSuggestion();
         buttons.innerHTML = `
@@ -286,12 +286,8 @@
 
     function hit() {
       if (userDice.length < 10 && gameActive) {
-        rollWithAnimation(userDice, 1, () => {
+        rollSingleDie(userDice, () => {
           updateDisplay();
-          if (userDice.length > 10 && sumDice(dealerDice) < 17) {
-            dealerDice.push(rollDie());
-            updateDisplay();
-          }
           if (sumDice(userDice) > GOAL) {
             endGame("You busted! Dealer wins.");
           } else {
@@ -333,24 +329,33 @@
       buttons.innerHTML = `<button class="bubble-btn" onclick="startDealer()">Play Again</button>`;
     }
 
-    function rollWithAnimation(targetArray, count, callback) {
-      let finalRolls = Array.from({length: count}, rollDie);
+    function rollMultipleDice(targetArray, count, callback) {
+      const rolls = Array.from({ length: count }, rollDie);
+      let index = 0;
+      const interval = setInterval(() => {
+        if (index >= rolls.length) {
+          clearInterval(interval);
+          callback();
+        } else {
+          targetArray.push(rolls[index]);
+          updateDisplay();
+          index++;
+        }
+      }, 150);
+    }
+
+    function rollSingleDie(targetArray, callback) {
       let animationIndex = 0;
-      const animationLength = 15;
+      const animationLength = 10;
+      let finalRoll = rollDie();
 
       const interval = setInterval(() => {
         animationIndex++;
         if (animationIndex >= animationLength) {
           clearInterval(interval);
-          for (let i = 0; i < count; i++) {
-            targetArray.push(finalRolls[i]);
-          }
-          updateDisplay();
+          targetArray.push(finalRoll);
           callback();
         } else {
-          for (let i = 0; i < count; i++) {
-            targetArray[targetArray.length - i - 1] = rollDie();
-          }
           updateDisplay();
         }
       }, 50);
@@ -365,7 +370,7 @@
       } else if (total >= 18) {
         suggestion = "You should stand.";
       } else {
-        suggestion = "It's risky. You chose!";
+        suggestion = "It's risky. You choose!";
       }
 
       suggestionDisplay.textContent = suggestion;
