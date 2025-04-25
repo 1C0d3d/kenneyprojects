@@ -260,6 +260,10 @@
     gameActive = true;
     resultDisplay.textContent = '';
     suggestionDisplayElement.textContent = '';
+    dealerDiceDisplay.textContent = '-'; // Clear dealer dice display initially
+    dealerTotalDisplay.textContent = '-'; // Clear dealer total initially
+    userDiceDisplay.textContent = '-';   // Clear user dice display initially
+    userTotalDisplay.textContent = '-';    // Clear user total initially
 
     rollWithAnimation(dealerDice, 3, () => { // Dealer rolls 3 dice
       updateDisplay();
