@@ -145,9 +145,9 @@
     <strong>How to Play:</strong><br>
     - Start with a balance of $100.<br>
     - Place a bet using the slider (max 100% of balance).<br>
-    - Click "Start" to let the dealer roll first.<br>
-    - Then click "Roll" to roll your own dice.<br>
-    - You can "Hit" to roll again or "Stand" to end your turn.<br>
+    - Click "Start" to let the dealer roll first (3 dice).<br>
+    - Then click "Roll" to roll your initial two dice.<br>
+    - You can "Hit" to roll an additional die or "Stand" to end your turn.<br>
     - Closest to 21 without going over wins.<br>
     - If the dealer gets 17 or more, they will stand automatically.<br>
     - Dealer may roll again if you pass 3 dice and they have <17.<br>
@@ -261,14 +261,14 @@
     resultDisplay.textContent = '';
     suggestionDisplayElement.textContent = '';
 
-    rollWithAnimation(dealerDice, 2, () => {
+    rollWithAnimation(dealerDice, 3, () => { // Dealer rolls 3 dice
       updateDisplay();
       buttons.innerHTML = `<button class="bubble-btn" onclick="startUser()">Roll</button>`;
     });
   }
 
   function startUser() {
-    rollWithAnimation(userDice, 2, () => {
+    rollWithAnimation(userDice, 2, () => { // User rolls 2 dice initially
       updateDisplay();
       if (enableSuggestionsCheckbox.checked) {
         showSuggestion();
@@ -283,7 +283,7 @@
 function hit() {
   if (userDice.length < 10 && gameActive) {
     const newRoll = rollDie();
-    userDice.push(newRoll);
+    userDice.push(newRoll); // User gets one more die
     updateDisplay();
     if (sumDice(userDice) > GOAL) {
       endGame("You busted! Dealer wins.");
@@ -299,7 +299,7 @@ function stand() {
   gameActive = false;
   suggestionDisplayElement.textContent = '';
 
-  // Dealer rolls until 17 or higher, but not more times than the user rolled
+  // Dealer rolls until 17 or higher, but not more times than the user has rolled
   const maxDealerRolls = userDice.length;
   while (sumDice(dealerDice) < 17 && dealerDice.length < maxDealerRolls) {
     dealerDice.push(rollDie());
@@ -357,8 +357,9 @@ function stand() {
         callback();
       } else {
         // For animation, we still update the display with random rolls
+        const currentDiceCount = targetArray.length;
         for (let i = 0; i < count; i++) {
-          const indexToUpdate = targetArray.length - count + i;
+          const indexToUpdate = currentDiceCount - count + i;
           if (indexToUpdate >= 0) {
             targetArray[indexToUpdate] = rollDie();
           } else {
@@ -374,12 +375,12 @@ function stand() {
     const total = sumDice(userDice);
     let suggestion = "";
 
-    if (total <= 15) {
-      suggestion = "You should hit.";
+    if (total <= 11) { // Adjusted suggestion logic based on starting with two dice
+      suggestion = "Consider hitting.";
     } else if (total >= 18) {
-      suggestion = "You should stand.";
+      suggestion = "Consider standing.";
     } else {
-      suggestion = "It's risky. Your call!";
+      suggestion = "Your call!";
     }
 
     suggestionDisplayElement.textContent = suggestion;
