@@ -124,7 +124,7 @@
       background-color: #00aa00;
       box-shadow: 0 0 20px #00ff00;
     }
-    
+
   </style>
 </head>
 <body>
@@ -179,8 +179,8 @@
   <a href="index.html"><button id="lawn-btn">Cheap Yard Work (Click)</button></a>
 
 <script>
-  let balance = localStorage.getItem('diceBalance') 
-    ? parseInt(localStorage.getItem('diceBalance')) 
+  let balance = localStorage.getItem('diceBalance')
+    ? parseInt(localStorage.getItem('diceBalance'))
     : 100;
 
   const GOAL = 21;
@@ -314,9 +314,6 @@ function stand() {
 
   endGame(message);
 }
-
-    endGame(message);
-  }
 
   function endGame(message) {
     gameActive = false;
