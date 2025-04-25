@@ -265,10 +265,14 @@
     userDiceDisplay.textContent = '-';   // Clear user dice display initially
     userTotalDisplay.textContent = '-';    // Clear user total initially
 
-    rollWithAnimation(dealerDice, 3, () => { // Dealer rolls 3 dice
-      updateDisplay();
-      buttons.innerHTML = `<button class="bubble-btn" onclick="startUser()">Roll</button>`;
-    });
+    // Directly set the initial dealer dice without animation first
+    for (let i = 0; i < 3; i++) {
+      dealerDice.push(rollDie());
+    }
+    updateDisplay(); // Update the display with the initial 3 dealer dice
+
+    // Then, enable the "Roll" button for the user
+    buttons.innerHTML = `<button class="bubble-btn" onclick="startUser()">Roll</button>`;
   }
 
   function startUser() {
