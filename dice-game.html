@@ -295,16 +295,15 @@ function stand() {
   const dealerTotal = sumDice(dealerDice);
 
   let message = "";
-  const winMultiplier = 0.3;
 
   if (userTotal > GOAL) {
     balance -= bet; // Deduct balance if user busts
     message = "You busted! Dealer wins.";
   } else if (dealerTotal > GOAL) {
-    balance += bet * winMultiplier; // Add 0.3 times the bet if dealer busts
+    balance += bet * 1.7; // Add 1.3 times the bet if dealer busts
     message = "Dealer busted! You win!";
   } else if (userTotal > dealerTotal) {
-    balance += bet * winMultiplier; // Add 0.3 times the bet if user wins
+    balance += bet * 1.7; // Add 1.3 times the bet if user wins
     message = "You win!";
   } else if (dealerTotal > userTotal) {
     balance -= bet; // Deduct balance if dealer wins
