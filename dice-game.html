@@ -76,7 +76,7 @@
       background-color: #c00000;
       color: white;
       border-radius: 5px;
-      margin-bottom: 20px;
+      margin-bottom: 10px; /* Adjusted margin */
       box-shadow: 0 0 10px #ff0000;
     }
 
@@ -125,6 +125,17 @@
       box-shadow: 0 0 20px #00ff00;
     }
 
+    .suggestion-control {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 15px;
+    }
+
+    .suggestion-control label {
+      margin-left: 5px;
+      color: #fff;
+    }
   </style>
 </head>
 <body>
@@ -152,6 +163,11 @@
         <input type="range" id="bet" min="1" max="95" value="10">
         <span id="betValue">10</span>
       </div>
+    </div>
+
+    <div class="suggestion-control">
+      <input type="checkbox" id="enableSuggestions" checked>
+      <label for="enableSuggestions">Enable Suggestions</label>
     </div>
 
     <div class="label-group">
@@ -188,6 +204,8 @@
   let dealerDice = [];
   let userDice = [];
   let gameActive = false;
+  let enableSuggestionsCheckbox = document.getElementById('enableSuggestions');
+  const suggestionDisplayElement = document.getElementById('suggestion');
 
   const balanceDisplay = document.getElementById('balance');
   const betSlider = document.getElementById('bet');
@@ -198,7 +216,6 @@
   const userTotalDisplay = document.getElementById('userTotal');
   const resultDisplay = document.getElementById('result');
   const buttons = document.getElementById('buttons');
-  const suggestionDisplay = document.getElementById('suggestion');
 
   betSlider.addEventListener('input', () => {
     const maxBet = Math.floor(balance * 1);
@@ -242,7 +259,7 @@
     userDice = [];
     gameActive = true;
     resultDisplay.textContent = '';
-    suggestionDisplay.textContent = '';
+    suggestionDisplayElement.textContent = '';
 
     rollWithAnimation(dealerDice, 2, () => {
       updateDisplay();
@@ -253,7 +270,9 @@
   function startUser() {
     rollWithAnimation(userDice, 2, () => {
       updateDisplay();
-      showSuggestion();
+      if (enableSuggestionsCheckbox.checked) {
+        showSuggestion();
+      }
       buttons.innerHTML = `
         <button class="bubble-btn" onclick="hit()">Hit</button>
         <button class="bubble-btn" onclick="stand()">Stand</button>
@@ -263,22 +282,22 @@
 
 function hit() {
   if (userDice.length < 10 && gameActive) {
-    rollWithAnimation(userDice, 1, () => {
-      updateDisplay();
-      if (sumDice(userDice) > GOAL) {
-        endGame("You busted! Dealer wins.");
-        balance -= bet; // Deduct balance immediately when user busts
-        updateDisplay(); // Update display after balance change
-      } else {
-        showSuggestion();
-      }
-    });
+    const newRoll = rollDie();
+    userDice.push(newRoll);
+    updateDisplay();
+    if (sumDice(userDice) > GOAL) {
+      endGame("You busted! Dealer wins.");
+      balance -= bet; // Deduct balance immediately when user busts
+      updateDisplay(); // Update display after balance change
+    } else if (enableSuggestionsCheckbox.checked) {
+      showSuggestion();
+    }
   }
 }
 
 function stand() {
   gameActive = false;
-  suggestionDisplay.textContent = '';
+  suggestionDisplayElement.textContent = '';
 
   // Dealer rolls until 17 or higher, but not more times than the user rolled
   const maxDealerRolls = userDice.length;
@@ -293,17 +312,17 @@ function stand() {
   function evaluateWinner() {
   const userTotal = sumDice(userDice);
   const dealerTotal = sumDice(dealerDice);
-
+  const winMultiplier = 0.3;
   let message = "";
 
   if (userTotal > GOAL) {
     balance -= bet; // Deduct balance if user busts
     message = "You busted! Dealer wins.";
   } else if (dealerTotal > GOAL) {
-    balance += bet; // Add 1.3 times the bet if dealer busts
+    balance += bet * winMultiplier; // Add 0.3 times the bet if dealer busts
     message = "Dealer busted! You win!";
   } else if (userTotal > dealerTotal) {
-    balance += bet; // Add 1.3 times the bet if user wins
+    balance += bet * winMultiplier; // Add 0.3 times the bet if user wins
     message = "You win!";
   } else if (dealerTotal > userTotal) {
     balance -= bet; // Deduct balance if dealer wins
@@ -337,8 +356,14 @@ function stand() {
         updateDisplay();
         callback();
       } else {
+        // For animation, we still update the display with random rolls
         for (let i = 0; i < count; i++) {
-          targetArray[targetArray.length - i - 1] = rollDie();
+          const indexToUpdate = targetArray.length - count + i;
+          if (indexToUpdate >= 0) {
+            targetArray[indexToUpdate] = rollDie();
+          } else {
+            targetArray.push(rollDie());
+          }
         }
         updateDisplay();
       }
@@ -350,14 +375,14 @@ function stand() {
     let suggestion = "";
 
     if (total <= 15) {
-      suggestion = "Hit 🥷.";
+      suggestion = "You should hit.";
     } else if (total >= 18) {
       suggestion = "You should stand.";
     } else {
-      suggestion = "Risky!";
+      suggestion = "It's risky. Your call!";
     }
 
-    suggestionDisplay.textContent = suggestion;
+    suggestionDisplayElement.textContent = suggestion;
   }
 
   function resetGame() {
