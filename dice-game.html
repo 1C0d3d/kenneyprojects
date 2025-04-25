@@ -261,18 +261,20 @@
     });
   }
 
-  function hit() {
-    if (userDice.length < 10 && gameActive) {
-      rollWithAnimation(userDice, 1, () => {
-        updateDisplay();
-        if (sumDice(userDice) > GOAL) {
-          endGame("You busted! Dealer wins.");
-        } else {
-          showSuggestion();
-        }
-      });
-    }
+function hit() {
+  if (userDice.length < 10 && gameActive) {
+    rollWithAnimation(userDice, 1, () => {
+      updateDisplay();
+      if (sumDice(userDice) > GOAL) {
+        endGame("You busted! Dealer wins.");
+        balance -= bet; // Deduct balance immediately when user busts
+        updateDisplay(); // Update display after balance change
+      } else {
+        showSuggestion();
+      }
+    });
   }
+}
 
 function stand() {
   gameActive = false;
@@ -289,26 +291,29 @@ function stand() {
 }
 
   function evaluateWinner() {
-    const userTotal = sumDice(userDice);
-    const dealerTotal = sumDice(dealerDice);
+  const userTotal = sumDice(userDice);
+  const dealerTotal = sumDice(dealerDice);
 
-    let message = "";
+  let message = "";
 
-    if (userTotal > GOAL) {
-      balance -= bet;
-      message = "You busted! Dealer wins.";
-    } else if (dealerTotal > GOAL) {
-      balance += bet;
-      message = "Dealer busted! You win.";
-    } else if (userTotal > dealerTotal) {
-      balance += bet;
-      message = "You win!";
-    } else if (dealerTotal > userTotal) {
-      balance -= bet;
-      message = "Dealer wins!";
-    } else {
-      message = "It's a tie!";
-    }
+  if (userTotal > GOAL) {
+    balance -= bet; // Deduct balance if user busts
+    message = "You busted! Dealer wins.";
+  } else if (dealerTotal > GOAL) {
+    balance += bet; // Add balance if dealer busts
+    message = "Dealer busted! You win.";
+  } else if (userTotal > dealerTotal) {
+    balance += bet; // Add balance if user wins
+    message = "You win!";
+  } else if (dealerTotal > userTotal) {
+    balance -= bet; // Deduct balance if dealer wins
+    message = "Dealer wins!";
+  } else {
+    message = "It's a tie!";
+  }
+
+  endGame(message);
+}
 
     endGame(message);
   }
