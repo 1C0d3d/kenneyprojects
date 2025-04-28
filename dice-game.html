@@ -76,7 +76,7 @@
       background-color: #c00000;
       color: white;
       border-radius: 5px;
-      margin-bottom: 10px; /* Adjusted margin */
+      margin-bottom: 20px;
       box-shadow: 0 0 10px #ff0000;
     }
 
@@ -125,17 +125,6 @@
       box-shadow: 0 0 20px #00ff00;
     }
 
-    .suggestion-control {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 15px;
-    }
-
-    .suggestion-control label {
-      margin-left: 5px;
-      color: #fff;
-    }
   </style>
 </head>
 <body>
@@ -145,9 +134,9 @@
     <strong>How to Play:</strong><br>
     - Start with a balance of $100.<br>
     - Place a bet using the slider (max 100% of balance).<br>
-    - Click "Start" to let the dealer roll first (3 dice).<br>
-    - Then click "Roll" to roll your initial two dice.<br>
-    - You can "Hit" to roll an additional die or "Stand" to end your turn.<br>
+    - Click "Start" to let the dealer roll first.<br>
+    - Then click "Roll" to roll your own dice.<br>
+    - You can "Hit" to roll again or "Stand" to end your turn.<br>
     - Closest to 21 without going over wins.<br>
     - If the dealer gets 17 or more, they will stand automatically.<br>
     - Dealer may roll again if you pass 3 dice and they have <17.<br>
@@ -163,11 +152,6 @@
         <input type="range" id="bet" min="1" max="95" value="10">
         <span id="betValue">10</span>
       </div>
-    </div>
-
-    <div class="suggestion-control">
-      <input type="checkbox" id="enableSuggestions" checked>
-      <label for="enableSuggestions">Enable Suggestions</label>
     </div>
 
     <div class="label-group">
@@ -195,8 +179,8 @@
   <a href="index.html"><button id="lawn-btn">Cheap Yard Work (Click)</button></a>
 
 <script>
-  let balance = localStorage.getItem('diceBalance') 
-    ? parseInt(localStorage.getItem('diceBalance')) 
+  let balance = localStorage.getItem('diceBalance')
+    ? parseInt(localStorage.getItem('diceBalance'))
     : 100;
 
   const GOAL = 21;
@@ -277,18 +261,20 @@
     });
   }
 
-  function hit() {
-    if (userDice.length < 10 && gameActive) {
-      rollWithAnimation(userDice, 1, () => {
-        updateDisplay();
-        if (sumDice(userDice) > GOAL) {
-          endGame("You busted! Dealer wins.");
-        } else {
-          showSuggestion();
-        }
-      });
-    }
+function hit() {
+  if (userDice.length < 10 && gameActive) {
+    rollWithAnimation(userDice, 1, () => {
+      updateDisplay();
+      if (sumDice(userDice) > GOAL) {
+        endGame("You busted! Dealer wins.");
+        balance -= bet; // Deduct balance immediately when user busts
+        updateDisplay(); // Update display after balance change
+      } else {
+        showSuggestion();
+      }
+    });
   }
+}
 
 function stand() {
   gameActive = false;
@@ -305,29 +291,30 @@ function stand() {
 }
 
   function evaluateWinner() {
-    const userTotal = sumDice(userDice);
-    const dealerTotal = sumDice(dealerDice);
+  const userTotal = sumDice(userDice);
+  const dealerTotal = sumDice(dealerDice);
 
-    let message = "";
+  let message = "";
+  const winMultiplier = 0.3;
 
-    if (userTotal > GOAL) {
-      balance -= bet;
-      message = "You busted! Dealer wins.";
-    } else if (dealerTotal > GOAL) {
-      balance += bet;
-      message = "Dealer busted! You win.";
-    } else if (userTotal > dealerTotal) {
-      balance += bet;
-      message = "You win!";
-    } else if (dealerTotal > userTotal) {
-      balance -= bet;
-      message = "Dealer wins!";
-    } else {
-      message = "It's a tie!";
-    }
-
-    endGame(message);
+  if (userTotal > GOAL) {
+    balance -= bet; // Deduct balance if user busts
+    message = "You busted! Dealer wins.";
+  } else if (dealerTotal > GOAL) {
+    balance += bet * winMultiplier; // Add 0.3 times the bet if dealer busts
+    message = "Dealer busted! You win!";
+  } else if (userTotal > dealerTotal) {
+    balance += bet * winMultiplier; // Add 0.3 times the bet if user wins
+    message = "You win!";
+  } else if (dealerTotal > userTotal) {
+    balance -= bet; // Deduct balance if dealer wins
+    message = "Dealer wins!";
+  } else {
+    message = "It's a tie!";
   }
+
+  endGame(message);
+}
 
   function endGame(message) {
     gameActive = false;
@@ -359,20 +346,19 @@ function stand() {
     }, 50);
   }
 
-
   function showSuggestion() {
     const total = sumDice(userDice);
     let suggestion = "";
 
-    if (total <= 11) { // Adjusted suggestion logic based on starting with two dice
-      suggestion = "Consider hitting.";
+    if (total <= 15) {
+      suggestion = "You should hit.";
     } else if (total >= 18) {
-      suggestion = "Consider standing.";
+      suggestion = "You should stand.";
     } else {
-      suggestion = "Your call!";
+      suggestion = "It's risky. Your call!";
     }
 
-    suggestionDisplayElement.textContent = suggestion;
+    suggestionDisplay.textContent = suggestion;
   }
 
   function resetGame() {
