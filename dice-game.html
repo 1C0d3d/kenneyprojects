@@ -195,8 +195,8 @@
   <a href="index.html"><button id="lawn-btn">Cheap Yard Work (Click)</button></a>
 
 <script>
-  let balance = localStorage.getItem('diceBalance')
-    ? parseInt(localStorage.getItem('diceBalance'))
+  let balance = localStorage.getItem('diceBalance') 
+    ? parseInt(localStorage.getItem('diceBalance')) 
     : 100;
 
   const GOAL = 21;
@@ -204,8 +204,6 @@
   let dealerDice = [];
   let userDice = [];
   let gameActive = false;
-  let enableSuggestionsCheckbox = document.getElementById('enableSuggestions');
-  const suggestionDisplayElement = document.getElementById('suggestion');
 
   const balanceDisplay = document.getElementById('balance');
   const betSlider = document.getElementById('bet');
@@ -216,6 +214,7 @@
   const userTotalDisplay = document.getElementById('userTotal');
   const resultDisplay = document.getElementById('result');
   const buttons = document.getElementById('buttons');
+  const suggestionDisplay = document.getElementById('suggestion');
 
   betSlider.addEventListener('input', () => {
     const maxBet = Math.floor(balance * 1);
@@ -259,28 +258,18 @@
     userDice = [];
     gameActive = true;
     resultDisplay.textContent = '';
-    suggestionDisplayElement.textContent = '';
-    dealerDiceDisplay.textContent = '-'; // Clear dealer dice display initially
-    dealerTotalDisplay.textContent = '-'; // Clear dealer total initially
-    userDiceDisplay.textContent = '-';   // Clear user dice display initially
-    userTotalDisplay.textContent = '-';    // Clear user total initially
+    suggestionDisplay.textContent = '';
 
-    // Directly set the initial dealer dice without animation first
-    for (let i = 0; i < 3; i++) {
-      dealerDice.push(rollDie());
-    }
-    updateDisplay(); // Update the display with the initial 3 dealer dice
-
-    // Then, enable the "Roll" button for the user
-    buttons.innerHTML = `<button class="bubble-btn" onclick="startUser()">Roll</button>`;
+    rollWithAnimation(dealerDice, 2, () => {
+      updateDisplay();
+      buttons.innerHTML = `<button class="bubble-btn" onclick="startUser()">Roll</button>`;
+    });
   }
 
   function startUser() {
-    rollWithAnimation(userDice, 2, () => { // User rolls 2 dice
+    rollWithAnimation(userDice, 2, () => {
       updateDisplay();
-      if (enableSuggestionsCheckbox.checked) {
-        showSuggestion();
-      }
+      showSuggestion();
       buttons.innerHTML = `
         <button class="bubble-btn" onclick="hit()">Hit</button>
         <button class="bubble-btn" onclick="stand()">Stand</button>
@@ -288,26 +277,24 @@
     });
   }
 
-function hit() {
-  if (userDice.length < 10 && gameActive) {
-    const newRoll = rollDie();
-    userDice.push(newRoll); // User gets one more die
-    updateDisplay();
-    if (sumDice(userDice) > GOAL) {
-      endGame("You busted! Dealer wins.");
-      balance -= bet; // Deduct balance immediately when user busts
-      updateDisplay(); // Update display after balance change
-    } else if (enableSuggestionsCheckbox.checked) {
-      showSuggestion();
+  function hit() {
+    if (userDice.length < 10 && gameActive) {
+      rollWithAnimation(userDice, 1, () => {
+        updateDisplay();
+        if (sumDice(userDice) > GOAL) {
+          endGame("You busted! Dealer wins.");
+        } else {
+          showSuggestion();
+        }
+      });
     }
   }
-}
 
 function stand() {
   gameActive = false;
-  suggestionDisplayElement.textContent = '';
+  suggestionDisplay.textContent = '';
 
-  // Dealer rolls until 17 or higher, but not more times than the user has rolled
+  // Dealer rolls until 17 or higher, but not more times than the user rolled
   const maxDealerRolls = userDice.length;
   while (sumDice(dealerDice) < 17 && dealerDice.length < maxDealerRolls) {
     dealerDice.push(rollDie());
@@ -318,29 +305,29 @@ function stand() {
 }
 
   function evaluateWinner() {
-  const userTotal = sumDice(userDice);
-  const dealerTotal = sumDice(dealerDice);
-  const winMultiplier = 0.3;
-  let message = "";
+    const userTotal = sumDice(userDice);
+    const dealerTotal = sumDice(dealerDice);
 
-  if (userTotal > GOAL) {
-    balance -= bet; // Deduct balance if user busts
-    message = "You busted! Dealer wins.";
-  } else if (dealerTotal > GOAL) {
-    balance += bet * winMultiplier; // Add 0.3 times the bet if dealer busts
-    message = "Dealer busted! You win!";
-  } else if (userTotal > dealerTotal) {
-    balance += bet * winMultiplier; // Add 0.3 times the bet if user wins
-    message = "You win!";
-  } else if (dealerTotal > userTotal) {
-    balance -= bet; // Deduct balance if dealer wins
-    message = "Dealer wins!";
-  } else {
-    message = "It's a tie!";
+    let message = "";
+
+    if (userTotal > GOAL) {
+      balance -= bet;
+      message = "You busted! Dealer wins.";
+    } else if (dealerTotal > GOAL) {
+      balance += bet;
+      message = "Dealer busted! You win.";
+    } else if (userTotal > dealerTotal) {
+      balance += bet;
+      message = "You win!";
+    } else if (dealerTotal > userTotal) {
+      balance -= bet;
+      message = "Dealer wins!";
+    } else {
+      message = "It's a tie!";
+    }
+
+    endGame(message);
   }
-
-  endGame(message);
-}
 
   function endGame(message) {
     gameActive = false;
@@ -364,20 +351,14 @@ function stand() {
         updateDisplay();
         callback();
       } else {
-        // For animation, we still update the display with random rolls
-        const currentDiceCount = targetArray.length;
         for (let i = 0; i < count; i++) {
-          const indexToUpdate = currentDiceCount - count + i;
-          if (indexToUpdate >= 0) {
-            targetArray[indexToUpdate] = rollDie();
-          } else {
-            targetArray.push(rollDie());
-          }
+          targetArray[targetArray.length - i - 1] = rollDie();
         }
         updateDisplay();
       }
     }, 50);
   }
+
 
   function showSuggestion() {
     const total = sumDice(userDice);
