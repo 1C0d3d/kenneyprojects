@@ -45,8 +45,14 @@
       opacity: 0;
     }
 
+    .bubble a {
+      color: #2e7d32;
+      text-decoration: none;
+    }
+
     .bubble:nth-child(1) { animation-delay: 0.2s; }
     .bubble:nth-child(2) { animation-delay: 0.4s; }
+    .bubble:nth-child(3) { animation-delay: 0.6s; }
 
     @keyframes floatUp {
       from {
@@ -70,8 +76,9 @@
 <body>
   <h1>Contact Us</h1>
   <div class="bubbles">
-    <div class="bubble">Phone: (605) 390-1111</div>
-    <div class="bubble">Phone: (605) 389-1442</div>
+    <div class="bubble"><a href="tel:6053901111">Phone: (605) 390-1111</a></div>
+    <div class="bubble"><a href="tel:6053891442">Phone: (605) 389-1442</a></div>
+    <div class="bubble"><a href="mailto:firststeplawncare40@gmail.com">Email: firststeplawncare40@gmail.com</a></div>
   </div>
 </body>
 </html>
