@@ -10,33 +10,51 @@
       background: linear-gradient(to bottom right, #d1f7c4, #a0e6a3);
       margin: 0;
       padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
-    .container {
-      max-width: 1000px;
-      margin: 4rem auto;
-      padding: 1rem;
-    }
+
     h1 {
-      text-align: center;
+      margin: 2rem 0 1rem;
+      font-size: 2.5rem;
       color: #2e7d32;
+      text-align: center;
+    }
+
+    iframe {
+      width: 90%;
+      height: 100vh;
+      border: none;
       margin-bottom: 2rem;
     }
-    iframe {
-      width: 100%;
-      height: 1800px; /* Make this large enough for full form */
+
+    .home-button {
+      margin-bottom: 2rem;
+      display: inline-block;
+      background: #66bb6a;
+      color: white;
+      padding: 0.6rem 1.2rem;
       border: none;
-      border-radius: 1rem;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 1rem;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+      transition: background 0.3s, transform 0.3s;
+    }
+
+    .home-button:hover {
+      background: #4caf50;
+      transform: scale(1.05);
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Hire Us</h1>
-    <iframe 
-      src="https://docs.google.com/forms/d/e/1FAIpQLSesU7_rHlTnFqH8qkmTlZ3fqi3KKu4hELXx3KiLaatS_8em3w/viewform?embedded=true"
-      allowfullscreen>
-      Loading…
-    </iframe>
-  </div>
+  <h1>Hire Us</h1>
+  <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSesU7_rHlTnFqH8qkmTlZ3fqi3KKu4hELXx3KiLaatS_8em3w/viewform?embedded=true" loading="lazy">
+    Loading…
+  </iframe>
+  <a href="index.html" class="home-button">Return to Home Page</a>
 </body>
 </html>
