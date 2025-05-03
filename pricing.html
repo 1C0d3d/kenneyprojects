@@ -78,7 +78,8 @@
       color: #1b5e20;
     }
 
-    .hire-button {
+    .hire-button,
+    .home-button {
       margin-top: 1.5rem;
       display: inline-block;
       background: #66bb6a;
@@ -93,18 +94,22 @@
       transition: background 0.3s, transform 0.3s;
     }
 
-    .hire-button:hover {
+    .hire-button:hover,
+    .home-button:hover {
       background: #4caf50;
       transform: scale(1.05);
     }
 
     .disclaimer {
       margin-top: 0;
-      margin-bottom: 2.5rem;
       color: #555;
       font-size: 0.95rem;
       max-width: 90%;
       text-align: center;
+    }
+
+    .home-wrapper {
+      margin: 2rem 0;
     }
 
     @media (max-width: 600px) {
@@ -145,5 +150,8 @@
   <p class="disclaimer">
     *Prices may vary depending on lawn size and condition. Final price confirmed upon inspection.
   </p>
+  <div class="home-wrapper">
+    <a href="index.html" class="home-button">Return to Home Page</a>
+  </div>
 </body>
 </html>
