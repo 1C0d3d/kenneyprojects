@@ -16,69 +16,53 @@
     }
 
     h1 {
-      margin-top: 3rem;
+      margin: 2rem 0 1rem;
       font-size: 2.5rem;
       color: #2e7d32;
-    }
-
-    .bubbles {
-      display: flex;
-      flex-direction: column;
-      gap: 2rem;
-      margin-top: 3rem;
-      padding: 2rem;
+      text-align: center;
     }
 
     .bubble {
-      background-color: white;
+      background: white;
       color: #2e7d32;
-      padding: 1.5rem 2rem;
+      padding: 1rem 2rem;
       border-radius: 50px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-      font-size: 1.3rem;
-      font-weight: bold;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      cursor: default;
-      text-align: center;
-      min-width: 300px;
-      animation: floatUp 0.7s ease forwards;
-      opacity: 0;
+      margin: 1rem 0;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      font-size: 1.2rem;
+      transition: transform 0.3s;
     }
 
-    .bubble a {
-      color: #2e7d32;
+    .bubble:hover {
+      transform: scale(1.05);
+    }
+
+    .home-button {
+      margin: 2rem 0;
+      display: inline-block;
+      background: #66bb6a;
+      color: white;
+      padding: 0.6rem 1.2rem;
+      border: none;
+      border-radius: 50px;
       text-decoration: none;
+      font-weight: bold;
+      font-size: 1rem;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+      transition: background 0.3s, transform 0.3s;
     }
 
-    .bubble:nth-child(1) { animation-delay: 0.2s; }
-    .bubble:nth-child(2) { animation-delay: 0.4s; }
-    .bubble:nth-child(3) { animation-delay: 0.6s; }
-
-    @keyframes floatUp {
-      from {
-        transform: translateY(40px);
-        opacity: 0;
-      }
-      to {
-        transform: translateY(0px);
-        opacity: 1;
-      }
-    }
-
-    @media (max-width: 600px) {
-      .bubble {
-        font-size: 1rem;
-        padding: 1rem;
-      }
+    .home-button:hover {
+      background: #4caf50;
+      transform: scale(1.05);
     }
   </style>
 </head>
 <body>
   <h1>Contact Us</h1>
-  <div class="bubbles">
-    <div class="bubble"><a href="tel:6053901111">Phone: (605) 390-1111</a></div>
-    <div class="bubble"><a href="tel:6053891442">Phone: (605) 389-1442</a></div>
-    <div class="bubble"><a href="mailto:firststeplawncare40@gmail.com">Email: firststeplawncare40@gmail.com</a></div>
-  </div>
+  <div class="bubble">Phone: (605) 390-1111</div>
+  <div class="bubble">Phone: (605) 389-1442</div>
+  <div class="bubble">Email: firststeplawncare40@gmail.com</div>
+  <a href="index.html" class="home-button">Return to Home Page</a>
 </body>
 </html>
