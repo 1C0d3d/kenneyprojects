@@ -2,78 +2,65 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Budget Quest</title>
+  <title>BudgetBuilder</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
-      background: #1b1b2f;
-      color: #fff;
-      font-family: 'Segoe UI', sans-serif;
       margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #101820;
+      color: #f0f0f0;
       padding: 10px;
     }
 
     h1 {
       text-align: center;
-      color: #f05454;
-      text-shadow: 0 0 10px #f05454;
-      font-size: 1.8em;
+      color: #00ffc6;
+      text-shadow: 0 0 10px #00ffc6;
     }
 
     .container {
       max-width: 600px;
       margin: auto;
-      background: #16213e;
-      padding: 15px;
+      background: #1b1b2f;
       border-radius: 10px;
-      box-shadow: 0 0 15px rgba(255, 255, 255, 0.05);
+      padding: 20px;
     }
 
     input, select, button {
+      width: 100%;
       padding: 12px;
       margin-top: 10px;
-      width: 100%;
       border-radius: 5px;
       border: none;
       font-size: 1em;
-    }
-
-    input[type="number"], input[type="text"], select {
-      background: #1f4068;
+      background: #273c75;
       color: white;
     }
 
     button {
-      background: #e43f5a;
-      color: white;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-
-    button:hover {
-      background: #f05454;
+      background: #00ffc6;
+      color: #000;
+      font-weight: bold;
     }
 
     .goal {
-      background: #0f3460;
-      padding: 10px;
-      margin: 10px 0;
-      border-radius: 5px;
+      background: #222;
+      padding: 12px;
+      margin-top: 12px;
+      border-radius: 6px;
     }
 
-    .progress-bar {
-      height: 18px;
-      background: #1f4068;
-      border-radius: 5px;
-      overflow: hidden;
-      margin-top: 5px;
+    .warning {
+      color: #ff5e5e;
+      font-weight: bold;
+      margin-top: 10px;
     }
 
-    .progress-fill {
-      height: 100%;
-      background: #00ffab;
-      width: 0%;
-      transition: width 0.5s ease;
+    .success {
+      color: #00ff88;
+      font-weight: bold;
+      margin-top: 10px;
     }
 
     @media (max-width: 480px) {
@@ -82,116 +69,107 @@
       }
 
       input, select, button {
-        font-size: 0.95em;
+        font-size: 1em;
       }
     }
   </style>
 </head>
 <body>
-  <h1>Budget Quest</h1>
+  <h1>BudgetBuilder</h1>
   <div class="container">
     <label>Monthly Income (before tax):</label>
     <input type="number" id="income" placeholder="e.g. 1000" />
 
     <label>Are you under 18?</label>
     <select id="ageGroup">
-      <option value="yes">Yes (estimate 12% tax)</option>
-      <option value="no">No (estimate 25% tax)</option>
+      <option value="yes">Yes (12% tax)</option>
+      <option value="no">No (25% tax)</option>
     </select>
 
-    <button onclick="setBudget()">Set Budget</button>
+    <button onclick="setIncome()">Start Budgeting</button>
 
     <hr>
 
-    <h3>Add a Goal</h3>
-    <input type="text" id="goalName" placeholder="e.g. New Laptop" />
-    <input type="number" id="goalCost" placeholder="Cost (USD)" />
-    <select id="urgency">
-      <option value="fast">Fast</option>
-      <option value="normal">Normal</option>
-      <option value="chill">Chill</option>
-    </select>
+    <div id="incomeDisplay"></div>
+
+    <h3>Add Purchase / Goal</h3>
+    <input type="text" id="goalName" placeholder="Goal name" />
+    <input type="number" id="goalCost" placeholder="Cost in $" />
+    <input type="number" id="goalMonths" placeholder="How many months to save?" />
     <button onclick="addGoal()">Add Goal</button>
 
     <hr>
 
     <div id="goalsList"></div>
+    <div id="status"></div>
   </div>
 
   <script>
     let netIncome = 0;
     let goals = [];
 
-    function setBudget() {
+    function setIncome() {
       const gross = parseFloat(document.getElementById('income').value);
-      const ageGroup = document.getElementById('ageGroup').value;
-      const taxRate = ageGroup === 'yes' ? 12 : 25;
+      const under18 = document.getElementById('ageGroup').value === 'yes';
+      const taxRate = under18 ? 0.12 : 0.25;
 
       if (isNaN(gross) || gross <= 0) {
-        alert("Please enter a valid income.");
+        alert("Enter a valid income.");
         return;
       }
 
-      netIncome = gross * ((100 - taxRate) / 100);
-      alert(`Estimated tax: ${taxRate}%. Net monthly income: $${netIncome.toFixed(2)}`);
+      netIncome = gross * (1 - taxRate);
+      document.getElementById('incomeDisplay').innerHTML =
+        `<p>Estimated monthly income after tax: <strong>$${netIncome.toFixed(2)}</strong></p>`;
       updateGoals();
     }
 
     function addGoal() {
       const name = document.getElementById('goalName').value.trim();
       const cost = parseFloat(document.getElementById('goalCost').value);
-      const urgency = document.getElementById('urgency').value;
+      const months = parseInt(document.getElementById('goalMonths').value);
 
-      if (!name || isNaN(cost) || cost <= 0) {
-        alert("Enter a valid goal name and cost.");
+      if (!name || isNaN(cost) || cost <= 0 || isNaN(months) || months <= 0) {
+        alert("Enter valid name, cost, and months.");
         return;
       }
 
-      goals.push({
-        name,
-        cost,
-        urgency,
-        allocated: 0
-      });
-
+      goals.push({ name, cost, months });
       updateGoals();
     }
 
     function updateGoals() {
       const list = document.getElementById('goalsList');
+      const status = document.getElementById('status');
       list.innerHTML = '';
+      status.innerHTML = '';
 
       if (netIncome === 0) {
-        list.innerHTML = '<p>Please set your income first.</p>';
+        list.innerHTML = '<p>Set your income to start planning.</p>';
         return;
       }
 
-      const urgencyWeights = {
-        fast: 1.5,
-        normal: 1,
-        chill: 0.5
-      };
-
-      const totalWeight = goals.reduce((sum, g) => sum + urgencyWeights[g.urgency], 0);
+      let totalMonthlyNeed = 0;
 
       goals.forEach(goal => {
-        const weight = urgencyWeights[goal.urgency];
-        const monthlyAllocation = (weight / totalWeight) * netIncome;
-        goal.allocated += monthlyAllocation;
-        if (goal.allocated > goal.cost) goal.allocated = goal.cost;
-
-        const percent = (goal.allocated / goal.cost) * 100;
+        const monthly = goal.cost / goal.months;
+        totalMonthlyNeed += monthly;
 
         list.innerHTML += `
           <div class="goal">
-            <strong>${goal.name}</strong> (${goal.urgency})<br/>
-            $${goal.allocated.toFixed(2)} / $${goal.cost.toFixed(2)}
-            <div class="progress-bar">
-              <div class="progress-fill" style="width:${percent}%"></div>
-            </div>
+            <strong>${goal.name}</strong><br/>
+            Cost: $${goal.cost.toFixed(2)} | Timeline: ${goal.months} months<br/>
+            <strong>Needs $${monthly.toFixed(2)} / month</strong>
           </div>
         `;
       });
+
+      if (totalMonthlyNeed > netIncome) {
+        status.innerHTML = `<div class="warning">You need $${totalMonthlyNeed.toFixed(2)} per month but only have $${netIncome.toFixed(2)}. Adjust your goals or timelines.</div>`;
+      } else {
+        const leftover = netIncome - totalMonthlyNeed;
+        status.innerHTML = `<div class="success">You're on track! You'll have $${leftover.toFixed(2)} left each month.</div>`;
+      }
     }
   </script>
 </body>
