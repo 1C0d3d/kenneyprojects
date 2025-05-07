@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Budget Quest</title>
+  <style>
+    body {
+      background: #1b1b2f;
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #f05454;
+      text-shadow: 0 0 10px #f05454;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: #16213e;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+    }
+
+    input, select, button {
+      padding: 10px;
+      margin: 10px 0;
+      width: 100%;
+      border-radius: 5px;
+      border: none;
+      font-size: 16px;
+    }
+
+    input[type="number"] {
+      background: #1f4068;
+      color: white;
+    }
+
+    select {
+      background: #1f4068;
+      color: white;
+    }
+
+    button {
+      background: #e43f5a;
+      color: white;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #f05454;
+    }
+
+    .goal {
+      background: #0f3460;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+    }
+
+    .progress-bar {
+      height: 20px;
+      background: #1f4068;
+      border-radius: 5px;
+      overflow: hidden;
+      margin-top: 5px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: #00ffab;
+      width: 0%;
+      transition: width 0.5s;
+    }
+  </style>
+</head>
+<body>
+  <h1>Budget Quest</h1>
+  <div class="container">
+    <label>Monthly Income (before tax):</label>
+    <input type="number" id="income" placeholder="$" />
+
+    <label>Estimated Tax (%):</label>
+    <input type="number" id="taxRate" placeholder="e.g. 20" value="20"/>
+
+    <button onclick="setBudget()">Set Budget</button>
+
+    <hr>
+
+    <h3>Add a Goal/Purchase</h3>
+    <input type="text" id="goalName" placeholder="Goal name (e.g. New Bike)" />
+    <input type="number" id="goalCost" placeholder="Cost ($)" />
+    <select id="urgency">
+      <option value="fast">Fast</option>
+      <option value="normal">Normal</option>
+      <option value="chill">Chill</option>
+    </select>
+    <button onclick="addGoal()">Add Goal</button>
+
+    <hr>
+
+    <div id="goalsList"></div>
+  </div>
+
+  <script>
+    let netIncome = 0;
+    let goals = [];
+
+    function setBudget() {
+      const gross = parseFloat(document.getElementById('income').value);
+      const tax = parseFloat(document.getElementById('taxRate').value) || 0;
+      netIncome = gross * ((100 - tax) / 100);
+      alert("Your post-tax monthly income is $" + netIncome.toFixed(2));
+      updateGoals();
+    }
+
+    function addGoal() {
+      const name = document.getElementById('goalName').value;
+      const cost = parseFloat(document.getElementById('goalCost').value);
+      const urgency = document.getElementById('urgency').value;
+
+      if (!name || isNaN(cost) || cost <= 0) {
+        alert("Enter valid goal name and cost.");
+        return;
+      }
+
+      goals.push({
+        name,
+        cost,
+        urgency,
+        allocated: 0
+      });
+
+      updateGoals();
+    }
+
+    function updateGoals() {
+      const list = document.getElementById('goalsList');
+      list.innerHTML = '';
+
+      if (netIncome === 0) {
+        list.innerHTML = '<p>Please set your income first.</p>';
+        return;
+      }
+
+      // Priority weighting
+      const urgencyWeights = {
+        fast: 1.5,
+        normal: 1,
+        chill: 0.5
+      };
+
+      const totalWeight = goals.reduce((sum, g) => sum + urgencyWeights[g.urgency], 0);
+
+      goals.forEach(goal => {
+        const weight = urgencyWeights[goal.urgency];
+        const monthlyAllocation = (weight / totalWeight) * netIncome;
+        goal.allocated += monthlyAllocation;
+        if (goal.allocated > goal.cost) goal.allocated = goal.cost;
+
+        const percent = (goal.allocated / goal.cost) * 100;
+
+        list.innerHTML += `
+          <div class="goal">
+            <strong>${goal.name}</strong> (${goal.urgency})<br/>
+            $${goal.allocated.toFixed(2)} / $${goal.cost} saved
+            <div class="progress-bar">
+              <div class="progress-fill" style="width:${percent}%"></div>
+            </div>
+          </div>
+        `;
+      });
+    }
+  </script>
+</body>
+</html>
