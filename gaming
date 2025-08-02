@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PC Gamer's Paradise</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&family=Roboto&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      scroll-behavior: smooth;
+    }
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: #0f0f0f;
+      color: #f0f0f0;
+    }
+    header {
+      background: #1f1f1f;
+      padding: 20px;
+      text-align: center;
+      border-bottom: 2px solid #00f2ff;
+    }
+    header h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2.5rem;
+      color: #00f2ff;
+    }
+    nav {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      background: #222;
+      padding: 15px;
+    }
+    nav a {
+      margin: 10px;
+      color: #00f2ff;
+      text-decoration: none;
+      padding: 10px 20px;
+      border: 1px solid #00f2ff;
+      border-radius: 20px;
+      transition: background 0.3s, color 0.3s;
+    }
+    nav a:hover {
+      background: #00f2ff;
+      color: #000;
+    }
+    section {
+      padding: 40px 20px;
+      max-width: 1000px;
+      margin: auto;
+    }
+    section h2 {
+      color: #00f2ff;
+      margin-bottom: 20px;
+      font-family: 'Orbitron', sans-serif;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      background: #1a1a1a;
+      border-radius: 15px;
+      padding: 20px;
+      border: 1px solid #00f2ff44;
+      transition: transform 0.3s;
+    }
+    .card:hover {
+      transform: scale(1.03);
+      border-color: #00f2ff;
+    }
+    .card h3 {
+      margin-bottom: 10px;
+      color: #fff;
+    }
+    .card a {
+      color: #00f2ff;
+      text-decoration: none;
+    }
+    .footer {
+      text-align: center;
+      padding: 20px;
+      border-top: 1px solid #00f2ff33;
+      background: #111;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>PC Gamer's Paradise</h1>
+    <p>Your ultimate hub for games, parts, and platforms.</p>
+  </header>
+
+  <nav>
+    <a href="#resellers">Game Resellers</a>
+    <a href="#platforms">Platforms</a>
+    <a href="#parts">PC Parts</a>
+    <a href="#games">Hot Games</a>
+  </nav>
+
+  <section id="resellers">
+    <h2>Top Game Resellers</h2>
+    <div class="grid">
+      <div class="card">
+        <h3><a href="https://www.cdkeys.com" target="_blank">CDKeys</a></h3>
+        <p>Up to 90% off new releases, safe & fast delivery. Great for buying AAA titles at budget prices.</p>
+      </div>
+      <div class="card">
+        <h3><a href="https://www.g2a.com" target="_blank">G2A</a></h3>
+        <p>Massive selection of games from indie to AAA. Marketplace-style pricing lets you score deals fast.</p>
+      </div>
+      <div class="card">
+        <h3><a href="https://www.greenmangaming.com" target="_blank">Green Man Gaming</a></h3>
+        <p>Official keys with discounts, sales, and bundles. Trusted partner for many publishers.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="platforms">
+    <h2>Major Platforms</h2>
+    <div class="grid">
+      <div class="card">
+        <h3><a href="https://store.steampowered.com" target="_blank">Steam</a></h3>
+        <p>Biggest PC game store. Features user reviews, mod support, and huge seasonal sales.</p>
+      </div>
+      <div class="card">
+        <h3><a href="https://www.epicgames.com/store/en-US/" target="_blank">Epic Games</a></h3>
+        <p>Weekly free games, Fortnite, and exclusive titles. Strong indie support.</p>
+      </div>
+      <div class="card">
+        <h3><a href="https://www.newegg.com" target="_blank">Newegg</a></h3>
+        <p>Top platform for PC components and pre-builts. Competitive pricing on GPUs, CPUs, and more.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="parts">
+    <h2>Best PC Parts Right Now</h2>
+    <div class="grid">
+      <div class="card">
+        <h3><a href="https://www.newegg.com/p/pl?d=rtx+4070" target="_blank">RTX 4070</a></h3>
+        <p>Great value-to-performance ratio for 1440p and even 4K gaming.</p>
+      </div>
+      <div class="card">
+        <h3><a href="https://www.newegg.com/p/pl?d=ryzen+7+5800x3d" target="_blank">Ryzen 7 5800X3D</a></h3>
+        <p>Still dominating for gaming in AM4 platform. Excellent for budget upgrades.</p>
+      </div>
+      <div class="card">
+        <h3><a href="https://www.newegg.com/p/pl?d=nvme+ssd+1tb" target="_blank">1TB NVMe SSD</a></h3>
+        <p>Essential for lightning-fast load times in modern PC gaming.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="games">
+    <h2>Hot New Indie & AAA Games</h2>
+    <div class="grid">
+      <div class="card">
+        <h3><a href="https://store.steampowered.com/app/2430160/Slay_the_Princess/" target="_blank">Slay the Princess</a></h3>
+        <p>Beautifully animated horror/romance visual novel. A must-play indie gem.</p>
+      </div>
+      <div class="card">
+        <h3><a href="https://store.steampowered.com/app/2060340/Hades_II/" target="_blank">Hades II (Early Access)</a></h3>
+        <p>Sequel to the hit rogue-lite. Gorgeous art, snappy combat, now with more depth.</p>
+      </div>
+      <div class="card">
+        <h3><a href="https://store.steampowered.com/app/2617160/Black_Myth_Wukong/" target="_blank">Black Myth: Wukong</a></h3>
+        <p>AAA-level Soulslike coming soon. Built with Unreal Engine 5 — jaw-dropping visuals.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="footer">
+    <p>Made for PC gamers, by a PC gamer. Stay sharp, stay upgraded. 🔧🎮</p>
+  </div>
+
+</body>
+</html>
