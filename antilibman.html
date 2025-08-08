@@ -1,22 +1,31 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Play AntiLibman!</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+<title>PacFlag Fullscreen Mobile</title>
 <style>
-body {
-  margin: 0;
-  background: black;
-  overflow: hidden;
-}
-#hud {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  color: white;
-  font-family: monospace;
-  font-size: 20px;
-}
+  body,html {
+    margin: 0; padding: 0; overflow: hidden; background: black; 
+    -webkit-touch-callout: none; /* Disable iOS callout */
+    -webkit-user-select: none; /* Disable selection */
+    -webkit-tap-highlight-color: transparent; /* Remove tap highlight */
+  }
+  #hud {
+    position: fixed;
+    top: 10px; left: 10px;
+    color: white;
+    font-family: monospace;
+    font-size: 20px;
+    user-select: none;
+    z-index: 10;
+  }
+  canvas {
+    display: block;
+    margin: auto;
+    background: #111;
+    touch-action: none; /* disable default gestures */
+  }
 </style>
 </head>
 <body>
@@ -42,7 +51,12 @@ function resizeCanvas() {
 }
 window.addEventListener('resize', resizeCanvas);
 
-// map
+// Map data codes:
+// 0 = pellet
+// 1 = wall
+// 2 = empty/visited
+// 3 = power pellet
+
 let map = [];
 function generateMap() {
   map = [];
@@ -62,7 +76,7 @@ function generateMap() {
   // tunnels
   map[Math.floor(ROWS/2)][0] = 2;
   map[Math.floor(ROWS/2)][COLS-1] = 2;
-  // power pellets (corners)
+  // power pellets in corners
   map[1][1] = 3;
   map[1][COLS-2] = 3;
   map[ROWS-2][1] = 3;
@@ -70,7 +84,7 @@ function generateMap() {
 }
 generateMap();
 
-// assets
+// Assets
 const ASSETS = {
   pacman: 'pacman.png',
   ghosts: ['ghost1.png','ghost2.png','ghost3.png','ghost4.png']
@@ -91,7 +105,7 @@ function loadImages(cb){
   function done(){ loaded++; if (loaded===totalToLoad) cb(); }
 }
 
-// entities
+// Entities
 const player = { r:Math.floor(ROWS/2), c:Math.floor(COLS/2), dir:{r:0,c:0}, timer:0, powered:false, powerTime:0 };
 let ghosts = [];
 function resetGhosts(){
@@ -104,7 +118,7 @@ function resetGhosts(){
 }
 resetGhosts();
 
-// scores
+// Scores
 let score = 0;
 let highScore = parseInt(localStorage.getItem('pacFlagHighScore') || '0');
 const scoreEl = document.getElementById('score');
@@ -114,7 +128,9 @@ function updateScoreDisplay(){
 }
 updateScoreDisplay();
 
-// controls
+// Controls
+
+// Desktop keyboard:
 window.addEventListener('keydown', e=>{
   if (e.key === 'ArrowUp') player.dir = {r:-1,c:0};
   if (e.key === 'ArrowDown') player.dir = {r:1,c:0};
@@ -122,7 +138,41 @@ window.addEventListener('keydown', e=>{
   if (e.key === 'ArrowRight') player.dir = {r:0,c:1};
 });
 
-// helpers
+// Mobile swipe detection:
+let touchStartX = 0;
+let touchStartY = 0;
+let touchEndX = 0;
+let touchEndY = 0;
+const SWIPE_THRESHOLD = 30; // minimal swipe distance in px
+
+canvas.addEventListener('touchstart', e => {
+  const t = e.changedTouches[0];
+  touchStartX = t.clientX;
+  touchStartY = t.clientY;
+});
+canvas.addEventListener('touchend', e => {
+  const t = e.changedTouches[0];
+  touchEndX = t.clientX;
+  touchEndY = t.clientY;
+  handleSwipe();
+});
+
+function handleSwipe(){
+  const dx = touchEndX - touchStartX;
+  const dy = touchEndY - touchStartY;
+  if (Math.abs(dx) < SWIPE_THRESHOLD && Math.abs(dy) < SWIPE_THRESHOLD) return; // ignore small movements
+  if (Math.abs(dx) > Math.abs(dy)){
+    // horizontal swipe
+    if (dx > 0) player.dir = {r:0, c:1}; // right
+    else player.dir = {r:0, c:-1}; // left
+  } else {
+    // vertical swipe
+    if (dy > 0) player.dir = {r:1, c:0}; // down
+    else player.dir = {r:-1, c:0}; // up
+  }
+}
+
+// Helpers
 function canWalk(r,c){
   if (r<0||c<0||r>=ROWS||c>=COLS) return false;
   return map[r][c] !== 1;
@@ -146,7 +196,7 @@ function pelletsRemaining(){
   return false;
 }
 
-// update
+// Update functions
 function updatePlayer(){
   player.timer++;
   if (player.timer < 6) return;
@@ -169,7 +219,7 @@ function updatePlayer(){
       map[nr][nc] = 2;
       score += 50;
       player.powered = true;
-      player.powerTime = 420; // ~7 seconds
+      player.powerTime = 420; // ~7 seconds at 60fps-ish
       updateScoreDisplay();
     }
   }
@@ -180,7 +230,6 @@ function updateGhosts(){
     if (g.timer < 10) return;
     g.timer = 0;
 
-    // Opposite direction helper:
     function opposite(dir){
       return {r:-dir.r, c:-dir.c};
     }
@@ -192,21 +241,14 @@ function updateGhosts(){
       {r:0,c:-1}
     ];
 
-    // Get valid directions ghost can move into:
     let validDirs = dirs.filter(d => canWalk(g.r + d.r, g.c + d.c));
-
-    // Filter out immediate reverse so ghost doesn't bounce back:
     validDirs = validDirs.filter(d => !(d.r === -g.dir.r && d.c === -g.dir.c));
 
-    // If ghost can continue forward, prefer that 70% of the time:
     let nextDir = g.dir;
     if (!canWalk(g.r + g.dir.r, g.c + g.dir.c) || Math.random() < 0.3 || validDirs.length === 0) {
-      // Either forward blocked, or randomly choose new direction (30% chance), or no valid directions except reverse
       if (validDirs.length > 0) {
-        // Pick a random valid direction (not reverse)
         nextDir = validDirs[Math.floor(Math.random() * validDirs.length)];
       } else {
-        // No choice but to go back
         nextDir = opposite(g.dir);
       }
     }
@@ -216,7 +258,6 @@ function updateGhosts(){
     let nr = g.r + g.dir.r;
     let nc = g.c + g.dir.c;
 
-    // Handle wrap-around tunnels:
     if (nr < 0) nr = ROWS - 1;
     else if (nr >= ROWS) nr = 0;
     if (nc < 0) nc = COLS - 1;
@@ -226,7 +267,6 @@ function updateGhosts(){
       g.r = nr;
       g.c = nc;
     } else {
-      // If blocked unexpectedly, just pick a random valid direction next update
       g.dir = {r:0,c:0};
     }
   });
@@ -236,7 +276,6 @@ function updateGhosts(){
     if (player.powerTime <= 0) player.powered = false;
   }
 }
-
 function checkCollisions(){
   for (const g of ghosts){
     if (g.r===player.r && g.c===player.c){
@@ -257,7 +296,7 @@ function checkCollisions(){
   }
 }
 
-// draw
+// Draw
 function draw(){
   ctx.fillStyle = '#000';
   ctx.fillRect(0,0,canvas.width,canvas.height);
@@ -280,7 +319,6 @@ function draw(){
       }
     }
   }
-  // ghosts
   ghosts.forEach(g=>{
     const img=images.ghosts[g.imgIndex];
     const x=g.c*TILE, y=g.r*TILE;
@@ -289,7 +327,6 @@ function draw(){
       ctx.drawImage(img, x+(TILE-img.width*scale)/2, y+(TILE-img.height*scale)/2, img.width*scale, img.height*scale);
     }
   });
-  // player
   const pimg = images.pacman;
   const px = player.c*TILE, py = player.r*TILE;
   const sizeBoost = player.powered ? 1.3 : 1;
@@ -304,6 +341,7 @@ function draw(){
   }
 }
 
+// Game loop & logic
 let running=true;
 function loop(){
   if (!running) return;
@@ -312,7 +350,6 @@ function loop(){
   checkCollisions();
   draw();
 
-  // check for level completion
   if (!pelletsRemaining()) {
     score += 500; // level clear bonus
     updateScoreDisplay();
@@ -335,6 +372,3 @@ loadImages(()=>{
 </script>
 </body>
 </html>
-
-
-
