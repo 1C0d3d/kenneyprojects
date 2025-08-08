@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>PacFlag</title>
+<style>
+body {
+  margin: 0;
+  background: black;
+  overflow: hidden;
+}
+#hud {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  color: white;
+  font-family: monospace;
+  font-size: 20px;
+}
+</style>
+</head>
+<body>
+<canvas id="game"></canvas>
+<div id="hud">
+  <div id="score"></div>
+  <div id="status">Status: Playing</div>
+</div>
+
+<script>
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
+
+let TILE = 32;
+let ROWS = 20;
+let COLS = 20;
+
+function resizeCanvas() {
+  const minDim = Math.min(window.innerWidth, window.innerHeight);
+  TILE = Math.floor(minDim / ROWS);
+  canvas.width = COLS * TILE;
+  canvas.height = ROWS * TILE;
+}
+window.addEventListener('resize', resizeCanvas);
+
+// map
+let map = [];
+function generateMap() {
+  map = [];
+  for (let r=0;r<ROWS;r++){
+    map[r] = [];
+    for (let c=0;c<COLS;c++){
+      if (r===0 || c===0 || r===ROWS-1 || c===COLS-1) map[r][c]=1; // wall
+      else map[r][c]=0; // pellet
+    }
+  }
+  // random walls
+  for (let r=2;r<ROWS-2;r++){
+    for (let c=2;c<COLS-2;c++){
+      if (Math.random() < 0.2) map[r][c]=1;
+    }
+  }
+  // tunnels
+  map[Math.floor(ROWS/2)][0] = 2;
+  map[Math.floor(ROWS/2)][COLS-1] = 2;
+  // power pellets (corners)
+  map[1][1] = 3;
+  map[1][COLS-2] = 3;
+  map[ROWS-2][1] = 3;
+  map[ROWS-2][COLS-2] = 3;
+}
+generateMap();
+
+// assets
+const ASSETS = {
+  pacman: 'assets/pacman.png',
+  ghosts: ['assets/ghost1.png','assets/ghost2.png','assets/ghost3.png','assets/ghost4.png']
+};
+let images = { ghosts: [] };
+let loaded = 0;
+let totalToLoad = 1 + ASSETS.ghosts.length;
+function loadImages(cb){
+  images.pacman = new Image();
+  images.pacman.src = ASSETS.pacman;
+  images.pacman.onload = done; images.pacman.onerror = done;
+  ASSETS.ghosts.forEach((src,i)=>{
+    const img = new Image();
+    img.src = src;
+    img.onload = done; img.onerror = done;
+    images.ghosts[i] = img;
+  });
+  function done(){ loaded++; if (loaded===totalToLoad) cb(); }
+}
+
+// entities
+const player = { r:Math.floor(ROWS/2), c:Math.floor(COLS/2), dir:{r:0,c:0}, timer:0, powered:false, powerTime:0 };
+let ghosts = [];
+function resetGhosts(){
+  ghosts = [
+    {r:1, c:1, dir:{r:0,c:1}, imgIndex:0, timer:0},
+    {r:1, c:COLS-2, dir:{r:0,c:-1}, imgIndex:1, timer:0},
+    {r:ROWS-2, c:1, dir:{r:0,c:1}, imgIndex:2, timer:0},
+    {r:ROWS-2, c:COLS-2, dir:{r:0,c:-1}, imgIndex:3, timer:0},
+  ];
+}
+resetGhosts();
+
+// scores
+let score = 0;
+let highScore = parseInt(localStorage.getItem('pacFlagHighScore') || '0');
+const scoreEl = document.getElementById('score');
+const statusEl = document.getElementById('status');
+function updateScoreDisplay(){
+  scoreEl.textContent = `Score: ${score} | High Score: ${highScore}`;
+}
+updateScoreDisplay();
+
+// controls
+window.addEventListener('keydown', e=>{
+  if (e.key === 'ArrowUp') player.dir = {r:-1,c:0};
+  if (e.key === 'ArrowDown') player.dir = {r:1,c:0};
+  if (e.key === 'ArrowLeft') player.dir = {r:0,c:-1};
+  if (e.key === 'ArrowRight') player.dir = {r:0,c:1};
+});
+
+// helpers
+function canWalk(r,c){
+  if (r<0||c<0||r>=ROWS||c>=COLS) return false;
+  return map[r][c] !== 1;
+}
+function wrapPosition(entity){
+  if (entity.c < 0) entity.c = COLS - 1;
+  if (entity.c >= COLS) entity.c = 0;
+  if (entity.r < 0) entity.r = ROWS - 1;
+  if (entity.r >= ROWS) entity.r = 0;
+}
+function resetGhost(g){
+  g.r = Math.random()<0.5 ? 1 : ROWS-2;
+  g.c = Math.random()<0.5 ? 1 : COLS-2;
+}
+function pelletsRemaining(){
+  for (let r=0;r<ROWS;r++){
+    for (let c=0;c<COLS;c++){
+      if (map[r][c]===0 || map[r][c]===3) return true;
+    }
+  }
+  return false;
+}
+
+// update
+function updatePlayer(){
+  player.timer++;
+  if (player.timer < 6) return;
+  player.timer = 0;
+  let nr = player.r + player.dir.r;
+  let nc = player.c + player.dir.c;
+  if (nr<0||nc<0||nr>=ROWS||nc>=COLS){
+    player.r = nr; player.c = nc;
+    wrapPosition(player);
+    return;
+  }
+  if (canWalk(nr,nc)){
+    player.r = nr; player.c = nc;
+    if (map[nr][nc] === 0){ // pellet
+      map[nr][nc] = 2;
+      score += 10;
+      updateScoreDisplay();
+    }
+    if (map[nr][nc] === 3){ // power pellet
+      map[nr][nc] = 2;
+      score += 50;
+      player.powered = true;
+      player.powerTime = 420; // ~7 seconds
+      updateScoreDisplay();
+    }
+  }
+}
+function updateGhosts(){
+  ghosts.forEach(g=>{
+    g.timer++;
+    if (g.timer < 10) return;
+    g.timer = 0;
+
+    // Opposite direction helper:
+    function opposite(dir){
+      return {r:-dir.r, c:-dir.c};
+    }
+
+    const dirs = [
+      {r:1,c:0},
+      {r:-1,c:0},
+      {r:0,c:1},
+      {r:0,c:-1}
+    ];
+
+    // Get valid directions ghost can move into:
+    let validDirs = dirs.filter(d => canWalk(g.r + d.r, g.c + d.c));
+
+    // Filter out immediate reverse so ghost doesn't bounce back:
+    validDirs = validDirs.filter(d => !(d.r === -g.dir.r && d.c === -g.dir.c));
+
+    // If ghost can continue forward, prefer that 70% of the time:
+    let nextDir = g.dir;
+    if (!canWalk(g.r + g.dir.r, g.c + g.dir.c) || Math.random() < 0.3 || validDirs.length === 0) {
+      // Either forward blocked, or randomly choose new direction (30% chance), or no valid directions except reverse
+      if (validDirs.length > 0) {
+        // Pick a random valid direction (not reverse)
+        nextDir = validDirs[Math.floor(Math.random() * validDirs.length)];
+      } else {
+        // No choice but to go back
+        nextDir = opposite(g.dir);
+      }
+    }
+
+    g.dir = nextDir;
+
+    let nr = g.r + g.dir.r;
+    let nc = g.c + g.dir.c;
+
+    // Handle wrap-around tunnels:
+    if (nr < 0) nr = ROWS - 1;
+    else if (nr >= ROWS) nr = 0;
+    if (nc < 0) nc = COLS - 1;
+    else if (nc >= COLS) nc = 0;
+
+    if (canWalk(nr, nc)) {
+      g.r = nr;
+      g.c = nc;
+    } else {
+      // If blocked unexpectedly, just pick a random valid direction next update
+      g.dir = {r:0,c:0};
+    }
+  });
+
+  if (player.powered){
+    player.powerTime--;
+    if (player.powerTime <= 0) player.powered = false;
+  }
+}
+
+function checkCollisions(){
+  for (const g of ghosts){
+    if (g.r===player.r && g.c===player.c){
+      if (player.powered){
+        score += 200;
+        resetGhost(g);
+        updateScoreDisplay();
+      } else {
+        statusEl.textContent = 'Status: Caught! Game Over';
+        running=false;
+        if (score > highScore){
+          highScore = score;
+          localStorage.setItem('pacFlagHighScore', highScore);
+        }
+        updateScoreDisplay();
+      }
+    }
+  }
+}
+
+// draw
+function draw(){
+  ctx.fillStyle = '#000';
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  for (let r=0;r<ROWS;r++){
+    for (let c=0;c<COLS;c++){
+      const x=c*TILE, y=r*TILE;
+      if (map[r][c]===1){
+        ctx.fillStyle = '#223';
+        ctx.fillRect(x,y,TILE,TILE);
+      } else if (map[r][c]===0){
+        ctx.fillStyle='#fff';
+        ctx.beginPath();
+        ctx.arc(x+TILE/2, y+TILE/2, 3, 0, Math.PI*2);
+        ctx.fill();
+      } else if (map[r][c]===3){ // power pellet
+        ctx.fillStyle='#ff0';
+        ctx.beginPath();
+        ctx.arc(x+TILE/2, y+TILE/2, 6, 0, Math.PI*2);
+        ctx.fill();
+      }
+    }
+  }
+  // ghosts
+  ghosts.forEach(g=>{
+    const img=images.ghosts[g.imgIndex];
+    const x=g.c*TILE, y=g.r*TILE;
+    if (img && img.complete && img.naturalWidth){
+      const scale=Math.min(TILE*0.9/img.width, TILE*0.9/img.height);
+      ctx.drawImage(img, x+(TILE-img.width*scale)/2, y+(TILE-img.height*scale)/2, img.width*scale, img.height*scale);
+    }
+  });
+  // player
+  const pimg = images.pacman;
+  const px = player.c*TILE, py = player.r*TILE;
+  const sizeBoost = player.powered ? 1.3 : 1;
+  if (pimg && pimg.complete && pimg.naturalWidth){
+    const scale=Math.min((TILE-4)*sizeBoost/pimg.width,(TILE-4)*sizeBoost/pimg.height);
+    ctx.drawImage(pimg, px+(TILE-pimg.width*scale)/2, py+(TILE-pimg.height*scale)/2, pimg.width*scale, pimg.height*scale);
+  } else {
+    ctx.fillStyle= player.powered ? '#0f0' : '#0ff';
+    ctx.beginPath();
+    ctx.arc(px+TILE/2, py+TILE/2, (TILE-6)/2 * sizeBoost, 0, Math.PI*2);
+    ctx.fill();
+  }
+}
+
+let running=true;
+function loop(){
+  if (!running) return;
+  updatePlayer();
+  updateGhosts();
+  checkCollisions();
+  draw();
+
+  // check for level completion
+  if (!pelletsRemaining()) {
+    score += 500; // level clear bonus
+    updateScoreDisplay();
+    generateMap();
+    player.r = Math.floor(ROWS/2);
+    player.c = Math.floor(COLS/2);
+    player.dir = {r:0,c:0};
+    player.powered = false;
+    resetGhosts();
+    statusEl.textContent = 'Status: New Level!';
+  }
+
+  requestAnimationFrame(loop);
+}
+
+resizeCanvas();
+loadImages(()=>{
+  loop();
+});
+</script>
+</body>
+</html>
