@@ -199,7 +199,7 @@ function pelletsRemaining(){
 // Update functions
 function updatePlayer(){
   player.timer++;
-  if (player.timer < 6) return;
+  if (player.timer < 10) return; // slower movement
   player.timer = 0;
   let nr = player.r + player.dir.r;
   let nc = player.c + player.dir.c;
@@ -372,3 +372,4 @@ loadImages(()=>{
 </script>
 </body>
 </html>
+
