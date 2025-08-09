@@ -130,17 +130,17 @@
                     for (let row = 0; row < gridSize; row++) {
                         column.push(newGrid[row][col]);
                     }
-                    column = slide(column, direction === 'down');
+                    let newColumn = slide(column, direction === 'down');
                     for (let row = 0; row < gridSize; row++) {
-                        if (newGrid[row][col] !== column[row]) moved = true;
-                        newGrid[row][col] = column[row];
+                        if (newGrid[row][col] !== newColumn[row]) moved = true;
+                        newGrid[row][col] = newColumn[row];
                     }
                 }
-            } else {
+            } else { // left or right
                 for (let row = 0; row < gridSize; row++) {
-                    let r = slide(newGrid[row], direction === 'right');
-                    if (newGrid[row].join() !== r.join()) moved = true;
-                    newGrid[row] = r;
+                    let newRow = slide(newGrid[row], direction === 'right');
+                    if (newGrid[row].join() !== newRow.join()) moved = true;
+                    newGrid[row] = newRow;
                 }
             }
 
@@ -158,24 +158,28 @@
             // Remove zeros
             let filtered = line.filter(num => num !== 0);
             // Merge
-            for (let i = 0; i < filtered.length - 1; i++) {
-                if (filtered[i] === filtered[i + 1]) {
-                    filtered[i] *= 2;
-                    score += filtered[i];
+            let newLine = [];
+            for (let i = 0; i < filtered.length; ) {
+                if (i < filtered.length - 1 && filtered[i] === filtered[i + 1]) {
+                    let merged = filtered[i] * 2;
+                    newLine.push(merged);
+                    score += merged;
                     if (score > bestScore) {
                         bestScore = score;
                         localStorage.setItem('bestScore2048', bestScore);
                     }
-                    filtered.splice(i + 1, 1);
-                    i--; // Check next pair
+                    i += 2;
+                } else {
+                    newLine.push(filtered[i]);
+                    i++;
                 }
             }
             // Pad with zeros
-            while (filtered.length < gridSize) {
-                filtered.push(0);
+            while (newLine.length < gridSize) {
+                newLine.push(0);
             }
-            if (reverse) filtered = filtered.reverse();
-            return filtered;
+            if (reverse) newLine = newLine.reverse();
+            return newLine;
         }
 
         // Check if game over (no moves left)
@@ -183,14 +187,17 @@
             let full = true;
             for (let i = 0; i < gridSize; i++) {
                 for (let j = 0; j < gridSize; j++) {
-                    if (grid[i][j] === 0) full = false;
+                    if (grid[i][j] === 0) {
+                        full = false;
+                        continue;
+                    }
                     if (i < gridSize - 1 && grid[i][j] === grid[i + 1][j]) return;
                     if (j < gridSize - 1 && grid[i][j] === grid[i][j + 1]) return;
                 }
             }
             if (full) {
                 gameOver = true;
-                document.getElementById('message').textContent = 'Game Over! Swipe to Restart';
+                document.getElementById('message').textContent = 'Game Over! Tap to Restart';
             }
         }
 
@@ -200,7 +207,7 @@
                 for (let j = 0; j < gridSize; j++) {
                     if (grid[i][j] === 2048 && !won) {
                         won = true;
-                        document.getElementById('message').textContent = 'You Win! Continue or Swipe to Restart';
+                        document.getElementById('message').textContent = 'You Win! Continue or Tap to Restart';
                     }
                 }
             }
@@ -233,7 +240,8 @@
         let touchStartX = 0;
         let touchStartY = 0;
         canvas.addEventListener('touchstart', (e) => {
-            if (gameOver || (won && Math.abs(e.touches[0].clientX - touchStartX) > 50)) {
+            e.preventDefault();
+            if (gameOver || won) {
                 resetGame();
                 return;
             }
@@ -241,7 +249,11 @@
             touchStartY = e.touches[0].clientY;
         });
         canvas.addEventListener('touchend', (e) => {
-            if (gameOver || won) return;
+            e.preventDefault();
+            if (gameOver || won) {
+                resetGame();
+                return;
+            }
             let touchEndX = e.changedTouches[0].clientX;
             let touchEndY = e.changedTouches[0].clientY;
             let dx = touchEndX - touchStartX;
