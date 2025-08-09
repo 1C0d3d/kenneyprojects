@@ -72,4 +72,129 @@
             ctx.fillStyle = '#0f0';
             pipes.forEach(pipe => {
                 // Top pipe
-                ctx.fillRect(pipe​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​
+                ctx.fillRect(pipe.x, 0, pipeWidth, pipe.top);
+                // Bottom pipe
+                ctx.fillRect(pipe.x, pipe.bottom, pipeWidth, canvas.height - pipe.bottom);
+            });
+        }
+
+        // Draw score
+        function drawScore() {
+            ctx.fillStyle = '#fff';
+            ctx.font = '30px Arial';
+            ctx.fillText(`Score: ${score}`, 10, 40);
+            ctx.fillText(`High: ${highScore}`, 10, 80);
+        }
+
+        // Update game
+        function update() {
+            if (gameOver) return;
+
+            // Bird physics
+            bird.velocity += bird.gravity;
+            bird.y += bird.velocity;
+
+            // Ground and ceiling collision
+            if (bird.y + bird.size > canvas.height || bird.y - bird.size < 0) {
+                endGame();
+            }
+
+            // Move pipes
+            pipes.forEach(pipe => {
+                pipe.x -= pipeSpeed;
+
+                // Collision detection
+                if (bird.x + bird.size > pipe.x && bird.x - bird.size < pipe.x + pipeWidth) {
+                    if (bird.y - bird.size < pipe.top || bird.y + bird.size > pipe.bottom) {
+                        endGame();
+                    }
+                }
+
+                // Score when passing pipe
+                if (pipe.x + pipeWidth < bird.x && !pipe.scored) {
+                    score++;
+                    pipe.scored = true;
+                    if (score > highScore) {
+                        highScore = score;
+                        localStorage.setItem('highScore', highScore);
+                    }
+                }
+            });
+
+            // Remove off-screen pipes
+            pipes = pipes.filter(pipe => pipe.x + pipeWidth > 0);
+
+            // Add new pipe
+            if (frame % 100 === 0) {
+                addPipe();
+            }
+
+            frame++;
+        }
+
+        // Render game
+        function render() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            drawBird();
+            drawPipes();
+            drawScore();
+
+            if (gameOver) {
+                ctx.fillStyle = '#fff';
+                ctx.font = '40px Arial';
+                ctx.fillText('Game Over!', canvas.width / 2 - 100, canvas.height / 2);
+                ctx.font = '20px Arial';
+                ctx.fillText('Tap to Restart', canvas.width / 2 - 80, canvas.height / 2 + 40);
+            }
+        }
+
+        // Game loop
+        function gameLoop() {
+            update();
+            render();
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Jump on touch or click
+        function jump() {
+            if (gameOver) {
+                resetGame();
+            } else {
+                bird.velocity = bird.lift;
+            }
+        }
+
+        // Reset game
+        function resetGame() {
+            bird.y = canvas.height / 2;
+            bird.velocity = 0;
+            pipes = [];
+            score = 0;
+            gameOver = false;
+            frame = 0;
+            addPipe(); // Start with one pipe
+        }
+
+        // End game
+        function endGame() {
+            gameOver = true;
+        }
+
+        // Event listeners for mobile touch and desktop click
+        canvas.addEventListener('touchstart', jump);
+        canvas.addEventListener('click', jump);
+
+        // Start game
+        resetGame();
+        gameLoop();
+
+        // Handle resize for mobile orientation changes
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
+</body>
+</html>
+```​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​
