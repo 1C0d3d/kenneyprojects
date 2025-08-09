@@ -1,33 +1,21 @@
 import React, { useEffect, useRef, useState } from "react";
 
-// Candy Land Match3 — Responsive, visually polished mobile-first match-3
-// - Responsive grid (mobile -> desktop) that fills available screen
-// - Rainbow border remains
-// - Fullscreen board, no bottom buttons
-// - Timer bar at top (green → yellow → red). Runs down and costs a heart on expiry
-// - Frozen obstacles: tinted candy + ice overlay, immovable but matchable. Shatter animation and +heart reward
-// - Difficulty scales with score (more frozen spawn chance)
-// - Cascades resolve cleanly and only score once per clear
-// - Visual polish: shadows, pop + float, shatter, subtle particle burst
-
-const BACKGROUND_URL = "https://images.unsplash.com/photo-1505250469679-203ad9ced0cb?w=1600&q=80&auto=format&fit=crop"; // replace with AI background
+const BACKGROUND_URL = "https://images.unsplash.com/photo-1505250469679-203ad9ced0cb?w=1600&q=80&auto=format&fit=crop";
 const CANDIES = ["🍬", "🍭", "🍫", "🍪", "🍩", "🍒", "🍇", "🍓"];
 const START_HEARTS = 5;
-const TIMER_SECONDS = 7.0; // seconds per move
+const TIMER_SECONDS = 7.0;
 
-// Determine grid size based on screen dimensions (will re-evaluate on resize)
+// determine max grid size based on full screen width/height
 function computeGridSize(width, height) {
-  const short = Math.min(width, height);
-  // mobile small: 7, mobile: 8, tablet: 9-10, desktop: 11-13
-  if (short < 420) return 7;
-  if (short < 600) return 8;
-  if (short < 900) return 9;
-  if (short < 1200) return 10;
-  if (short < 1600) return 11;
+  const shortSide = Math.min(width, height);
+  if (shortSide < 420) return 7;
+  if (shortSide < 600) return 8;
+  if (shortSide < 900) return 9;
+  if (shortSide < 1200) return 10;
+  if (shortSide < 1600) return 11;
   return 12;
 }
 
-// Tile representation: { kind: number, frozen: boolean }
 function emptyTile() {
   return { kind: null, frozen: false };
 }
@@ -35,57 +23,39 @@ function emptyTile() {
 export default function CandyLandMatch3() {
   const [cols, setCols] = useState(8);
   const [rows, setRows] = useState(8);
-  const [grid, setGrid] = useState([]); // array of tiles length rows*cols
+  const [grid, setGrid] = useState([]);
   const [score, setScore] = useState(0);
   const [highScore, setHighScore] = useState(0);
   const [selected, setSelected] = useState(null);
   const [hearts, setHearts] = useState(START_HEARTS);
   const [animating, setAnimating] = useState(false);
-  const [matchedMap, setMatchedMap] = useState(new Map()); // idx -> {type:'pop'|'shatter', ts}
+  const [matchedMap, setMatchedMap] = useState(new Map());
   const [timeLeft, setTimeLeft] = useState(TIMER_SECONDS);
-  const timerRef = useRef(null);
-  const lastMoveRef = useRef(Date.now());
-  const cascadingRef = useRef(false);
-  const mounted = useRef(false);
+  const [gameOver, setGameOver] = useState(false);
 
+  const timerRef = useRef(null);
+  const firstMoveRef = useRef(false);
+
+  // handle resizing properly (no half tiles)
   useEffect(() => {
     function onResize() {
-      const newSize = computeGridSize(window.innerWidth, window.innerHeight);
-      setCols(newSize);
-      setRows(newSize);
+      const size = computeGridSize(window.innerWidth, window.innerHeight);
+      setCols(size);
+      setRows(size);
     }
     onResize();
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
+  // init game
   useEffect(() => {
-    mounted.current = true;
     const saved = parseInt(localStorage.getItem("cl_highscore") || "0", 10);
     setHighScore(isNaN(saved) ? 0 : saved);
     initBoard(rows, cols);
-    return () => { mounted.current = false; };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rows, cols]);
 
-  useEffect(() => {
-    // start timer tick
-    stopTimer();
-    setTimeLeft(TIMER_SECONDS);
-    timerRef.current = setInterval(() => {
-      setTimeLeft((t) => {
-        const next = t - 0.1;
-        if (next <= 0) {
-          handleTimerExpiry();
-          return TIMER_SECONDS; // refill for next turn
-        }
-        return next;
-      });
-    }, 100);
-    return () => stopTimer();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [grid]);
-
+  // high score tracking
   useEffect(() => {
     if (score > highScore) {
       setHighScore(score);
@@ -100,17 +70,34 @@ export default function CandyLandMatch3() {
     }
   }
 
-  function handleTimerExpiry() {
-    // lose a heart, check game over
-    setHearts((h) => Math.max(0, h - 1));
-    setSelected(null);
-    // small visual feedback could be added
+  function startTimer() {
+    stopTimer();
+    timerRef.current = setInterval(() => {
+      setTimeLeft((t) => {
+        const next = t - 0.1;
+        if (next <= 0) {
+          handleTimerExpiry();
+          return TIMER_SECONDS;
+        }
+        return next;
+      });
+    }, 100);
   }
 
-  function initBoard(r = rows, c = cols) {
+  function handleTimerExpiry() {
+    setHearts((h) => {
+      const nh = Math.max(0, h - 1);
+      if (nh <= 0) setGameOver(true);
+      return nh;
+    });
+    setSelected(null);
+  }
+
+  function initBoard(r, c) {
     const size = r * c;
-    const b = Array(size).fill(0).map(() => ({ kind: randKind(), frozen: false }));
-    // remove immediate matches
+    const b = Array(size)
+      .fill(0)
+      .map(() => ({ kind: randKind(), frozen: false }));
     for (let i = 0; i < size; i++) {
       let tries = 0;
       while (hasImmediateMatchAt(b, i, r, c) && tries < 12) {
@@ -118,7 +105,6 @@ export default function CandyLandMatch3() {
         tries++;
       }
     }
-    // spawn a few frozen tiles depending on size
     const initialFrozen = Math.max(1, Math.floor(size * 0.03));
     for (let k = 0; k < initialFrozen; k++) {
       const idx = Math.floor(Math.random() * size);
@@ -129,27 +115,31 @@ export default function CandyLandMatch3() {
     setHearts(START_HEARTS);
     setSelected(null);
     setMatchedMap(new Map());
-    lastMoveRef.current = Date.now();
+    setTimeLeft(TIMER_SECONDS);
+    stopTimer();
+    firstMoveRef.current = false;
   }
 
   function randKind() {
     return Math.floor(Math.random() * CANDIES.length);
   }
 
-  function hasImmediateMatchAt(b, idx, r = rows, c = cols) {
+  function hasImmediateMatchAt(b, idx, r, c) {
     const val = b[idx].kind;
     if (val === null) return false;
     const row = Math.floor(idx / c);
     const col = idx % c;
-    // left two
     if (col >= 2 && b[row * c + col - 1].kind === val && b[row * c + col - 2].kind === val) return true;
-    // up two
     if (row >= 2 && b[(row - 1) * c + col].kind === val && b[(row - 2) * c + col].kind === val) return true;
     return false;
   }
 
-  function indexToRC(i) { return [Math.floor(i / cols), i % cols]; }
-  function rcToIndex(r, c) { return r * cols + c; }
+  function indexToRC(i) {
+    return [Math.floor(i / cols), i % cols];
+  }
+  function rcToIndex(r, c) {
+    return r * cols + c;
+  }
 
   function areNeighbors(a, b) {
     if (a == null || b == null) return false;
@@ -158,63 +148,119 @@ export default function CandyLandMatch3() {
     return Math.abs(ra - rb) + Math.abs(ca - cb) === 1;
   }
 
-  // Important: you cannot initiate a swap FROM or TO a frozen tile. Frozen tiles must be matched in place.
   function canSwap(a, b) {
     if (!areNeighbors(a, b)) return false;
     const ta = grid[a];
     const tb = grid[b];
     if (!ta || !tb) return false;
-    if (ta.frozen || tb.frozen) return false; // neither side can be frozen
+    if (ta.frozen || tb.frozen) return false;
     return true;
   }
 
   function onCellTap(i) {
-    if (animating || hearts <= 0) return;
-    // reset timer on any tap
+    if (animating || hearts <= 0 || gameOver) return;
     setTimeLeft(TIMER_SECONDS);
-    lastMoveRef.current = Date.now();
+
+    if (!firstMoveRef.current) {
+      startTimer();
+      firstMoveRef.current = true;
+    }
 
     if (selected === null) {
-      // don't allow selecting frozen as source
-      if (grid[i].frozen) return; // must use neighbor swaps to line up
+      if (grid[i].frozen) return;
       setSelected(i);
       return;
     }
-    if (selected === i) { setSelected(null); return; }
+    if (selected === i) {
+      setSelected(null);
+      return;
+    }
     if (canSwap(selected, i)) {
       doSwap(selected, i);
       setSelected(null);
     } else {
-      // if attempted invalid swap, penalize by losing a heart
-      setHearts((h) => Math.max(0, h - 1));
+      setHearts((h) => {
+        const nh = Math.max(0, h - 1);
+        if (nh <= 0) setGameOver(true);
+        return nh;
+      });
       setSelected(null);
     }
   }
 
   function doSwap(a, b) {
     if (animating) return;
-    const copy = grid.slice().map(t => ({ ...t }));
+    const copy = grid.slice().map((t) => ({ ...t }));
     [copy[a], copy[b]] = [copy[b], copy[a]];
     setGrid(copy);
     setAnimating(true);
-    // After swap, resolve cascades — if no matches formed, revert and penalize
     setTimeout(() => {
       resolveCascades(copy).then((didMatch) => {
         if (!didMatch) {
-          // revert swap with small animation
-          const revert = grid.slice().map(t => ({ ...t }));
+          const revert = grid.slice().map((t) => ({ ...t }));
           setGrid(revert);
-          setHearts((h) => Math.max(0, h - 1));
+          setHearts((h) => {
+            const nh = Math.max(0, h - 1);
+            if (nh <= 0) setGameOver(true);
+            return nh;
+          });
         }
         setAnimating(false);
       });
     }, 180);
   }
 
-  // Find matches set (indices) on provided board
+  async function resolveCascades(startGrid) {
+    let anyMatch = false;
+    const gridCopy = startGrid.slice().map((t) => ({ ...t }));
+    while (true) {
+      const matches = findMatches(gridCopy);
+      if (!matches.size) break;
+      anyMatch = true;
+      const matchIndices = Array.from(matches);
+      const shatterSet = new Set();
+      matchIndices.forEach((idx) => {
+        if (gridCopy[idx].frozen) shatterSet.add(idx);
+      });
+      const newMatched = new Map();
+      matchIndices.forEach((i) =>
+        newMatched.set(i, { type: gridCopy[i].frozen ? "shatter" : "pop", ts: Date.now() })
+      );
+      setMatchedMap(newMatched);
+      setScore((s) => s + matchIndices.length * 10);
+      if (shatterSet.size) {
+        setHearts((h) => Math.min(START_HEARTS, h + shatterSet.size));
+      }
+      await new Promise((res) => setTimeout(res, 480));
+      matchIndices.forEach((i) => {
+        gridCopy[i] = emptyTile();
+      });
+      for (let c = 0; c < cols; c++) {
+        let write = rows - 1;
+        for (let r = rows - 1; r >= 0; r--) {
+          const idx = rcToIndex(r, c);
+          if (gridCopy[idx].kind !== null) {
+            if (write !== r) {
+              gridCopy[rcToIndex(write, c)] = gridCopy[idx];
+              gridCopy[idx] = emptyTile();
+            }
+            write--;
+          }
+        }
+        for (let r = write; r >= 0; r--) {
+          gridCopy[rcToIndex(r, c)] = { kind: randKind(), frozen: spawnFrozenChance(score) > Math.random() };
+        }
+      }
+      setGrid(gridCopy.map((t) => ({ ...t })));
+      await new Promise((res) => setTimeout(res, 160));
+    }
+    setMatchedMap(new Map());
+    setTimeLeft(TIMER_SECONDS);
+    return anyMatch;
+  }
+
   function findMatches(bd) {
     const matches = new Set();
-    // horizontal
     for (let r = 0; r < rows; r++) {
       for (let c = 0; c < cols - 2; c++) {
         const idx = rcToIndex(r, c);
@@ -229,7 +275,6 @@ export default function CandyLandMatch3() {
         }
       }
     }
-    // vertical
     for (let c = 0; c < cols; c++) {
       for (let r = 0; r < rows - 2; r++) {
         const idx = rcToIndex(r, c);
@@ -247,199 +292,41 @@ export default function CandyLandMatch3() {
     return matches;
   }
 
-  // Resolve cascades: loop until no matches. Return true if any matches were cleared.
-  async function resolveCascades(startGrid) {
-    cascadingRef.current = true;
-    let anyMatch = false;
-    const gridCopy = startGrid.slice().map(t => ({ ...t }));
-    while (true) {
-      const matches = findMatches(gridCopy);
-      if (!matches.size) break;
-      anyMatch = true;
-      // prepare match visual types and scoring
-      const matchIndices = Array.from(matches.values());
-      const shatterSet = new Set();
-      matchIndices.forEach(idx => { if (gridCopy[idx].frozen) shatterSet.add(idx); });
-
-      // mark matchedMap so animations can play
-      const newMatched = new Map();
-      matchIndices.forEach(i => newMatched.set(i, { type: gridCopy[i].frozen ? 'shatter' : 'pop', ts: Date.now() }));
-      setMatchedMap(newMatched);
-
-      // award points once for this clearance
-      const points = matchIndices.length * 10;
-      setScore((s) => s + points);
-
-      // reward hearts for shattering frozen tiles
-      let heartsGained = 0;
-      if (shatterSet.size) {
-        heartsGained = shatterSet.size; // +1 heart per frozen cleared
-        setHearts(h => Math.min(START_HEARTS, h + heartsGained));
-      }
-
-      // wait for animations
-      await new Promise((res) => setTimeout(res, 480));
-
-      // actually remove matched tiles
-      matchIndices.forEach(i => { gridCopy[i] = emptyTile(); });
-
-      // gravity/drop
-      for (let c = 0; c < cols; c++) {
-        let write = rows - 1;
-        for (let r = rows - 1; r >= 0; r--) {
-          const idx = rcToIndex(r, c);
-          if (gridCopy[idx].kind !== null) {
-            if (write !== r) {
-              gridCopy[rcToIndex(write, c)] = gridCopy[idx];
-              gridCopy[idx] = emptyTile();
-            }
-            write--;
-          }
-        }
-        // fill top with new candies (with chance of frozen depending on difficulty)
-        for (let r = write; r >= 0; r--) {
-          gridCopy[rcToIndex(r, c)] = { kind: randKind(), frozen: spawnFrozenChance(score) > Math.random() };
-        }
-      }
-
-      // update visible grid for next loop
-      setGrid(gridCopy.map(t => ({ ...t })));
-      // small pause for drop animation
-      await new Promise((res) => setTimeout(res, 160));
-    }
-    // clear matched visuals
-    setMatchedMap(new Map());
-    cascadingRef.current = false;
-    // reset timer after cascade finishes
-    setTimeLeft(TIMER_SECONDS);
-    // return whether any match occurred
-    return anyMatch;
-  }
-
   function spawnFrozenChance(currentScore) {
-    // base 5% to 25% depending on score
     const base = 0.05;
     const cap = 0.25;
     const extra = Math.min(cap - base, (currentScore / 2000) * (cap - base));
     return base + extra;
   }
 
-  // Visual helpers
-  function cellClass(i) {
-    const t = grid[i];
-    const matched = matchedMap.get(i);
-    const classes = ["relative flex items-center justify-center select-none"];
-    if (matched) classes.push(matched.type === 'shatter' ? 'matched-shatter' : 'matched-pop');
-    return classes.join(' ');
-  }
-
-  // Render
-  const sizePx = Math.min(window.innerWidth, window.innerHeight) - 40; // leave padding for rainbow border
+  const sizePx = Math.floor(
+    Math.min(window.innerWidth, window.innerHeight) * 0.9
+  );
   const cellSize = Math.floor(sizePx / Math.max(cols, rows));
 
+  if (gameOver) {
+    stopTimer();
+    return (
+      <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "#ffe6e6" }}>
+        <div style={{ fontSize: 48, fontWeight: "bold", color: "red", fontFamily: "'Comic Sans MS', cursive" }}>Game Over!</div>
+        <div style={{ marginTop: 20, fontSize: 20 }}>Your score: {score}</div>
+        <div style={{ fontSize: 20 }}>High score: {highScore}</div>
+        <button onClick={() => { setGameOver(false); initBoard(rows, cols); }} style={{ marginTop: 30, padding: "10px 20px", fontSize: 18, borderRadius: 8, border: "none", background: "red", color: "white", cursor: "pointer" }}>
+          Restart
+        </button>
+      </div>
+    );
+  }
+
   return (
-    <div style={{
-      minHeight: '100vh',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundImage: `url(${BACKGROUND_URL})`,
-      backgroundSize: 'cover',
-      backgroundPosition: 'center'
-    }}>
-      <div style={{
-        padding: 6,
-        borderRadius: 24,
-        background: 'conic-gradient(from 0deg, #ff4da6, #ffb86b, #fff66b, #67ffb1, #66d9ff, #b76bff, #ff4da6)'
-      }}>
-        <div style={{ width: sizePx + 12, height: sizePx + 12, borderRadius: 18, overflow: 'hidden', background: 'rgba(255,255,255,0.75)', backdropFilter: 'blur(6px)', padding: 12 }}>
-          {/* HUD: Score / Hearts / Timer */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-            <div>
-              <div style={{ fontSize: 20, fontWeight: 800 }}>Candy Land</div>
-              <div style={{ fontSize: 12, color: '#333' }}>Score: {score} — High: {highScore}</div>
-            </div>
-
-            <div style={{ textAlign: 'right' }}>
-              <div style={{ fontSize: 18 }}>Hearts: { '❤'.repeat(Math.max(0, hearts)) }</div>
-            </div>
+    <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", backgroundImage: `url(${BACKGROUND_URL})`, backgroundSize: "cover", backgroundPosition: "center" }}>
+      <div style={{ width: sizePx, height: sizePx, display: "grid", gridTemplateColumns: `repeat(${cols}, ${cellSize}px)`, gridTemplateRows: `repeat(${rows}, ${cellSize}px)`, gap: 4 }}>
+        {grid.map((tile, i) => (
+          <div key={i} onClick={() => onCellTap(i)} style={{ width: cellSize, height: cellSize, background: "#fff8", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: 6, fontSize: cellSize * 0.5 }}>
+            {tile.kind !== null ? CANDIES[tile.kind] : ""}
           </div>
-
-          {/* Timer bar */}
-          <TimerBar timeLeft={timeLeft} total={TIMER_SECONDS} />
-
-          {/* Game board */}
-          <div style={{ width: sizePx, height: sizePx, marginTop: 8, display: 'grid', gridTemplateColumns: `repeat(${cols}, ${cellSize}px)`, gridTemplateRows: `repeat(${rows}, ${cellSize}px)`, gap: 6 }}>
-            {grid.map((tile, i) => (
-              <div key={i} onClick={() => onCellTap(i)} style={{ width: cellSize, height: cellSize, borderRadius: 10, boxShadow: '0 6px 12px rgba(0,0,0,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', background: 'linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0.6))' }}>
-                <div style={{ fontSize: Math.floor(cellSize * 0.45), transform: selected === i ? 'scale(1.08)' : 'scale(1)', transition: 'transform 140ms' }}>{tile.kind !== null ? CANDIES[tile.kind] : ''}</div>
-
-                {/* tint for frozen */}
-                {tile.frozen && (
-                  <div style={{ position: 'absolute', inset: 0, borderRadius: 10, background: 'linear-gradient(180deg, rgba(180,230,255,0.25), rgba(140,200,255,0.18))', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none' }}>
-                    {/* ice overlay */}
-                    <div style={{ position: 'absolute', inset: 0, borderRadius: 10, backgroundImage: 'linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02))', backdropFilter: 'saturate(120%) blur(2px)' }} />
-                    <svg width={cellSize * 0.6} height={cellSize * 0.6} viewBox="0 0 24 24" fill="none" stroke="#E0F7FF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ zIndex: 3 }}>
-                      <path d="M12 3v18" />
-                      <path d="M3 12h18" />
-                    </svg>
-                  </div>
-                )}
-
-                {/* matched overlay (pop or shatter) */}
-                {matchedMap.get(i) && matchedMap.get(i).type === 'pop' && (
-                  <div style={{ position: 'absolute', inset: 0, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none' }}>
-                    <div style={{ fontSize: Math.floor(cellSize * 0.42), transform: 'translateY(-30px) scale(1.6)', opacity: 0, animation: 'popFloat 480ms forwards' }}>{CANDIES[grid[i].kind]}</div>
-                  </div>
-                )}
-
-                {matchedMap.get(i) && matchedMap.get(i).type === 'shatter' && (
-                  <div style={{ position: 'absolute', inset: 0, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none' }}>
-                    <div style={{ width: cellSize * 0.9, height: cellSize * 0.9, borderRadius: 10, background: 'linear-gradient(180deg,#e6f7ff,#d4f0ff)', transform: 'scale(1)', animation: 'shatter 420ms forwards' }} />
-                  </div>
-                )}
-
-              </div>
-            ))}
-          </div>
-
-          {/* Styles/Animations */}
-          <style>{`
-            @keyframes popFloat {
-              0% { transform: translateY(0) scale(1); opacity: 1; }
-              40% { transform: translateY(-8px) scale(1.5); opacity: 1; }
-              100% { transform: translateY(-80px) scale(1.2); opacity: 0; }
-            }
-            @keyframes shatter {
-              0% { transform: scale(1); opacity: 1; filter: blur(0); }
-              50% { transform: scale(1.05) rotate(-6deg); opacity: 1; }
-              100% { transform: scale(1.2) rotate(10deg); opacity: 0; filter: blur(6px); }
-            }
-          `}</style>
-
-        </div>
+        ))}
       </div>
     </div>
   );
-}
-
-// TimerBar component — shows the time left as a colored shrink bar
-function TimerBar({ timeLeft, total }) {
-  const pct = Math.max(0, Math.min(1, timeLeft / total));
-  const color = pct > 0.6 ? '#3adf7c' : pct > 0.3 ? '#ffd24d' : '#ff6b6b';
-  return (
-    <div style={{ height: 12, width: '100%', background: 'rgba(0,0,0,0.08)', borderRadius: 6, overflow: 'hidden', marginBottom: 6 }}>
-      <div style={{ height: '100%', width: `${pct * 100}%`, background: `linear-gradient(90deg, ${color}, ${shade(color, -12)})`, transition: 'width 120ms linear' }} />
-    </div>
-  );
-}
-
-// tiny color shade helper
-function shade(hex, percent) {
-  // hex like #rrggbb
-  const num = parseInt(hex.slice(1), 16);
-  const r = Math.max(0, Math.min(255, (num >> 16) + percent));
-  const g = Math.max(0, Math.min(255, ((num >> 8) & 0x00FF) + percent));
-  const b = Math.max(0, Math.min(255, (num & 0x0000FF) + percent));
-  return `rgb(${r}, ${g}, ${b})`;
 }
