@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flappy Bird - Mobile Game</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #70c5ce;
+        }
+        canvas {
+            display: block;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+    <script>
+        // Flappy Bird Clone in JavaScript and HTML5 Canvas
+        // Optimized for mobile with touch controls
+        // Endless play until collision, addictive scoring system
+
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Set canvas to full screen for mobile
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        // Game variables
+        let bird = {
+            x: 50,
+            y: canvas.height / 2,
+            size: 20,
+            gravity: 0.6,
+            lift: -15,
+            velocity: 0
+        };
+
+        let pipes = [];
+        let pipeWidth = 60;
+        let pipeGap = 150;
+        let pipeSpeed = 3;
+        let score = 0;
+        let highScore = localStorage.getItem('highScore') || 0;
+        let gameOver = false;
+        let frame = 0;
+
+        // Add pipes every 100 frames
+        function addPipe() {
+            let topHeight = Math.floor(Math.random() * (canvas.height / 2)) + 50;
+            pipes.push({
+                x: canvas.width,
+                top: topHeight,
+                bottom: topHeight + pipeGap
+            });
+        }
+
+        // Draw bird
+        function drawBird() {
+            ctx.fillStyle = '#ff0';
+            ctx.beginPath();
+            ctx.arc(bird.x, bird.y, bird.size, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // Draw pipes
+        function drawPipes() {
+            ctx.fillStyle = '#0f0';
+            pipes.forEach(pipe => {
+                // Top pipe
+                ctx.fillRect(pipe​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​
