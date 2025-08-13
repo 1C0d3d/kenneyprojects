@@ -1,596 +1,143 @@
-import React, { useEffect, useRef, useState } from "react";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Infinite Game</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: #000;
+    height: 100%;
+    width: 100%;
+    touch-action: none;
+  }
+  canvas {
+    display: block;
+    width: 100vw;
+    height: 100vh;
+  }
+</style>
+</head>
+<body>
+<canvas id="game"></canvas>
+<script>
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
 
-// Neon Drift — Infinite Dodge (Fullscreen Edition)
-// React + Canvas, endless play, high score (localStorage), particles, screen shake,
-// parallax stars, smooth touch/mouse controls, pause, settings.
-
-export default function App() {
-  return (
-    <div className="fixed inset-0 bg-black text-white">{/* Fullscreen root */}
-      <Game />
-    </div>
-  );
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
 }
+window.addEventListener("resize", resizeCanvas);
+resizeCanvas();
 
-function Game() {
-  const canvasRef = useRef(null);
-  const [running, setRunning] = useState(false);
-  const [paused, setPaused] = useState(false);
-  const [score, setScore] = useState(0);
-  const [high, setHigh] = useState(() => {
-    const k = localStorage.getItem("neonDriftHighScore");
-    return k ? Number(k) : 0;
+let player = { x: canvas.width / 2, y: canvas.height - 50, size: 20, color: "#0ff" };
+let bullets = [];
+let enemies = [];
+let score = 0;
+let highScore = localStorage.getItem("highScore") || 0;
+let lastSpawn = 0;
+
+function spawnEnemy() {
+  let size = 20 + Math.random() * 30;
+  enemies.push({
+    x: Math.random() * (canvas.width - size),
+    y: -size,
+    size: size,
+    speed: 2 + Math.random() * 3,
+    color: "hsl(" + Math.random() * 360 + ", 80%, 60%)"
   });
-  const [bestCombo, setBestCombo] = useState(() => {
-    const k = localStorage.getItem("neonDriftBestCombo");
-    return k ? Number(k) : 0;
+}
+
+function drawPlayer() {
+  ctx.fillStyle = player.color;
+  ctx.beginPath();
+  ctx.arc(player.x, player.y, player.size, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+function drawEnemies() {
+  enemies.forEach(e => {
+    ctx.fillStyle = e.color;
+    ctx.beginPath();
+    ctx.arc(e.x, e.y, e.size, 0, Math.PI * 2);
+    ctx.fill();
   });
-  const [gameOver, setGameOver] = useState(false);
-  const [settingsOpen, setSettingsOpen] = useState(false);
-  const [vfxOn, setVfxOn] = useState(true);
-  const [sfxOn, setSfxOn] = useState(true);
-  const [sensitivity, setSensitivity] = useState(0.12);
-  const [difficulty, setDifficulty] = useState(1); // 0=easy, 1=normal, 2=hard
+}
 
-  // Internal refs/state for the loop
-  const state = useRef(null);
-  const animationRef = useRef(0);
-  const lastTsRef = useRef(0);
-  const pointerRef = useRef({ x: 0, y: 0, active: false });
-  const shakeRef = useRef(0);
+function drawBullets() {
+  ctx.fillStyle = "#fff";
+  bullets.forEach(b => {
+    ctx.beginPath();
+    ctx.arc(b.x, b.y, 5, 0, Math.PI * 2);
+    ctx.fill();
+  });
+}
 
-  // Audio (tiny synth beeps)
-  const audioCtxRef = useRef(null);
-  function beep(freq = 440, dur = 0.07, gain = 0.02) {
-    if (!sfxOn) return;
-    try {
-      const ctx = audioCtxRef.current || new (window.AudioContext || window.webkitAudioContext)();
-      audioCtxRef.current = ctx;
-      const o = ctx.createOscillator();
-      const g = ctx.createGain();
-      o.connect(g); g.connect(ctx.destination);
-      o.type = "sine"; o.frequency.value = freq;
-      g.gain.setValueAtTime(gain, ctx.currentTime);
-      g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + dur);
-      o.start(); o.stop(ctx.currentTime + dur);
-    } catch {}
-  }
-
-  // Init & fullscreen resize
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d", { alpha: false });
-
-    function sizeToViewport() {
-      // Use dynamic viewport height to avoid iOS Safari 100vh bugs
-      const vw = window.innerWidth;
-      const vh = window.innerHeight; // paired with fixed inset-0 this follows the visual viewport
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      canvas.style.width = vw + "px";
-      canvas.style.height = vh + "px";
-      canvas.width = Math.floor(vw * dpr);
-      canvas.height = Math.floor(vh * dpr);
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    }
-
-    const ro = new ResizeObserver(sizeToViewport);
-    ro.observe(document.body);
-
-    // Also respond to visualViewport changes (mobile URL bar show/hide)
-    const vv = window.visualViewport;
-    if (vv) vv.addEventListener("resize", sizeToViewport);
-    sizeToViewport();
-
-    // Input
-    function onMove(e) {
-      const rect = canvas.getBoundingClientRect();
-      const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
-      const y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
-      pointerRef.current.x = x; pointerRef.current.y = y; pointerRef.current.active = true;
-    }
-    function onLeave() { pointerRef.current.active = false; }
-
-    canvas.addEventListener("pointermove", onMove);
-    canvas.addEventListener("pointerdown", onMove);
-    canvas.addEventListener("pointerup", onLeave);
-    canvas.addEventListener("pointerleave", onLeave);
-    canvas.addEventListener("touchstart", onMove, { passive: true });
-    canvas.addEventListener("touchmove", onMove, { passive: true });
-    canvas.addEventListener("touchend", onLeave);
-
-    // Prevent iOS rubber-band scrolling during game
-    const prevent = (e) => { if (pointerRef.current.active) e.preventDefault(); };
-    document.addEventListener("touchmove", prevent, { passive: false });
-
-    return () => {
-      ro.disconnect();
-      if (vv) vv.removeEventListener("resize", sizeToViewport);
-      canvas.removeEventListener("pointermove", onMove);
-      canvas.removeEventListener("pointerdown", onMove);
-      canvas.removeEventListener("pointerup", onLeave);
-      canvas.removeEventListener("pointerleave", onLeave);
-      canvas.removeEventListener("touchstart", onMove);
-      canvas.removeEventListener("touchmove", onMove);
-      canvas.removeEventListener("touchend", onLeave);
-      document.removeEventListener("touchmove", prevent);
-    };
-  }, [sfxOn]);
-
-  // Start a new run
-  function startGame() {
-    const canvas = canvasRef.current;
-    const rect = canvas.getBoundingClientRect();
-    const cx = rect.width / 2;
-    const cy = rect.height * 0.75;
-
-    state.current = createInitialState(cx, cy, difficulty);
-    lastTsRef.current = 0;
-    setScore(0);
-    setGameOver(false);
-    setRunning(true);
-    setPaused(false);
-    cancelAnimationFrame(animationRef.current);
-    animationRef.current = requestAnimationFrame(loop);
-  }
-
-  function endGame() {
-    setRunning(false);
-    setGameOver(true);
-    const finalScore = Math.floor(state.current.score);
-    const finalCombo = Math.floor(state.current.maxCombo);
-    setScore(finalScore);
-    setBestCombo((prev) => {
-      const next = Math.max(prev, finalCombo);
-      localStorage.setItem("neonDriftBestCombo", String(next));
-      return next;
+function update() {
+  bullets.forEach((b, i) => {
+    b.y -= 8;
+    if (b.y < 0) bullets.splice(i, 1);
+  });
+  enemies.forEach((e, i) => {
+    e.y += e.speed;
+    if (e.y > canvas.height) enemies.splice(i, 1);
+  });
+  bullets.forEach((b, bi) => {
+    enemies.forEach((e, ei) => {
+      let dx = b.x - e.x;
+      let dy = b.y - e.y;
+      let dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < e.size) {
+        enemies.splice(ei, 1);
+        bullets.splice(bi, 1);
+        score++;
+        if (score > highScore) {
+          highScore = score;
+          localStorage.setItem("highScore", highScore);
+        }
+      }
     });
-    setHigh((prev) => {
-      const next = Math.max(prev, finalScore);
-      localStorage.setItem("neonDriftHighScore", String(next));
-      return next;
-    });
-  }
-
-  function loop(ts) {
-    if (!state.current) return;
-    if (!lastTsRef.current) lastTsRef.current = ts;
-    const dt = Math.min(0.033, (ts - lastTsRef.current) / 1000);
-    lastTsRef.current = ts;
-
-    if (!paused) update(state.current, dt, pointerRef.current, sensitivity, vfxOn, () => beep(880, 0.05, 0.02), () => beep(220, 0.12, 0.03), shakeRef);
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
-    render(ctx, canvas, state.current, vfxOn, shakeRef.current);
-
-    setScore(Math.floor(state.current.score));
-
-    if (state.current.dead) {
-      cancelAnimationFrame(animationRef.current);
-      endGame();
-      return;
-    }
-    animationRef.current = requestAnimationFrame(loop);
-  }
-
-  useEffect(() => {
-    if (running) {
-      cancelAnimationFrame(animationRef.current);
-      animationRef.current = requestAnimationFrame(loop);
-    }
-    return () => cancelAnimationFrame(animationRef.current);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paused, vfxOn, sensitivity, difficulty]);
-
-  // UI (fullscreen canvas with overlay HUD)
-  return (
-    <div className="fixed inset-0">{/* Fullscreen container */}
-      {/* Top bar */}
-      <div className="pointer-events-auto absolute left-0 right-0 top-0 z-20 flex items-center justify-between p-3">
-        <h1 className="text-xl md:text-2xl font-bold tracking-wide bg-gradient-to-r from-fuchsia-500 via-cyan-400 to-indigo-400 bg-clip-text text-transparent drop-shadow">
-          Neon Drift
-        </h1>
-        <div className="flex items-center gap-2">
-          <InfoPill label="Score" value={score} />
-          <InfoPill label="High" value={high} />
-          <button onClick={() => setSettingsOpen((s) => !s)} className="px-3 py-1.5 rounded-2xl bg-zinc-900/70 hover:bg-zinc-800 border border-zinc-700 text-sm">
-            Settings
-          </button>
-          {running && (
-            <button onClick={() => setPaused((p) => !p)} className="px-3 py-1.5 rounded-2xl bg-zinc-900/70 hover:bg-zinc-800 border border-zinc-700 text-sm">
-              {paused ? "Resume" : "Pause"}
-            </button>
-          )}
-          {!running && (
-            <button onClick={startGame} className="px-4 py-1.5 rounded-2xl bg-fuchsia-600 hover:bg-fuchsia-500 text-white font-semibold shadow">
-              Start
-            </button>
-          )}
-        </div>
-      </div>
-
-      {/* Fullscreen canvas */}
-      <canvas ref={canvasRef} className="absolute inset-0 block w-full h-full" />
-
-      {/* Overlays */}
-      {!running && !gameOver && (
-        <Overlay>
-          <Title />
-          <p className="text-zinc-300">Drag or move your finger/mouse to dodge. Collect prisms to boost your multiplier. Don't get hit!</p>
-          <div className="mt-4 flex gap-2 justify-center">
-            <button onClick={startGame} className="px-5 py-2 rounded-xl bg-fuchsia-600 hover:bg-fuchsia-500 font-semibold">Play</button>
-            <button onClick={() => setSettingsOpen(true)} className="px-5 py-2 rounded-xl bg-zinc-900 border border-zinc-700">Settings</button>
-          </div>
-        </Overlay>
-      )}
-
-      {paused && running && (
-        <Overlay>
-          <h2 className="text-3xl font-bold mb-2">Paused</h2>
-          <p className="text-zinc-300">Take a breather. Avoid the neon shards when you resume!</p>
-          <div className="mt-4 flex gap-2 justify-center">
-            <button onClick={() => setPaused(false)} className="px-5 py-2 rounded-xl bg-fuchsia-600 hover:bg-fuchsia-500 font-semibold">Resume</button>
-            <button onClick={() => { setPaused(false); startGame(); }} className="px-5 py-2 rounded-xl bg-zinc-900 border border-zinc-700">Restart</button>
-          </div>
-        </Overlay>
-      )}
-
-      {gameOver && (
-        <Overlay>
-          <h2 className="text-4xl font-extrabold mb-1 bg-gradient-to-r from-fuchsia-400 to-cyan-300 bg-clip-text text-transparent">Game Over</h2>
-          <p className="text-zinc-300">Final Score: <span className="font-semibold text-white">{score}</span></p>
-          <p className="text-zinc-300">Best: <span className="font-semibold text-white">{high}</span> · Best Combo: <span className="font-semibold text-white">{bestCombo}</span>x</p>
-          <div className="mt-4 flex gap-2 justify-center">
-            <button onClick={startGame} className="px-5 py-2 rounded-xl bg-fuchsia-600 hover:bg-fuchsia-500 font-semibold">Play Again</button>
-            <button onClick={() => setGameOver(false)} className="px-5 py-2 rounded-xl bg-zinc-900 border border-zinc-700">Close</button>
-          </div>
-        </Overlay>
-      )}
-
-      {settingsOpen && (
-        <div className="absolute inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-30">
-          <div className="w-full max-w-md rounded-2xl border border-zinc-800 bg-zinc-950 p-4 shadow-xl">
-            <h3 className="text-lg font-semibold mb-3">Settings</h3>
-            <div className="space-y-3">
-              <Toggle label="Visual Effects" checked={vfxOn} onChange={setVfxOn} />
-              <Toggle label="Sound Effects" checked={sfxOn} onChange={setSfxOn} />
-              <Slider label={`Sensitivity (${sensitivity.toFixed(2)})`} min={0.05} max={0.3} step={0.01} value={sensitivity} onChange={setSensitivity} />
-              <div>
-                <p className="text-sm text-zinc-300 mb-1">Difficulty</p>
-                <div className="grid grid-cols-3 gap-2">
-                  {[[0,"Easy"],[1,"Normal"],[2,"Hard"]].map(([v,lab]) => (
-                    <button key={v}
-                      onClick={() => setDifficulty(v)}
-                      className={`px-3 py-1.5 rounded-xl border ${difficulty===v?"bg-fuchsia-600 border-fuchsia-500":"bg-zinc-900 border-zinc-800"}`}>
-                      {lab}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-            <div className="mt-4 flex justify-between">
-              <button onClick={() => setSettingsOpen(false)} className="px-4 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800">Close</button>
-              <button onClick={() => { localStorage.removeItem("neonDriftHighScore"); localStorage.removeItem("neonDriftBestCombo"); setHigh(0); setBestCombo(0); }} className="px-4 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800">Reset High Scores</button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
+  });
 }
 
-function InfoPill({ label, value }) {
-  return (
-    <div className="px-3 py-1 rounded-2xl bg-zinc-900/70 border border-zinc-700 text-sm backdrop-blur">
-      <span className="text-zinc-400 mr-1">{label}:</span>
-      <span className="font-semibold">{value}</span>
-    </div>
-  );
+function drawScore() {
+  ctx.fillStyle = "#fff";
+  ctx.font = "20px Arial";
+  ctx.fillText("Score: " + score, 10, 30);
+  ctx.fillText("High Score: " + highScore, 10, 60);
 }
 
-function Overlay({ children }) {
-  return (
-    <div className="absolute inset-0 grid place-items-center z-20 pointer-events-none">
-      <div className="pointer-events-auto text-center p-6 rounded-3xl bg-zinc-950/70 backdrop-blur-sm border border-zinc-800 shadow-2xl max-w-lg mx-auto">
-        {children}
-      </div>
-    </div>
-  );
-}
-
-function Title(){
-  return (
-    <div className="mb-2">
-      <div className="text-5xl font-extrabold leading-tight">
-        <span className="bg-gradient-to-r from-fuchsia-400 via-cyan-300 to-indigo-300 bg-clip-text text-transparent">Neon Drift</span>
-      </div>
-      <p className="uppercase tracking-[0.3em] text-xs text-zinc-400">Infinite Dodge</p>
-    </div>
-  );
-}
-
-function Toggle({ label, checked, onChange }) {
-  return (
-    <label className="flex items-center justify-between gap-3 py-1">
-      <span className="text-sm text-zinc-300">{label}</span>
-      <button
-        onClick={() => onChange(!checked)}
-        className={`relative w-12 h-7 rounded-full transition-colors ${checked ? "bg-fuchsia-600" : "bg-zinc-700"}`}
-        aria-pressed={checked}
-      >
-        <span className={`absolute top-1 left-1 w-5 h-5 rounded-full bg-white transition-transform ${checked ? "translate-x-5" : ""}`}></span>
-      </button>
-    </label>
-  );
-}
-
-function Slider({ label, min, max, step, value, onChange }) {
-  return (
-    <div>
-      <p className="text-sm text-zinc-300 mb-1">{label}</p>
-      <input type="range" min={min} max={max} step={step} value={value}
-        onChange={(e) => onChange(Number(e.target.value))}
-        className="w-full"/>
-    </div>
-  );
-}
-
-function Footer(){
-  return (
-    <div className="absolute bottom-2 inset-x-0 text-center text-xs text-zinc-500 z-10">
-      Tip: Toggle Visual Effects if your device stutters. Your ship follows your finger/mouse with smoothing.
-    </div>
-  );
-}
-
-// ----------------- Core Game Logic -----------------
-function createInitialState(cx, cy, difficulty){
-  const rng = mulberry32(Math.floor(Math.random()*1e9));
-  return {
-    t: 0,
-    score: 0,
-    dead: false,
-    maxCombo: 1,
-    combo: 1,
-    comboTimer: 0,
-    player: { x: cx, y: cy, vx: 0, vy: 0, r: 12, inv: 0 },
-    shards: [], // hazards
-    prisms: [], // collectibles
-    particles: [],
-    stars: makeStars(rng, 160),
-    rng,
-    level: { spawnTimer: 0, prismTimer: 0, speed: 140 + difficulty*40, rate: 0.9 + difficulty*0.25 },
-  };
-}
-
-function update(s, dt, pointer, sensitivity, vfxOn, onCollect, onHit, shakeRef){
-  s.t += dt;
-
-  // Parallax stars
-  for (const st of s.stars){
-    st.y += st.z * (40 + s.level.speed*0.2) * dt;
-    if (st.y > st.h + 10){ st.y = -10; st.x = (st.x + (s.rng()-0.5)*60) % st.w; }
+function loop(timestamp) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  if (timestamp - lastSpawn > 1000) {
+    spawnEnemy();
+    lastSpawn = timestamp;
   }
-
-  // Player follow pointer with smoothing
-  if (pointer.active){
-    const dx = pointer.x - s.player.x;
-    const dy = pointer.y - s.player.y;
-    s.player.vx += dx * sensitivity;
-    s.player.vy += dy * sensitivity;
-  }
-  // Damping
-  s.player.vx *= 0.86; s.player.vy *= 0.86;
-  s.player.x += s.player.vx * dt * 60/1.6;
-  s.player.y += s.player.vy * dt * 60/1.6;
-
-  if (s.player.inv>0) s.player.inv -= dt;
-
-  // Spawn hazards & prisms
-  const rate = s.level.rate;
-  s.level.spawnTimer -= dt;
-  s.level.prismTimer -= dt;
-  if (s.level.spawnTimer <= 0){
-    s.level.spawnTimer = 0.4 * rate * (0.5 + s.rng());
-    const lanes = 3 + Math.floor(s.t/10);
-    const w = s.stars[0]?.w || 800;
-    const gap = w/(lanes+1);
-    const x = gap + Math.floor(s.rng()*lanes)*gap + (s.rng()-0.5)*gap*0.3;
-    const size = 8 + s.rng()*18;
-    const speed = s.level.speed * (0.8 + s.rng()*0.6) * (1 + Math.min(1.2, s.t/60*0.25));
-    const type = s.rng() < 0.15 ? "spinner" : (s.rng()<0.5?"fall":"swerve");
-    s.shards.push({ x, y: -20, vx: 0, vy: speed, r: size, rot: 0, vr: (s.rng()-0.5)*4, type, t: 0 });
-  }
-  if (s.level.prismTimer <= 0){
-    s.level.prismTimer = 1.1 * rate * (0.7 + s.rng());
-    const w = s.stars[0]?.w || 800;
-    const x = 30 + s.rng()*(w-60);
-    const speed = s.level.speed * 0.7 * (0.9 + s.rng()*0.4);
-    s.prisms.push({ x, y: -20, vy: speed, r: 9, t: 0 });
-  }
-
-  // Update hazards
-  for (const a of s.shards){
-    a.t += dt; a.rot += a.vr*dt;
-    if (a.type === "swerve") a.x += Math.sin(a.t*3) * 60 * dt;
-    if (a.type === "spinner") a.vr += 0.4*dt;
-    a.y += a.vy * dt;
-  }
-
-  // Update prisms
-  for (const p of s.prisms){ p.t += dt; p.y += p.vy * dt; }
-
-  // Collisions & scoring
-  s.comboTimer -= dt;
-  if (s.comboTimer <= 0) s.combo = Math.max(1, s.combo - 1);
-
-  for (let i=s.prisms.length-1;i>=0;i--){
-    const p = s.prisms[i];
-    if (circleHit(s.player, p)){
-      s.prisms.splice(i,1);
-      s.combo = Math.min(20, s.combo + 1);
-      s.comboTimer = 3.5;
-      s.maxCombo = Math.max(s.maxCombo, s.combo);
-      s.score += 10 * s.combo;
-      if (vfxOn) spawnBurst(s, p.x, p.y, 12, "prism");
-      onCollect();
-    }
-  }
-
-  for (let i=s.shards.length-1;i>=0;i--){
-    const a = s.shards[i];
-    if (circleHit(s.player, a) && s.player.inv<=0){
-      s.player.inv = 1.2; // brief invulnerability
-      s.combo = 1; s.comboTimer = 0.5;
-      if (vfxOn) { spawnBurst(s, a.x, a.y, 18, "hit"); shakeRef.current = 10; }
-      onHit();
-      s.dead = true; // one-hit death
-    }
-  }
-
-  // Cull
-  const h = s.stars[0]?.h || 600;
-  s.shards = s.shards.filter(o => o.y < h + 40);
-  s.prisms = s.prisms.filter(o => o.y < h + 40);
-
-  // Particles
-  for (const pt of s.particles){
-    pt.x += pt.vx*dt; pt.y += pt.vy*dt; pt.life -= dt; pt.vy += 20*dt;
-  }
-  s.particles = s.particles.filter(p => p.life>0);
-
-  // Passive scoring
-  s.score += (2 + s.combo*0.2) * dt * 60 * (1 + s.t/90);
-
-  if (shakeRef.current>0) shakeRef.current -= 60*dt;
+  drawPlayer();
+  drawEnemies();
+  drawBullets();
+  drawScore();
+  update();
+  requestAnimationFrame(loop);
 }
 
-function render(ctx, canvas, s, vfxOn, shake){
-  const rect = canvas.getBoundingClientRect();
-  const w = rect.width; const h = rect.height;
+canvas.addEventListener("touchstart", e => {
+  let touch = e.touches[0];
+  player.x = touch.clientX;
+  player.y = touch.clientY;
+  bullets.push({ x: player.x, y: player.y });
+});
+canvas.addEventListener("touchmove", e => {
+  let touch = e.touches[0];
+  player.x = touch.clientX;
+  player.y = touch.clientY;
+});
 
-  // Background gradient
-  const g = ctx.createLinearGradient(0,0,0,h);
-  g.addColorStop(0, "#08080c");
-  g.addColorStop(1, "#0b0012");
-  ctx.fillStyle = g; ctx.fillRect(0,0,w,h);
-
-  // Parallax starfield
-  for (const st of s.stars){
-    const a = 0.3 + st.z*0.6; // brightness
-    ctx.globalAlpha = a;
-    ctx.fillStyle = "white";
-    ctx.fillRect(st.x, st.y, st.z*2, st.z*2);
-  }
-  ctx.globalAlpha = 1;
-
-  // Apply screen shake
-  if (shake>0){
-    const m = shake*0.02;
-    ctx.save(); ctx.translate((Math.random()-0.5)*m, (Math.random()-0.5)*m);
-  }
-
-  // Draw prisms (collectibles)
-  for (const p of s.prisms){
-    const t = (Math.sin((s.t + p.t)*4)+1)/2;
-    const r = p.r*(0.9+0.2*t);
-    neonDiamond(ctx, p.x, p.y, r, "#59f1ff");
-  }
-
-  // Draw shards (hazards)
-  for (const a of s.shards){
-    ctx.save();
-    ctx.translate(a.x, a.y); ctx.rotate(a.rot);
-    neonShard(ctx, a.r, a.type === "spinner" ? "#ff6ad5" : "#ffd166");
-    ctx.restore();
-  }
-
-  // Player ship
-  const invPulse = s.player.inv>0 ? (0.5+0.5*Math.sin(s.t*20)) : 1;
-  neonShip(ctx, s.player.x, s.player.y, s.player.r, invPulse);
-
-  // Particles
-  if (vfxOn){
-    for (const pt of s.particles){
-      ctx.globalAlpha = Math.max(0, pt.life/pt.maxLife);
-      ctx.fillStyle = pt.color; ctx.beginPath();
-      ctx.arc(pt.x, pt.y, pt.r, 0, Math.PI*2); ctx.fill();
-    }
-    ctx.globalAlpha = 1;
-  }
-
-  // HUD (combo)
-  const comboX = w - 16, comboY = 28;
-  const combo = Math.floor(s.combo);
-  drawText(ctx, `${combo}x`, comboX, comboY, 18, "right", combo>1?"#9b5cff":"#6b7280");
-
-  if (shake>0) ctx.restore();
-}
-
-// ------------ Render helpers ------------
-function neonShip(ctx, x, y, r, pulse=1){
-  ctx.save();
-  ctx.translate(x,y);
-  ctx.shadowBlur = 18*pulse; ctx.shadowColor = "#60a5fa";
-  ctx.strokeStyle = "#8ab4ff"; ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(0,-r*1.6); ctx.lineTo(r*0.9,r*0.6); ctx.lineTo(0,r*1.0); ctx.lineTo(-r*0.9,r*0.6); ctx.closePath();
-  ctx.stroke();
-  ctx.restore();
-}
-
-function neonDiamond(ctx, x, y, r, color){
-  ctx.save(); ctx.translate(x,y);
-  ctx.shadowBlur = 16; ctx.shadowColor = color; ctx.strokeStyle = color; ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(0,-r); ctx.lineTo(r,0); ctx.lineTo(0,r); ctx.lineTo(-r,0); ctx.closePath();
-  ctx.stroke(); ctx.restore();
-}
-
-function neonShard(ctx, r, color){
-  ctx.shadowBlur = 14; ctx.shadowColor = color; ctx.fillStyle = color;
-  ctx.beginPath();
-  ctx.moveTo(-r*0.5, -r*1.2);
-  ctx.lineTo(r*0.6, 0);
-  ctx.lineTo(-r*0.4, r*1.1);
-  ctx.closePath(); ctx.fill();
-}
-
-function drawText(ctx, text, x, y, size=16, align="left", color="#e5e7eb"){
-  ctx.font = `bold ${size}px ui-sans-serif, system-ui, -apple-system`;
-  ctx.textAlign = align; ctx.textBaseline = "middle";
-  ctx.fillStyle = color; ctx.fillText(text, x, y);
-}
-
-function spawnBurst(s, x, y, n, kind){
-  for (let i=0;i<n;i++){
-    const a = s.rng()*Math.PI*2; const sp = 60 + s.rng()*120;
-    const r = 1 + s.rng()*2;
-    const color = kind==="hit"? (s.rng()<0.5?"#ff6ad5":"#ffd166") : "#59f1ff";
-    s.particles.push({ x, y, vx: Math.cos(a)*sp, vy: Math.sin(a)*sp, r, color, life: 0.6+s.rng()*0.4, maxLife: 1.0 });
-  }
-  if (s.particles.length>600) s.particles.splice(0, s.particles.length-600);
-}
-
-function circleHit(a,b){
-  const dx = a.x-b.x, dy = a.y-b.y; const rr = (a.r+b.r)*(a.r+b.r);
-  return dx*dx+dy*dy <= rr;
-}
-
-function makeStars(rng, count){
-  // Logical starfield space; render scales to fullscreen canvas
-  const w = 1280, h = 720;
-  const stars = [];
-  for (let i=0;i<count;i++){
-    stars.push({ x: rng()*w, y: rng()*h, z: rng()*2+0.3, w, h });
-  }
-  return stars;
-}
-
-function mulberry32(a){
-  return function(){
-    var t = a += 0x6D2B79F5;
-    t = Math.imul(t ^ t >>> 15, t | 1);
-    t ^= t + Math.imul(t ^ t >>> 7, t | 61);
-    return ((t ^ t >>> 14) >>> 0) / 4294967296;
-  }
-}
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
