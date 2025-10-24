@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tic Tac Toe vs Bot</title>
+  <style>
+    :root {
+      --bg: #0f1221;
+      --panel: #151936;
+      --accent: #6fd1ff;
+      --win: #6dffb8;
+      --lose: #ff6f91;
+      --grid: #2a2f55;
+      --text: #e7e9ff;
+      --sub: #a6a9c9;
+    }
+    html, body {
+      height: 100%;
+      margin: 0;
+      background: radial-gradient(1200px 800px at 20% -10%, #1b2050 0%, var(--bg) 55%) no-repeat fixed;
+      color: var(--text);
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+    }
+    .app {
+      min-height: 100%;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+    .card {
+      width: min(520px, 92vw);
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+      border: 1px solid #2a2f55;
+      border-radius: 20px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.05);
+      padding: 20px 20px 16px;
+      backdrop-filter: blur(6px);
+    }
+    .row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .row.spread { justify-content: space-between; }
+    h1 {
+      font-size: 22px;
+      margin: 0 0 6px;
+      letter-spacing: 0.3px;
+    }
+    p { margin: 0; color: var(--sub); }
+
+    /* Board */
+    .board {
+      margin: 18px 0 10px;
+      aspect-ratio: 1/1;
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      user-select: none;
+    }
+    .cell {
+      background: var(--panel);
+      border: 1px solid var(--grid);
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      font-size: clamp(40px, 10vw, 64px);
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 120ms ease, box-shadow 120ms ease, background 150ms ease;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.25), inset 0 -2px 0 rgba(0,0,0,0.25);
+    }
+    .cell:hover { transform: translateY(-2px); }
+    .cell.taken { cursor: not-allowed; opacity: 0.9; }
+
+    .marker-X { color: var(--accent); text-shadow: 0 0 18px rgba(111, 209, 255, 0.55); }
+    .marker-O { color: #ffcf6f; text-shadow: 0 0 18px rgba(255, 207, 111, 0.5); }
+
+    .winFlash { animation: flash 900ms ease-in-out 2 both; }
+    @keyframes flash {
+      0%, 100% { background: var(--panel); }
+      50% { background: rgba(109,255,184,0.16); }
+    }
+
+    .controls { display: flex; gap: 10px; flex-wrap: wrap; }
+    select, button {
+      background: #1a1f46;
+      color: var(--text);
+      border: 1px solid #343a74;
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-weight: 600;
+      letter-spacing: .2px;
+    }
+    button.primary { background: #24307a; border-color: #4250a3; }
+    button.ghost { background: transparent; border-color: #333a78; }
+
+    .status {
+      margin: 6px 0 12px;
+      font-weight: 700;
+      letter-spacing: .3px;
+    }
+    .status .tag {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid #2f356b;
+      background: #181d42;
+    }
+    .tag.win { color: var(--win); border-color: rgba(109,255,184,0.45); background: rgba(109,255,184,0.1); }
+    .tag.lose { color: var(--lose); border-color: rgba(255,111,145,0.45); background: rgba(255,111,145,0.08); }
+    .tag.draw { color: #a3b0ff; border-color: rgba(163,176,255,0.45); background: rgba(163,176,255,0.08); }
+
+    .footer { color: var(--sub); font-size: 13px; margin-top: 8px; }
+    .footer a { color: var(--accent); text-decoration: none; }
+
+    .tiny { font-size: 12px; opacity: 0.9; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="card">
+      <div class="row spread">
+        <div>
+          <h1>Tic Tac Toe vs Bot</h1>
+          <p>You're <strong>X</strong>. Get three in a row before the bot does.</p>
+        </div>
+        <div class="controls">
+          <label class="tiny" for="difficulty">Difficulty</label>
+          <select id="difficulty" aria-label="Difficulty">
+            <option value="easy">Easy (Random)</option>
+            <option value="medium" selected>Medium (Smart-ish)</option>
+            <option value="hard">Hard (Unbeatable)</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="status" class="status"><span class="tag">Your turn</span></div>
+
+      <div id="board" class="board" role="grid" aria-label="Tic Tac Toe board"></div>
+
+      <div class="row spread">
+        <div class="controls">
+          <button id="restart" class="primary">Restart</button>
+          <button id="swap" class="ghost" title="Let bot start first">Bot starts</button>
+        </div>
+        <div class="footer">Tip: Click any empty square to place an <strong>X</strong>.</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const HUMAN = 'X';
+    const BOT = 'O';
+
+    const boardEl = document.getElementById('board');
+    const statusEl = document.getElementById('status');
+    const diffEl = document.getElementById('difficulty');
+    const restartBtn = document.getElementById('restart');
+    const swapBtn = document.getElementById('swap');
+
+    let board, humanTurn, gameOver;
+
+    const lines = [
+      [0,1,2],[3,4,5],[6,7,8], // rows
+      [0,3,6],[1,4,7],[2,5,8], // cols
+      [0,4,8],[2,4,6]          // diags
+    ];
+
+    function init(startWithHuman = true) {
+      board = Array(9).fill('');
+      humanTurn = startWithHuman;
+      gameOver = false;
+      render();
+      setStatus(humanTurn ? 'Your turn' : "Bot thinking…");
+      if (!humanTurn) setTimeout(botMove, 350);
+    }
+
+    function setStatus(text, kind) {
+      statusEl.innerHTML = `<span class="tag ${kind || ''}">${text}</span>`;
+    }
+
+    function render() {
+      boardEl.innerHTML = '';
+      board.forEach((v, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'cell' + (v ? ' taken' : '');
+        btn.setAttribute('role', 'gridcell');
+        btn.setAttribute('aria-label', v ? `Cell ${i+1} ${v}` : `Cell ${i+1} empty`);
+        btn.dataset.index = i;
+        btn.onclick = onHumanMove;
+        if (v) {
+          const span = document.createElement('span');
+          span.textContent = v;
+          span.className = v === 'X' ? 'marker-X' : 'marker-O';
+          btn.appendChild(span);
+        }
+        boardEl.appendChild(btn);
+      });
+    }
+
+    function onHumanMove(e) {
+      if (gameOver || !humanTurn) return;
+      const i = +e.currentTarget.dataset.index;
+      if (board[i]) return;
+      board[i] = HUMAN;
+      humanTurn = false;
+      render();
+
+      const res = evaluate(board);
+      if (res.over) return endGame(res);
+
+      setStatus('Bot thinking…');
+      setTimeout(botMove, 280);
+    }
+
+    function botMove() {
+      if (gameOver) return;
+      const move = chooseBotMove(board, diffEl.value);
+      if (move != null) board[move] = BOT;
+      render();
+      const res = evaluate(board);
+      if (res.over) return endGame(res);
+      humanTurn = true;
+      setStatus('Your turn');
+    }
+
+    function endGame({ winner, line }) {
+      gameOver = true;
+      if (winner === HUMAN) {
+        setStatus('You win! 🏆', 'win');
+      } else if (winner === BOT) {
+        setStatus('Bot wins 🤖', 'lose');
+      } else {
+        setStatus("It's a draw", 'draw');
+      }
+      // highlight winning line
+      if (line) {
+        line.forEach(idx => boardEl.children[idx].classList.add('winFlash'));
+      }
+    }
+
+    function emptyIndices(b) {
+      const arr = [];
+      for (let i=0;i<9;i++) if (!b[i]) arr.push(i);
+      return arr;
+    }
+
+    function evaluate(b) {
+      for (const [a,b2,c] of lines) {
+        if (b[a] && b[a] === b[b2] && b[a] === b[c]) {
+          return { over: true, winner: b[a], line: [a,b2,c] };
+        }
+      }
+      if (b.every(Boolean)) return { over: true, winner: null };
+      return { over: false };
+    }
+
+    // Bot move selection per difficulty
+    function chooseBotMove(b, difficulty) {
+      const empties = emptyIndices(b);
+      if (empties.length === 0) return null;
+
+      // Easy: random
+      if (difficulty === 'easy') {
+        return empties[Math.floor(Math.random()*empties.length)];
+      }
+
+      // Medium: win if you can, block if needed, else center/corner/random
+      if (difficulty === 'medium') {
+        // try to win
+        for (const i of empties) {
+          b[i] = BOT; if (evaluate(b).over && evaluate(b).winner === BOT) { b[i] = ''; return i; } b[i] = '';
+        }
+        // block human win
+        for (const i of empties) {
+          b[i] = HUMAN; if (evaluate(b).over && evaluate(b).winner === HUMAN) { b[i] = ''; return i; } b[i] = '';
+        }
+        if (empties.includes(4)) return 4; // center
+        const corners = empties.filter(i => [0,2,6,8].includes(i));
+        if (corners.length) return corners[Math.floor(Math.random()*corners.length)];
+        return empties[0];
+      }
+
+      // Hard: Minimax (unbeatable)
+      const { move } = minimax(b, BOT, -Infinity, Infinity);
+      return move;
+    }
+
+    function minimax(b, player, alpha, beta) {
+      const res = evaluate(b);
+      if (res.over) {
+        if (res.winner === BOT) return { score: 10 };
+        if (res.winner === HUMAN) return { score: -10 };
+        return { score: 0 };
+      }
+      const empties = emptyIndices(b);
+
+      let bestMove = null;
+      if (player === BOT) {
+        let bestScore = -Infinity;
+        for (const i of empties) {
+          b[i] = BOT;
+          const { score } = minimax(b, HUMAN, alpha, beta);
+          b[i] = '';
+          if (score > bestScore) { bestScore = score; bestMove = i; }
+          alpha = Math.max(alpha, score);
+          if (beta <= alpha) break; // prune
+        }
+        return { score: bestScore, move: bestMove };
+      } else {
+        let bestScore = Infinity;
+        for (const i of empties) {
+          b[i] = HUMAN;
+          const { score } = minimax(b, BOT, alpha, beta);
+          b[i] = '';
+          if (score < bestScore) { bestScore = score; bestMove = i; }
+          beta = Math.min(beta, score);
+          if (beta <= alpha) break; // prune
+        }
+        return { score: bestScore, move: bestMove };
+      }
+    }
+
+    // Controls
+    restartBtn.addEventListener('click', () => init(true));
+
+    let botStarts = false;
+    swapBtn.addEventListener('click', () => {
+      botStarts = !botStarts;
+      swapBtn.textContent = botStarts ? 'You start' : 'Bot starts';
+      init(!botStarts);
+    });
+
+    diffEl.addEventListener('change', () => {
+      // Keep current turn order, just restart fresh
+      init(humanTurn);
+    });
+
+    // Start the game
+    init(true);
+  </script>
+</body>
+</html>
