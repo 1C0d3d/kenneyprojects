@@ -1,93 +1,151 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" content="height=device-height, initial scale=1.0" />
-  <title>First Step Lawn Mowing</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kenney Projects</title>
+  <meta name="description" content="Kenney Projects — games, research papers, code projects, and more." />
+  <link rel="canonical" href="https://kenneyprojects.com/" />
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+    :root{
+      --bg:#0b0f14; --fg:#e6edf3; --sub:#9fb3c8; --border:rgba(255,255,255,.12);
+      --card:rgba(255,255,255,.06); --accent:#60a5fa; --accent-2:#a78bfa;
+      --glow: 0 12px 30px rgba(96,165,250,.25), 0 2px 12px rgba(167,139,250,.2);
     }
-    body {
-      font-family: Arial, sans-serif;
-      background-color: white;
-      color: #2e7d32;
-      overflow-x: hidden;
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
+      color:var(--fg);
+      background:
+        radial-gradient(70vw 70vw at 90% -20%, rgba(96,165,250,.18), transparent 60%),
+        radial-gradient(60vw 60vw at -10% 100%, rgba(167,139,250,.14), transparent 60%),
+        var(--bg);
+      -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
     }
-    .hero {
-      min-height: 85vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      text-align: center;
-      padding: 2rem;
-      background-image: url('https://hips.hearstapps.com/hmg-prod/images/how-to-mow-lawn-first-time-year-65eb01a88ae0a.jpg?crop=0.668xw:1.00xh;0.0456xw,0&resize=1200:*s=612x612&w=0&k=20&c=Bt91WCdmICMIO19uL9q2ijTOgtf-wPtIIU7hJ-stcf8=q=tbn:ANd9GcSp1BuInPhNqHwq9EqiKtIA3fkC6DzFeFa_77OJkKGcBg&s=10');
-      background-size: flex;
-      background-position: center;
-      color: white;
+    a{color:inherit; text-decoration:none}
+    .container{max-width:1100px; margin:0 auto; padding: clamp(16px, 3vw, 28px)}
+
+    /* Header */
+    header{position:sticky; top:0; z-index:10; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px)}
+    .nav{
+      display:flex; align-items:center; justify-content:space-between;
+      padding: 12px 0; border-bottom:1px solid var(--border);
     }
-    .hero h2 {
-      font-size: 3rem;
-      margin-bottom: 1rem;
-      animation: fadeInUp 1s ease-in-out;
+    .brand{display:flex; align-items:center; gap:10px; font-weight:800; letter-spacing:.2px}
+    .logo{width:28px;height:28px;border-radius:8px; display:inline-block;
+      background: conic-gradient(from 180deg, var(--accent), var(--accent-2));
+      box-shadow: 0 4px 16px rgba(96,165,250,.35);
     }
-    .hero p {
-      font-size: 1.4rem;
-      max-width: 700px;
-      animation: fadeInUp 1.2s ease-in-out;
+    .nav a{opacity:.9}
+    .links{display:flex; gap:18px; align-items:center}
+    .links a{padding:8px 10px; border-radius:10px}
+    .links a:hover{background:var(--card)}
+
+    /* Hero */
+    .hero{display:grid; gap:18px; padding: clamp(28px, 8vw, 64px) 0 24px 0; text-align:center}
+    .title{font-size: clamp(28px, 6vw, 56px); line-height:1.05; letter-spacing:-.02em}
+    .title strong{background: linear-gradient(90deg,#fff, #c7d2fe 30%, #93c5fd 65%, #fff); -webkit-background-clip:text; background-clip:text; color:transparent; text-shadow:0 6px 40px rgba(96,165,250,.3)}
+    .subtitle{color:var(--sub); max-width:70ch; margin:0 auto}
+    .cta{display:flex; gap:12px; justify-content:center; margin-top:8px}
+    .btn{display:inline-flex; align-items:center; gap:10px; padding:12px 16px; border-radius:12px; font-weight:700; border:1px solid var(--border); background:var(--card); box-shadow:var(--glow)}
+    .btn.primary{border:0; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color:#0a0d12}
+    .btn:hover{transform: translateY(-2px); transition: .15s ease}
+
+    /* Grid */
+    .grid{display:grid; grid-template-columns:repeat(12, 1fr); gap:18px}
+    .card{grid-column: span 12; padding:18px; border-radius:18px; background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03)); border:1px solid var(--border); box-shadow:var(--glow)}
+    .card:hover{transform: translateY(-2px); transition: .15s ease}
+    .card h3{margin:8px 0 6px 0; letter-spacing:.2px}
+    .card p{color:var(--sub); margin:0}
+    .icon{width:28px;height:28px; opacity:.9}
+
+    @media (min-width:680px){
+      .card{grid-column: span 6}
     }
-    .button-group {
-      margin-top: 3rem;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 1.5rem;
-      animation: fadeInUp 1.4s ease-in-out;
-      margin-bottom: 5rem;
+    @media (min-width:980px){
+      .card{grid-column: span 3}
     }
-    .bubble-button {
-      background-color: white;
-      border: none;
-      border-radius: 2rem;
-      padding: 1rem 2rem;
-      font-size: 1.2rem;
-      color: #2e7d32;
-      font-weight: bold;
-      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
-      cursor: pointer;
-      transition: transform 0.3s ease, background-color 0.3s ease;
-      text-decoration: none;
+
+    /* Footer */
+    footer{border-top:1px solid var(--border); margin-top:36px}
+    .foot{display:flex; gap:12px; justify-content:space-between; align-items:center; padding:18px 0; color:var(--sub); font-size:14px}
+
+    /* Light mode */
+    @media (prefers-color-scheme: light){
+      :root{ --bg:#f8fafc; --fg:#0b1220; --sub:#475569; --card:rgba(255,255,255,.8); --border:rgba(2,6,23,.08) }
+      .btn.primary{color:#fff}
     }
-    .bubble-button:hover {
-      transform: scale(1.05);
-      background-color: #d0f0d0;
-    }
-    @keyframes fadeInUp {
-      0% {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-      100% {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
+    /* Focus styles */
+    :focus-visible{outline: 2px solid var(--accent); outline-offset:2px; border-radius:10px}
   </style>
 </head>
 <body>
-  <div class="hero">
-    <h2>Welcome to First Step Lawn Mowing</h2>
-    <p>The best, most affordable, and reliable lawn mowing in Rapid City, SD.</p>
-
-    <div class="button-group">
-      <a href="pricing.html" class="bubble-button">Pricing</a>
-      <a href="hire.html" class="bubble-button">Hire Us</a>
-      <a href="contact.html" class="bubble-button">Contact Us</a>
-      <a href="about-us.html" class="bubble-button">About Us</a>
+  <header>
+    <div class="container nav" role="navigation" aria-label="Main">
+      <a href="/" class="brand" aria-label="Kenney Projects home">
+        <span class="logo" aria-hidden="true"></span>
+        <span>Kenney Projects</span>
+      </a>
+      <nav class="links" aria-label="Primary">
+        <a href="/games">Games</a>
+        <a href="/papers">Research Papers</a>
+        <a href="/projects">Code Projects</a>
+        <a href="/about">About</a>
+      </nav>
     </div>
-  </div>
+  </header>
+
+  <main class="container" role="main">
+    <section class="hero">
+      <h1 class="title">Build. Learn. Play. <strong>Kenney Projects</strong></h1>
+      <p class="subtitle">A tidy hub for everything I make: small web and desktop games, research write‑ups, open‑source code projects, and a little bit about the person behind it.</p>
+      <div class="cta">
+        <a class="btn primary" href="/games" aria-label="Explore games">Explore Games</a>
+        <a class="btn" href="/projects" aria-label="Browse code projects">Browse Projects</a>
+      </div>
+    </section>
+
+    <section aria-labelledby="quick-links" style="margin-top:8px">
+      <h2 id="quick-links" style="position:absolute; left:-9999px">Quick links</h2>
+      <div class="grid">
+        <a class="card" href="/games" aria-label="Go to Games">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M6 12h12M7 8h3M14 16h3"/><rect x="3" y="6" width="18" height="12" rx="3"/></svg>
+          <h3>Games</h3>
+          <p>Play prototypes and finished titles, right in your browser.</p>
+        </a>
+
+        <a class="card" href="/papers" aria-label="Go to Research Papers">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/></svg>
+          <h3>Research Papers</h3>
+          <p>Concise write‑ups and references on topics I’m exploring.</p>
+        </a>
+
+        <a class="card" href="/projects" aria-label="Go to Code Projects">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M8 16l-4-4 4-4M16 8l4 4-4 4"/></svg>
+          <h3>Code Projects</h3>
+          <p>Open‑source snippets, utilities, and full apps with docs.</p>
+        </a>
+
+        <a class="card" href="/about" aria-label="Go to About">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="7" r="3"/><path d="M5 21a7 7 0 0 1 14 0"/></svg>
+          <h3>About</h3>
+          <p>Who I am, how to reach me, and what I’m building next.</p>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container foot">
+      <span>© <span id="year"></span> Kenney Projects</span>
+      <span><a href="/support">see support page</a></span>
+    </div>
+  </footer>
+
+  <script>
+    // Set current year
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
 </body>
 </html>
