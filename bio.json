@@ -1,0 +1,14 @@
+{
+  "profile": {
+    "name": "Eric K",
+    "bio": "Steven's Football player, Broncos fan, and Motorcycle enthusiast.",
+    "accent": "#000080",
+    "avatarDataUrl": null
+  },
+  "links": [
+    { "id": 1, "title": "Tiktok", "url": "https://www.tiktok.com/@erickenney09" },
+    { "id": 2, "title": "Instagram", "url": "https://www.instagram.com/erickenney09" },
+    { "id": 3, "title": "X (formerly Twitter)", "url": "https://x.com/OnlyE_Kenney" }
+  ],
+  "exportedAt": "2025-10-26T00:00:00Z"
+}
