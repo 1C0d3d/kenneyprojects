@@ -1,1 +1,139 @@
-not a valid link idiot
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>404 • Kenney Projects</title>
+  <meta name="robots" content="noindex" />
+  <meta name="description" content="Sorry, we couldn't find that page on KenneyProjects.com."/>
+  <link rel="canonical" href="https://kenneyprojects.com/" />
+  <style>
+    :root{
+      --bg:#0b0f14;
+      --fg:#e6edf3;
+      --sub:#9fb3c8;
+      --accent:#60a5fa;
+      --accent-2:#a78bfa;
+      --card:rgba(255,255,255,.06);
+      --border:rgba(255,255,255,.12);
+      --glow: 0 10px 30px rgba(96,165,250,.35), 0 2px 10px rgba(167,139,250,.25);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      color:var(--fg);
+      background:
+        radial-gradient(60vw 60vw at 80% -10%, rgba(96,165,250,.2), transparent 60%),
+        radial-gradient(50vw 50vw at -10% 90%, rgba(167,139,250,.18), transparent 60%),
+        var(--bg);
+      display:grid;
+      place-items:center;
+      padding:24px;
+    }
+    .wrap{
+      width:min(960px, 92vw);
+      display:grid;
+      gap:24px;
+      text-align:center;
+    }
+    .card{
+      position:relative;
+      padding: clamp(24px, 4vw, 48px);
+      border-radius:24px;
+      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border:1px solid var(--border);
+      box-shadow: var(--glow);
+      overflow:hidden;
+    }
+
+    .orb{position:absolute; filter: blur(24px); opacity:.6; pointer-events:none;}
+    .orb.one{ width:220px;height:220px; left:-60px; top:-60px; background:radial-gradient(circle at 30% 30%, var(--accent), transparent 60%); animation: float 10s ease-in-out infinite;}
+    .orb.two{ width:260px;height:260px; right:-80px; bottom:-80px; background:radial-gradient(circle at 70% 70%, var(--accent-2), transparent 60%); animation: float 12s ease-in-out -2s infinite;}
+    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+
+    .tag{
+      display:inline-flex; align-items:center; gap:10px;
+      padding:8px 12px; border-radius:999px; border:1px solid var(--border);
+      background:var(--card); color:var(--sub); font-size:14px; margin-bottom:8px;
+    }
+    .tag svg{width:18px;height:18px; opacity:.8}
+
+    h1{font-size: clamp(44px, 9vw, 120px); line-height: .9; margin:10px 0; letter-spacing:-.02em;}
+    .gradient-404{
+      background: linear-gradient(90deg, #fff, #c7d2fe 30%, #93c5fd 60%, #fff);
+      -webkit-background-clip: text; background-clip:text; color:transparent;
+      text-shadow: 0 4px 40px rgba(96,165,250,.35);
+    }
+
+    p{margin:0 auto; max-width:60ch; color:var(--sub); font-size: clamp(16px, 2.2vw, 18px)}
+
+    .actions{display:flex; justify-content:center; margin-top:28px}
+    .btn{
+      --btn-bg:linear-gradient(135deg, var(--accent), var(--accent-2));
+      display:inline-flex; align-items:center; gap:10px;
+      padding:14px 20px; font-weight:600; text-decoration:none; color:#0a0d12;
+      background:var(--btn-bg); border-radius:14px; border:0; cursor:pointer;
+      box-shadow: 0 12px 24px rgba(96,165,250,.35), inset 0 0 0 1px rgba(255,255,255,.5);
+      transition: transform .15s ease, box-shadow .15s ease, filter .2s ease;
+    }
+    .btn:hover{ transform: translateY(-2px); filter:brightness(1.05) }
+    .btn:active{ transform: translateY(0) }
+    .btn svg{ width:18px; height:18px }
+
+    .footer{font-size:13px; color:var(--sub)}
+    .footer a{color:inherit}
+
+    @media (prefers-color-scheme: light){
+      :root{ --bg:#f8fafc; --fg:#0b1220; --sub:#475569; --card:rgba(255,255,255,.8); --border:rgba(2,6,23,.08) }
+      body{background:
+        radial-gradient(70vw 70vw at 80% -20%, rgba(59,130,246,.15), transparent 60%),
+        radial-gradient(60vw 60vw at -10% 90%, rgba(139,92,246,.12), transparent 60%),
+        var(--bg)}
+      .btn{ color:white; box-shadow: 0 8px 18px rgba(59,130,246,.35), inset 0 0 0 1px rgba(255,255,255,.3) }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap" role="main">
+    <section class="card" aria-labelledby="title">
+      <div class="orb one" aria-hidden="true"></div>
+      <div class="orb two" aria-hidden="true"></div>
+
+      <span class="tag" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 3.75a8.25 8.25 0 1 0 0 16.5 8.25 8.25 0 0 0 0-16.5Z"/><path d="M15.75 8.25 13 13l-4.75 2.75L11 11l4.75-2.75Z"/></svg>
+        Lost in space
+      </span>
+
+      <h1 id="title" class="gradient-404">404</h1>
+      <p>
+        Oops! We couldn't find that page on <strong>KenneyProjects.com</strong>.
+        It might have been moved, renamed, or never existed.
+      </p>
+
+      <div class="actions">
+        <a class="btn" href="/" aria-label="Go back to Kenney Projects home">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 10v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-9"/></svg>
+          Take me home
+        </a>
+      </div>
+
+      <p class="footer" role="contentinfo">
+        If you think this is a mistake, see <a href="mailto:hello@kenneyprojects.com">support page</a>.
+      </p>
+    </section>
+  </main>
+
+  <script>
+    (function(){
+      try {
+        const ref = document.referrer;
+        if(ref && sessionStorage){ sessionStorage.setItem('last404Referrer', ref); }
+      } catch(e){}
+    })();
+  </script>
+</body>
+</html>
