@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Southern Economy Study Guide</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f9fafb;
+    margin: 0;
+    padding: 0;
+    color: #222;
+  }
+  header {
+    background: #1e3a8a;
+    color: white;
+    padding: 1rem;
+    text-align: center;
+  }
+  #searchBar {
+    display: block;
+    margin: 1rem auto;
+    padding: 0.7rem;
+    width: 90%;
+    max-width: 600px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+  }
+  .qa-container {
+    max-width: 800px;
+    margin: auto;
+    padding: 1rem;
+  }
+  .qa {
+    background: white;
+    padding: 1rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 1rem;
+    transition: 0.2s ease;
+  }
+  .qa:hover {
+    transform: scale(1.01);
+  }
+  .question {
+    font-weight: bold;
+    color: #1e40af;
+  }
+  .answer {
+    margin-top: 0.5rem;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>U.S. History — Southern Economy Study Guide</h1>
+  <input type="text" id="searchBar" placeholder="Search for a question or answer...">
+</header>
+
+<div class="qa-container" id="qaList">
+  <!-- Q&A will appear here -->
+</div>
+
+<script>
+const qas = [
+  { q: "What was the most important economic activity in the South between 1800 and the time of Civil War?", a: "Cultivating cotton" },
+  { q: "A depression in _____ prices between the 1820s and 1850s led many farmers to switch to other crops.", a: "Tobacco" },
+  { q: "Which of the following best explains why sugar did not become a staple crop in the South?", a: "Competition with Caribbean farmers, backbreaking labor, and long growth time." },
+  { q: "Which of the following is an advantage that short-staple cotton has over other cotton varieties?", a: "It can be grown in a variety of climates and soils." },
+  { q: "By 1861, cotton exports were bringing nearly $______ million into the United States each year.", a: "200" },
+  { q: "How did the shift of enslaved people to the cotton states affect planters in the upper South?", a: "They began selling enslaved people to cotton plantations to compensate for their crops' decline in value." },
+  { q: "Why did American tobacco cultivation move westward in the 1830s?", a: "Tobacco farming had exhausted the land, so farmers had to switch to other crops." },
+  { q: "Which of the following best describes the relationship between agriculture and business in the South during the mid-19th century?", a: "Most successful businesses were related to the needs of plantation owners." },
+  { q: "Which of the following best explains why rice did not become a staple crop of the southern economy?", a: "Rice fields require extensive irrigation." },
+  { q: "True or false: The South was economically dependent on the North because the North provided the raw materials that southerners used to manufacture products.", a: "False" },
+  { q: "The rapid growth of the American ______ industry during the first half of the nineteenth century drove demand for short-staple cotton.", a: "Textile" },
+  { q: "Before the Civil War, the principal means of transporting goods in the South was by", a: "Water" },
+  { q: "Which of the following best describes the growth of the cotton economy in the South?", a: "Erratic" },
+  { q: "Which of the following best describes why wealthy Southerners invested little capital in manufacturing?", a: "Wealthy Southerners had much of their capital tied up in their land." },
+  { q: "Brokers who worked to find buyers for planters' cotton and other crops in the South during the mid-19th century also regularly served as", a: "Bankers, providing loans to farmers during dry spells or when crop prices were low." },
+  { q: "Many white Southerners thought of themselves as '______,' or people who were more concerned with a refined and gracious lifestyle than northerners.", a: "Cavaliers" },
+];
+
+const list = document.getElementById('qaList');
+function renderList(items) {
+  list.innerHTML = items.map(i => `
+    <div class="qa">
+      <div class="question">Q: ${i.q}</div>
+      <div class="answer">A: ${i.a}</div>
+    </div>
+  `).join('');
+}
+renderList(qas);
+
+document.getElementById('searchBar').addEventListener('input', (e) => {
+  const val = e.target.value.toLowerCase();
+  const filtered = qas.filter(i => i.q.toLowerCase().includes(val) || i.a.toLowerCase().includes(val));
+  renderList(filtered);
+});
+</script>
+
+</body>
+</html>
