@@ -1,106 +1,153 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Southern Economy Study Guide</title>
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    background: #f9fafb;
-    margin: 0;
-    padding: 0;
-    color: #222;
-  }
-  header {
-    background: #1e3a8a;
-    color: white;
-    padding: 1rem;
-    text-align: center;
-  }
-  #searchBar {
-    display: block;
-    margin: 1rem auto;
-    padding: 0.7rem;
-    width: 90%;
-    max-width: 600px;
-    font-size: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-  }
-  .qa-container {
-    max-width: 800px;
-    margin: auto;
-    padding: 1rem;
-  }
-  .qa {
-    background: white;
-    padding: 1rem;
-    border-radius: 10px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    margin-bottom: 1rem;
-    transition: 0.2s ease;
-  }
-  .qa:hover {
-    transform: scale(1.01);
-  }
-  .question {
-    font-weight: bold;
-    color: #1e40af;
-  }
-  .answer {
-    margin-top: 0.5rem;
-  }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>U.S. History Study Guide: Southern Economy and Slavery</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      margin: 0;
+      padding: 20px;
+      color: #222;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    #searchBox {
+      display: block;
+      margin: 0 auto 20px auto;
+      width: 80%;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    .qa-container {
+      background: white;
+      padding: 15px;
+      margin: 10px auto;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      width: 90%;
+      transition: 0.3s;
+    }
+    .qa-container:hover {
+      transform: scale(1.01);
+    }
+    .question {
+      font-weight: bold;
+      color: #003366;
+    }
+    .answer {
+      margin-top: 5px;
+      color: #006400;
+    }
+  </style>
 </head>
 <body>
+  <h1>U.S. History Study Guide:<br>Southern Economy and Slavery (Brinkley, 16e)</h1>
+  <input type="text" id="searchBox" placeholder="Search for a question or keyword..." onkeyup="searchQuestions()">
 
-<header>
-  <h1>U.S. History — Southern Economy Study Guide</h1>
-  <input type="text" id="searchBar" placeholder="Search for a question or answer...">
-</header>
+  <div id="qaList"></div>
 
-<div class="qa-container" id="qaList">
-  <!-- Q&A will appear here -->
-</div>
+  <script>
+    const qaData = [
+      {q: '1. What was the most important economic activity in the South between 1800 and the time of Civil War?', a: 'Cultivating cotton'},
+      {q: '2. A depression in _____ prices between the 1820s and 1850s led many farmers to switch to other crops.', a: 'Tobacco'},
+      {q: '3. Which of the following best explains why sugar did not become a staple crop in the South?', a: 'Sugarcane growers in the South had to compete with farmers in the Caribbean. Cultivation of sugarcane required backbreaking labor. Sugarcane takes a long time to grow.'},
+      {q: '4. Which of the following is an advantage that short-staple cotton has over other cotton varieties?', a: 'It can be grown in a variety of climates and soils.'},
+      {q: '5. By 1861, cotton exports were bringing nearly $______ million into the United States each year.', a: '200'},
+      {q: '6. How did the shift of enslaved people to the cotton states affect planters in the upper South?', a: 'They began selling enslaved people to cotton plantations to compensate for their crops\' decline in value.'},
+      {q: '7. Why did American tobacco cultivation move westward in the 1830s?', a: 'Tobacco farming had exhausted the land, so farmers had to switch to other crops.'},
+      {q: '8. Which of the following best describes the relationship between agriculture and business in the South during the mid-19th century?', a: 'Most successful businesses were related to the needs of plantation owners.'},
+      {q: '9. Which of the following best explains why rice did not become a staple crop of the southern economy?', a: 'Rice fields require extensive irrigation.'},
+      {q: '10. True or false: The South was economically dependent on the North because the North provided the raw materials that southerners used to manufacture products.', a: 'False'},
+      {q: '11. The rapid growth of the American ______ industry during the first half of the nineteenth century drove demand for short-staple cotton.', a: 'Textile'},
+      {q: '12. Before the Civil War, the principal means of transporting goods in the South was by', a: 'Water'},
+      {q: '13. Which of the following best describes the growth of the cotton economy in the South?', a: 'Erratic'},
+      {q: '14. Which of the following best describes why wealthy Southerners invested little capital in manufacturing?', a: 'Wealthy Southerners had much of their capital tied up in their land.'},
+      {q: '15. Brokers who worked to find buyers for planters\' cotton and other crops in the South during the mid-19th century also regularly served as', a: 'Bankers, providing loans to farmers during dry spells or when crop prices were low.'},
+      {q: '16. Many white Southerners thought of themselves as \"______\," or people who were more concerned with a refined and gracious lifestyle than northerners.', a: 'Cavaliers'},
+      {q: '17. Which of the following best describes the economic relationship between the North and South during the antebellum period?', a: 'The South was like a colony, shipping raw goods to the North to be turned into salable goods.'},
+      {q: '18. Approximately what percentage of Southern whites were slaveholders in the early 1800s?', a: '25%'},
+      {q: '19. Which of the following best describes the status of railroads in the antebellum South?', a: 'Only major cities were connected to rail lines that ran outside the region.'},
+      {q: '20. Which of the following best describes most members of the Southern planter class in the antebellum South?', a: 'They were newly wealthy and among the first in their families to succeed at farming.'},
+      {q: '21. Which of the following best describes white Southern males and their perception of honor?', a: 'They held themselves to elaborate code of chivalry and kept up an appearance of dignity at all times.'},
+      {q: '22. Which of the following best explains why wealthy Southerners invested little capital in manufacturing?', a: 'Wealthy Southerners had much of their capital tied up in their land.'},
+      {q: '23. Which of the following effects did the cult of honor have on the lives of Southern white women?', a: 'White Southern men felt obligated to protect white women. Men expected women to be subordinate in exchange for defending women\'s honor.'},
+      {q: '24. Which of the following traditional values motivated Southerners to resist industrialization?', a: 'Chivalry'},
+      {q: '25. Most white women in the antebellum South lived ______, which afforded them little opportunity to look beyond their familial roles.', a: 'On farms'},
+      {q: '26. Which of the following best describes the prevalence of slaveholding in the South?', a: 'Only a very small minority of Southern whites were slaveholders.'},
+      {q: '27. Antebellum Southern white women who attended female academies were primarily trained to', a: 'Be suitable wives'},
+      {q: '28. Before the Civil War, childrearing was a particular burden for Southern white women because', a: 'Nearly half the children born in the South died before the age of five.'},
+      {q: '29. According to Southern social norms, when a white man felt his dignity was insulted by another white man, he should', a: 'Challenge him to a duel'},
+      {q: '30. Approximately what percentage of white farmers in the antebellum South were nonslaveholders?', a: '75%'},
+      {q: '31. Most affluent white Southern women in the antebellum South engaged in all of the following except', a: 'Public activities'},
+      {q: '32. Which of the following best describes elementary and secondary schools in the American South before the Civil War?', a: 'They were inferior to those in the Northeast.'},
+      {q: '33. Antebellum Southern white women who lived on farms of modest size regularly engaged in which of the following activities?', a: 'Spinning and weaving, Weeding the garden, Overseeing enslaved people'},
+      {q: '34. Nonslaveholding whites who lived in backcountry areas like the Appalachians and Ozarks before the Civil War were known as', a: 'Hill people'},
+      {q: '35. Nonslaveholding whites relied on the plantation system for all of the following except', a: 'Rented land'},
+      {q: '36. White Southerners\' commitment to ______ led many to believe that the North\'s attack on slavery was an attack on their Southern way of life.', a: 'Patriarchy'},
+      {q: '37. Subsistence farmers in the antebellum South were largely unable to move into the planter class because of', a: 'Lack of education'},
+      {q: '38. Most whites Southerners living in the Appalachians or the Ozarks before the Civil War', a: 'Practiced subsistence agriculture, growing most of their crops for their own use.'},
+      {q: '39. How did most destitute Southern white men make their living in the antebellum South?', a: 'They mostly foraged or hunted but were often malnourished.'},
+      {q: '40. One reason that nonslaveholding whites living amid the plantation system accepted slavery was that they', a: 'Were often closely related to the wealthier slaveholding planters.'},
+      {q: '41. When white Southerners referred to slavery as the \"peculiar institution,\" they usually meant that it was', a: 'Distinctive and special.'},
+      {q: '42. Which of the following were among the activities enslaved people were forbidden from doing under the slave codes of Southern states?', a: 'Hold property, Carry firearms, Strike a white person, even in self-defense'},
+      {q: '43. White Southern farmers who held few or no enslaved people were known as', a: 'Plain folk'},
+      {q: '44. On large plantations, slaveholders would employ ______ - enslaved people who acted as foremen.', a: 'Head drivers'},
+      {q: '45. Cotton, sugar, and tobacco plantations in the antebellum South employed the ______ system, which divided enslaved people into groups directed by an overseer.', a: 'Gang'},
+      {q: '46. In 1850, approximately how many white Southerners, known derogatorily as \"poor white trash,\" were truly destitute and marginalized in white society?', a: '500,000'},
+      {q: '47. Which of the following best describes the position of enslaved women in the antebellum South?', a: 'They often were separated from their husbands and fathers.'},
+      {q: '48. The relationship of slaveholders and enslaved people on medium and large Southern plantations was', a: 'Not as intimate as on small farms.'},
+      {q: '49. The most common method of assigning enslaved laborers on rice plantations in the antebellum South was the ______ system.', a: 'Task'},
+      {q: '50. Why would slaveholders in the antebellum South attempt to protect the health of enslaved people?', a: 'Enslaved people represented an economic investment that slaveholders could not afford to lose.'},
+      {q: '51. What is one reason enslaved women often held additional authority in their families under the plantation system?', a: 'They acted as single parents when their husbands were sold to other plantations.'},
+      {q: '52. Which of the following advantages did enslaved people who labored as house servants often have?', a: 'Less physical labor, Access to more food'},
+      {q: '53. Urban enslaved people in the antebellum South often had more freedom than rural enslaved people because urban enslaved people', a: 'Were often hired out to work as common laborers.'},
+      {q: '54. By the start of the Civil War, approximately how many free African Americans were living in the South?', a: '250,000'},
+      {q: '55. What social effects did slavery have on Southerners in the antebellum South?', a: 'Black Southerners developed a culture different from that of white Southerners. It created an inviolable racial barrier between white and black Southerners.'},
+      {q: '56. Before revisions were made to state laws in the 1830s, enslaved people could be set free by', a: 'The slaveholder\'s will.'},
+      {q: '57. Which of the following was not a reason that Southern states\' laws governing slavery became more rigid in the 1830s?', a: 'White Southerners were afraid that the number of enslaved people in the region was becoming unmanageable.'},
+      {q: '58. By the mid-nineteenth century, how common was slavery in the Western world?', a: 'Apart from the southern United States, it existed only in Brazil, Cuba, and Puerto Rico.'},
+      {q: '59. Which of the following accurately describes the domestic slave trade?', a: 'It was a necessity for perpetuating the system. Enslaved people were often transported to domestic auctions on foot and in shackles.'},
+      {q: '60. Which of the following was the most likely way that enslaved people could earn money to buy their freedom before the Civil War?', a: 'Marketing a skill to make additional money.'},
+      {q: '61. How did the type of crops grown in the American South and the Caribbean affect the health and treatment of enslaved people?', a: 'Caribbean crops were far more labor intensive than American crops.'},
+      {q: '62. Why did the number of enslaved people living in Southern cities decline as cities grew?', a: 'Urban slaveholders sold off enslaved men because they feared insurrections.'},
+      {q: '63. How did new slave laws of the 1830s affect enslaved people and free African Americans in the South?', a: 'They forbade free African Americans from entering the Southern states. They prevented slaveholders from setting enslaved people free in their wills. They made free African Americans less likely to try to interact with enslaved people.'},
+      {q: '64. How were most enslaved people transferred from one part of the South to another?', a: 'Professional slave traders transported enslaved people to central markets by ocean steamers or on foot.'},
+      {q: '65. Though an 1808 federal law prohibited international slave trade, enslaved people continued to be smuggled into the country as late as the', a: '1850s.'},
+      {q: '66. The dominant response of African Americans to slavery in the antebellum South typically included', a: 'Resisting through peaceful means, Adapting to expectations of white society'},
+      {q: '67. Which of the following was true about the treatment of enslaved people in the Caribbean in the nineteenth century?', a: 'Because it was easy to replenish the labor supply, enslaved people in the Caribbean were often overworked, sometimes to death.'},
+      {q: '68. Which of the following were major hazards to runaway enslaved people?', a: 'Unfamiliar geography, Use of bloodhounds, \"Slave patrols\" asking for travel permits'},
+      {q: '69. The only successful large-scale slave uprising in the antebellum South was led by ______, a preacher who led a rebellion in Virginia.', a: 'Nat Turner'},
+      {q: '70. The most widespread method enslaved people in the antebellum South used in order to defy their slaveholders was', a: 'Everyday forms of resistance, such as running away.'},
+      {q: '71. The common language developed by enslaved people in the South is known as', a: 'Pidgin'},
+      {q: '72. Slave religion in the antebellum South was primarily a form of', a: 'Christianity'},
+      {q: '73. By fostering ______, or a sense of kindly protection and security for enslaved people, slaveholders in the antebellum South reduced resistance to slavery.', a: 'Paternalism'}
+    ];
 
-<script>
-const qas = [
-  { q: "What was the most important economic activity in the South between 1800 and the time of Civil War?", a: "Cultivating cotton" },
-  { q: "A depression in _____ prices between the 1820s and 1850s led many farmers to switch to other crops.", a: "Tobacco" },
-  { q: "Which of the following best explains why sugar did not become a staple crop in the South?", a: "Competition with Caribbean farmers, backbreaking labor, and long growth time." },
-  { q: "Which of the following is an advantage that short-staple cotton has over other cotton varieties?", a: "It can be grown in a variety of climates and soils." },
-  { q: "By 1861, cotton exports were bringing nearly $______ million into the United States each year.", a: "200" },
-  { q: "How did the shift of enslaved people to the cotton states affect planters in the upper South?", a: "They began selling enslaved people to cotton plantations to compensate for their crops' decline in value." },
-  { q: "Why did American tobacco cultivation move westward in the 1830s?", a: "Tobacco farming had exhausted the land, so farmers had to switch to other crops." },
-  { q: "Which of the following best describes the relationship between agriculture and business in the South during the mid-19th century?", a: "Most successful businesses were related to the needs of plantation owners." },
-  { q: "Which of the following best explains why rice did not become a staple crop of the southern economy?", a: "Rice fields require extensive irrigation." },
-  { q: "True or false: The South was economically dependent on the North because the North provided the raw materials that southerners used to manufacture products.", a: "False" },
-  { q: "The rapid growth of the American ______ industry during the first half of the nineteenth century drove demand for short-staple cotton.", a: "Textile" },
-  { q: "Before the Civil War, the principal means of transporting goods in the South was by", a: "Water" },
-  { q: "Which of the following best describes the growth of the cotton economy in the South?", a: "Erratic" },
-  { q: "Which of the following best describes why wealthy Southerners invested little capital in manufacturing?", a: "Wealthy Southerners had much of their capital tied up in their land." },
-  { q: "Brokers who worked to find buyers for planters' cotton and other crops in the South during the mid-19th century also regularly served as", a: "Bankers, providing loans to farmers during dry spells or when crop prices were low." },
-  { q: "Many white Southerners thought of themselves as '______,' or people who were more concerned with a refined and gracious lifestyle than northerners.", a: "Cavaliers" },
-];
+    function renderList(data) {
+      const list = document.getElementById('qaList');
+      list.innerHTML = '';
+      data.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'qa-container';
+        div.innerHTML = `<div class='question'>${item.q}</div><div class='answer'>${item.a}</div>`;
+        list.appendChild(div);
+      });
+    }
 
-const list = document.getElementById('qaList');
-function renderList(items) {
-  list.innerHTML = items.map(i => `
-    <div class="qa">
-      <div class="question">Q: ${i.q}</div>
-      <div class="answer">A: ${i.a}</div>
-    </div>
-  `).join('');
-}
-renderList(qas);
+    function searchQuestions() {
+      const query = document.getElementById('searchBox').value.toLowerCase();
+      const filtered = qaData.filter(item => item.q.toLowerCase().includes(query) || item.a.toLowerCase().includes(query));
+      renderList(filtered);
+    }
 
-document.getElementById('searchBar').addEventListener('input', (e) => {
-  const val = e.target.value.toLowerCase();
-  const filtered = qas.filter(i => i.q.toLowerCase().includes(val) || i.a.toLowerCase().includes(val));
-  renderList(filtered);
-});
-</script>
-
+    renderList(qaData);
+  </script>
 </body>
 </html>
