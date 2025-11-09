@@ -1,1 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HTML Chess</title>
+  <style>
+    body {
+      background: #111;
+      color: white;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      flex-direction: column;
+    }
+    #chessboard {
+      display: grid;
+      grid-template-columns: repeat(8, 80px);
+      grid-template-rows: repeat(8, 80px);
+      border: 5px solid #333;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .square {
+      width: 80px;
+      height: 80px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 40px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .light {
+      background-color: #f0d9b5;
+    }
+    .dark {
+      background-color: #b58863;
+    }
+    button {
+      margin-top: 20px;
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <h1>♟ HTML Chess ♟</h1>
+  <div id="chessboard"></div>
+  <button onclick="resetBoard()">Restart Game</button>
 
+  <script>
+    const board = document.getElementById('chessboard');
+    const pieces = {
+      white: {
+        king: '♔', queen: '♕', rook: '♖', bishop: '♗', knight: '♘', pawn: '♙'
+      },
+      black: {
+        king: '♚', queen: '♛', rook: '♜', bishop: '♝', knight: '♞', pawn: '♟'
+      }
+    };
+
+    let squares = [];
+    let selectedSquare = null;
+
+    function createBoard() {
+      board.innerHTML = '';
+      squares = [];
+      for (let row = 0; row < 8; row++) {
+        for (let col = 0; col < 8; col++) {
+          const square = document.createElement('div');
+          square.classList.add('square');
+          if ((row + col) % 2 === 0) square.classList.add('light');
+          else square.classList.add('dark');
+          square.dataset.row = row;
+          square.dataset.col = col;
+          square.addEventListener('click', onSquareClick);
+          board.appendChild(square);
+          squares.push(square);
+        }
+      }
+      resetBoard();
+    }
+
+    function resetBoard() {
+      const layout = [
+        ['♜','♞','♝','♛','♚','♝','♞','♜'],
+        ['♟','♟','♟','♟','♟','♟','♟','♟'],
+        ['','','','','','','',''],
+        ['','','','','','','',''],
+        ['','','','','','','',''],
+        ['','','','','','','',''],
+        ['♙','♙','♙','♙','♙','♙','♙','♙'],
+        ['♖','♘','♗','♕','♔','♗','♘','♖']
+      ];
+      squares.forEach((sq, index) => {
+        const row = Math.floor(index / 8);
+        const col = index % 8;
+        sq.textContent = layout[row][col];
+      });
+      selectedSquare = null;
+    }
+
+    function onSquareClick(e) {
+      const clicked = e.target;
+      if (!selectedSquare) {
+        if (clicked.textContent.trim() !== '') {
+          selectedSquare = clicked;
+          clicked.style.outline = '3px solid yellow';
+        }
+      } else {
+        // Move piece
+        if (clicked !== selectedSquare) {
+          clicked.textContent = selectedSquare.textContent;
+          selectedSquare.textContent = '';
+        }
+        selectedSquare.style.outline = 'none';
+        selectedSquare = null;
+      }
+    }
+
+    createBoard();
+  </script>
+</body>
+</html>
