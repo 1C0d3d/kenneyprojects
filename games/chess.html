@@ -261,16 +261,18 @@ function getLegalMoves(row, col) {
     if (r>=0 && c>=0 && r<8 && c<8) moves.push({row:r,col:c});
   };
 
-  const lower = piece.toLowerCase();
-  if (lower === '♙') {
-    if (!board[row-1][col]) addMove(row-1,col);
-    if (isBlack(board[row-1][col-1])) addMove(row-1,col-1);
-    if (isBlack(board[row-1][col+1])) addMove(row-1,col+1);
-  }
-  else if (lower === '♟') {
-    if (!board[row+1][col]) addMove(row+1,col);
-    if (isWhite(board[row+1][col-1])) addMove(row+1,col-1);
-    if (isWhite(board[row+1][col+1])) addMove(row+1,col+1);
+if (lower === '♙') { // White pawn
+  // Move forward if empty
+  if (!board[row - 1][col]) addMove(row - 1, col);
+  // Capture diagonally if enemy present
+  if (isBlack(board[row - 1]?.[col - 1])) addMove(row - 1, col - 1);
+  if (isBlack(board[row - 1]?.[col + 1])) addMove(row - 1, col + 1);
+}
+else if (lower === '♟') { // Black pawn
+  if (!board[row + 1][col]) addMove(row + 1, col);
+  if (isWhite(board[row + 1]?.[col - 1])) addMove(row + 1, col - 1);
+  if (isWhite(board[row + 1]?.[col + 1])) addMove(row + 1, col + 1);
+}
   }
   else if (['♖','♜'].includes(piece)) {
     for (let [dr,dc] of directions.rook) {
