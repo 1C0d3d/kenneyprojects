@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blackjack on KenneyProjects</title>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: #0b0b0b;
+      color: white;
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+    canvas {
+      background: #115511;
+      border: 3px solid #333;
+      border-radius: 10px;
+      display: block;
+      margin: 0 auto;
+      width: 100vw;
+      height: 80vh;
+    }
+    button {
+      background: #007bff;
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      margin: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: all 0.3s ease;
+    }
+    button:hover {
+      background: #0069d9;
+    }
+    #backBtn {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      background: #444;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 16px;
+    }
+    #backArrow {
+      display: none;
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      background: #444;
+      border-radius: 50%;
+      width: 45px;
+      height: 45px;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      cursor: pointer;
+    }
+    @media (max-width: 600px) {
+      #backBtn {
+        display: none;
+      }
+      #backArrow {
+        display: flex;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>💰 Blackjack 💰</h1>
+  <canvas id="gameCanvas"></canvas>
+  <div>
+    <button id="hitBtn">Hit</button>
+    <button id="standBtn">Stand</button>
+    <button id="restartRoundBtn">Restart Round</button>
+    <button id="resetMoneyBtn">Reset Progress</button>
+  </div>
+
+  <button id="backBtn" onclick="window.location.href='games.html'">← Back to Games</button>
+  <div id="backArrow">⬅️</div>
+
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    const hitBtn = document.getElementById('hitBtn');
+    const standBtn = document.getElementById('standBtn');
+    const restartRoundBtn = document.getElementById('restartRoundBtn');
+    const resetMoneyBtn = document.getElementById('resetMoneyBtn');
+    const backArrow = document.getElementById('backArrow');
+
+    const suits = ['♠', '♥', '♦', '♣'];
+    const values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+
+    let deck = [];
+    let playerHand = [];
+    let dealerHand = [];
+    let gameOver = false;
+    let playerMoney = parseInt(localStorage.getItem('blackjackMoney')) || 1000;
+    const betAmount = 100;
+
+    function saveMoney() {
+      localStorage.setItem('blackjackMoney', playerMoney);
+    }
+
+    function createDeck() {
+      deck = [];
+      for (let suit of suits) {
+        for (let value of values) {
+          deck.push({ value, suit });
+        }
+      }
+      deck.sort(() => Math.random() - 0.5);
+    }
+
+    function getCardValue(card) {
+      if (['J', 'Q', 'K'].includes(card.value)) return 10;
+      if (card.value === 'A') return 11;
+      return parseInt(card.value);
+    }
+
+    function getHandValue(hand) {
+      let value = 0;
+      let aces = 0;
+      for (let card of hand) {
+        value += getCardValue(card);
+        if (card.value === 'A') aces++;
+      }
+      while (value > 21 && aces > 0) {
+        value -= 10;
+        aces--;
+      }
+      return value;
+    }
+
+    function drawCard(hand) {
+      const card = deck.pop();
+      hand.push(card);
+    }
+
+    function drawText(text, y, size = 24) {
+      ctx.font = `${size}px Arial`;
+      ctx.fillStyle = 'white';
+      ctx.fillText(text, canvas.width / 2 - ctx.measureText(text).width / 2, y);
+    }
+
+    function drawCards(hand, y) {
+      const startX = canvas.width / 2 - (hand.length * 40);
+      hand.forEach((card, i) => {
+        const x = startX + i * 80;
+        ctx.fillStyle = '#fff';
+        ctx.fillRect(x - 25, y - 40, 50, 70);
+        ctx.fillStyle = (card.suit === '♥' || card.suit === '♦') ? 'red' : 'black';
+        ctx.font = '20px Arial';
+        ctx.fillText(`${card.value}${card.suit}`, x - 15, y);
+      });
+    }
+
+    function drawScreen() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawText(`Money: $${playerMoney}`, 40, 22);
+      drawText(`Dealer's Hand`, 100, 22);
+      drawCards(dealerHand, 140);
+      drawText(`Player's Hand`, canvas.height * 0.6, 22);
+      drawCards(playerHand, canvas.height * 0.65);
+      drawText(`Player Score: ${getHandValue(playerHand)}`, canvas.height * 0.8, 20);
+
+      if (gameOver) {
+        const playerValue = getHandValue(playerHand);
+        const dealerValue = getHandValue(dealerHand);
+        let result = '';
+
+        if (playerValue > 21) {
+          result = 'You busted! Dealer wins!';
+          playerMoney -= betAmount;
+        } else if (dealerValue > 21) {
+          result = 'Dealer busted! You win!';
+          playerMoney += betAmount;
+        } else if (playerValue === dealerValue) {
+          result = "It's a tie!";
+        } else if (playerValue > dealerValue) {
+          result = 'You win!';
+          playerMoney += betAmount;
+        } else {
+          result = 'Dealer wins!';
+          playerMoney -= betAmount;
+        }
+
+        saveMoney();
+        drawText(result, canvas.height * 0.9, 28);
+      }
+    }
+
+    function startGame() {
+      createDeck();
+      playerHand = [];
+      dealerHand = [];
+      drawCard(playerHand);
+      drawCard(dealerHand);
+      drawCard(playerHand);
+      drawCard(dealerHand);
+      gameOver = false;
+      resizeCanvas();
+      drawScreen();
+    }
+
+    function playerHit() {
+      if (gameOver) return;
+      drawCard(playerHand);
+      if (getHandValue(playerHand) > 21) endGame();
+      drawScreen();
+    }
+
+    function dealerPlay() {
+      if (gameOver) return;
+      while (getHandValue(dealerHand) < 17) {
+        drawCard(dealerHand);
+      }
+      endGame();
+    }
+
+    function endGame() {
+      gameOver = true;
+      drawScreen();
+    }
+
+    function resetMoney() {
+      playerMoney = 1000;
+      saveMoney();
+      startGame();
+    }
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight * 0.8;
+      drawScreen();
+    }
+
+    backArrow.addEventListener('click', () => {
+      window.location.href = 'games.html';
+    });
+
+    hitBtn.addEventListener('click', playerHit);
+    standBtn.addEventListener('click', dealerPlay);
+    restartRoundBtn.addEventListener('click', startGame);
+    resetMoneyBtn.addEventListener('click', resetMoney);
+    window.addEventListener('resize', resizeCanvas);
+
+    startGame();
+  </script>
+</body>
+</html>
