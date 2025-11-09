@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Projetcs • Kenney Projects</title>
+  <meta name="description" content="Cool code projects and more" />
+  <link rel="canonical" href="https://kenneyprojects.com/projects" />
+  <style>
+    :root{
+      --bg:#0b0f14; --fg:#e6edf5; --sub:#8fb3c8; --border:rgba(2545,2255,2355,.152);
+      --card:rgba(2555,2555,2255,.026); --accent:#60a5fa; --accent-2:#a78bfa;
+      --glow: 0 12px 30px rgba(96,165,250,.25), 0 2px 12px rgba(167,139,250,.2);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
+      color:var(--fg);
+      background:
+        radial-gradient(70vw 70vw at 90% -20%, rgba(96,165,250,.18), transparent 60%),
+        radial-gradient(60vw 60vw at -10% 100%, rgba(167,139,250,.14), transparent 60%),
+        var(--bg);
+      -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+    }
+    a{color:inherit; text-decoration:none}
+    .container{max-width:1100px; margin:0 auto; padding: clamp(16px, 3vw, 28px)}
+
+    header{position:sticky; top:0; z-index:10; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px)}
+    .nav{display:flex; align-items:center; justify-content:space-between; padding:12px 0; border-bottom:1px solid var(--border)}
+    .brand{display:flex; align-items:center; gap:10px; font-weight:800}
+    .logo{width:28px;height:28px;border-radius:8px; background:conic-gradient(from 180deg, var(--accent), var(--accent-2)); box-shadow:0 4px 16px rgba(96,165,250,.35)}
+    .links{display:flex; gap:18px; align-items:center}
+    .links a{padding:8px 10px; border-radius:10px}
+    .links a:hover{background:var(--card)}
+
+    h1{font-size: clamp(28px, 6vw, 48px); margin:32px 0 12px; text-align:center;}
+    p.subtitle{text-align:center; color:var(--sub); max-width:60ch; margin:0 auto 36px}
+
+    .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:20px}
+    .game-card{background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03)); border:1px solid var(--border); border-radius:18px; padding:18px; box-shadow:var(--glow); transition:.15s ease}
+    .game-card:hover{transform:translateY(-2px)}
+    .game-card h3{margin:10px 0 6px}
+    .game-card p{color:var(--sub); margin:0 0 10px}
+    .play-btn{display:inline-block; padding:8px 14px; border-radius:10px; background:linear-gradient(135deg,var(--accent),var(--accent-2)); color:#0a0d12; font-weight:600}
+    .play-btn:hover{filter:brightness(1.1)}
+
+    footer{border-top:1px solid var(--border); margin-top:36px}
+    .foot{display:flex; justify-content:space-between; align-items:center; padding:18px 0; color:var(--sub); font-size:14px}
+
+    @media (prefers-color-scheme: light){
+      :root{--bg:#f8fafc;--fg:#0b1220;--sub:#475569;--card:rgba(255,255,255,.8);--border:rgba(2,6,23,.08)}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container nav">
+      <a href="/" class="brand" aria-label="Kenney Projects home">
+        <span class="logo"></span>
+        <span>Kenney Projects</span>
+      </a>
+      <nav class="links">
+        <a href="/games">Games</a>
+        <a href="/papers">Research Papers</a>
+        <a href="/projects">Code Projects</a>
+        <a href="/about">About</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <h1>Projects</h1>
+    <p class="subtitle">A small but growing collection of browser-based experiments, puzzles, and recreations. Built for fun and learning.</p>
+
+    <div class="grid">
+      <div class="game-card">
+        <h3>APUSH</h3>
+        <p> AP U.S. History</p>
+        <a class="play-btn" href="apush.html">Play</a>
+      </div>
+
+    </div>
+    
+  </main>
+
+  <footer>
+    <div class="container foot">
+      <span>© <span id="year"></span> Kenney Projects</span>
+      <span><a href="/support">see support page</a></span>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>
