@@ -1,3 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Arcade Tetris</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: #000;
+    color: #fff;
+    font-family: 'Courier New', monospace;
+    height: 100%;
+    text-align: center;
+  }
+
+  #game {
+    display: block;
+    margin: auto;
+    background: #111;
+    outline: 4px solid #555;
+  }
+
+  #hud {
+    margin-top: 10px;
+    font-size: 20px;
+  }
+
+  #backBtn {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background: #333;
+    color: #fff;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+  #backArrow {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background: #333;
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    color: white;
+    cursor: pointer;
+  }
+
+  @media (max-width: 600px) {
+    #backBtn { display: none; }
+    #backArrow { display: flex; }
+  }
+
+  #gameOver {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #f00;
+    font-size: 40px;
+    font-weight: bold;
+    display: none;
+  }
+</style>
+</head>
+<body>
+<h1>🕹️ Arcade Tetris 🧱</h1>
+<div id="hud">
+  <span id="score">Score: 0</span> |
+  <span id="level">Level: 1</span> |
+  <span id="best">Best: 0</span>
+</div>
+<canvas id="game" width="300" height="600" tabindex="0"></canvas>
+<div id="gameOver">GAME OVER<br><small>Press Enter to Restart</small></div>
+<button id="backBtn" onclick="window.location.href='https://www.kenneyprojects.com/games'">← Back to Games</button>
+<div id="backArrow">⬅️</div>
+
 <script>
 (() => {
   const canvas = document.getElementById('game');
@@ -192,3 +279,5 @@
   update();
 })();
 </script>
+</body>
+</html>
