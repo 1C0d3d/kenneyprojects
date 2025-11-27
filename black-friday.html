@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Black Friday Deals 2025</title>
+
+<style>
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #0d0d0d;
+        color: white;
+    }
+
+    header {
+        background: linear-gradient(90deg, #ff003c, #ff006e);
+        padding: 25px;
+        text-align: center;
+        font-size: 32px;
+        font-weight: bold;
+    }
+
+    #searchBar {
+        width: 90%;
+        margin: 20px auto;
+        display: block;
+        padding: 12px;
+        font-size: 18px;
+        border: none;
+        border-radius: 8px;
+    }
+
+    .categories {
+        display: flex;
+        overflow-x: auto;
+        gap: 12px;
+        padding: 15px;
+        background: #1a1a1a;
+    }
+
+    .cat-btn {
+        padding: 10px 20px;
+        background: #333;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: .2s;
+        white-space: nowrap;
+    }
+
+    .cat-btn:hover, .active {
+        background: #ff006e;
+    }
+
+    .deal-grid {
+        padding: 20px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 20px;
+    }
+
+    .deal-card {
+        background: #1c1c1c;
+        padding: 15px;
+        border-radius: 12px;
+        transition: .3s;
+        cursor: pointer;
+        border: 1px solid #333;
+    }
+
+    .deal-card:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 18px #ff006e;
+    }
+
+    .deal-card img {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        border-radius: 10px;
+    }
+
+    .price {
+        color: #00ff90;
+        font-size: 18px;
+        font-weight: bold;
+        margin-top: 6px;
+    }
+
+    .tag {
+        background: #ff003c;
+        padding: 4px 10px;
+        border-radius: 6px;
+        display: inline-block;
+        font-size: 13px;
+        margin-bottom: 8px;
+    }
+
+    /* Modal */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 10;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.85);
+        backdrop-filter: blur(4px);
+    }
+
+    .modal-content {
+        background: #1f1f1f;
+        margin: 8% auto;
+        padding: 20px;
+        width: 90%;
+        max-width: 450px;
+        border-radius: 12px;
+        text-align: center;
+        animation: pop .25s ease-out;
+    }
+
+    @keyframes pop {
+        0% { transform: scale(0.8); opacity: 0; }
+        100% { transform: scale(1); opacity: 1; }
+    }
+
+    .modal-content img {
+        width: 100%;
+        border-radius: 12px;
+        margin-bottom: 15px;
+    }
+
+    .close {
+        float: right;
+        font-size: 25px;
+        cursor: pointer;
+        color: #ff006e;
+    }
+
+    .buy-btn {
+        display: inline-block;
+        margin-top: 12px;
+        padding: 12px 22px;
+        background: #ff006e;
+        color: white;
+        font-size: 17px;
+        border-radius: 10px;
+        text-decoration: none;
+        transition: .2s;
+    }
+
+    .buy-btn:hover {
+        background: #ff338c;
+    }
+</style>
+</head>
+<body>
+
+<header>🔥 Black Friday Deals 2025 🔥</header>
+
+<input type="text" id="searchBar" placeholder="Search deals...">
+
+<div class="categories">
+    <div class="cat-btn active" data-category="all">All Deals</div>
+    <div class="cat-btn" data-category="tv">TVs</div>
+    <div class="cat-btn" data-category="earbuds">Earbuds</div>
+    <div class="cat-btn" data-category="gaming">Gaming</div>
+    <div class="cat-btn" data-category="laptops">Laptops</div>
+    <div class="cat-btn" data-category="smartwatch">Smartwatches</div>
+</div>
+
+<div class="deal-grid" id="dealGrid"></div>
+
+<!-- Modal -->
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <span class="close" id="modalClose">&times;</span>
+        <img id="modalImg" src="">
+        <h2 id="modalTitle"></h2>
+        <p id="modalPrice" style="color:#00ff90;font-size:20px;font-weight:bold"></p>
+        <p id="modalDesc" style="line-height:1.4;color:#ddd"></p>
+
+        <a id="modalLink" class="buy-btn" href="#" target="_blank">Buy Now</a>
+    </div>
+</div>
+
+<script>
+const deals = [
+    {
+        category: "tv",
+        tag: "Best Overall Deal",
+        title: "Samsung 65\" S84F OLED TV",
+        price: "$899.99",
+        img: "https://pisces.bbystatic.com/image2/BestBuy_US/images/products/6599/6599139_sd.jpg",
+        link: "https://www.bestbuy.com/site/samsung-65-class-s84f-oled-4k-smart-tv/6599139.p",
+        desc: "A 65-inch Samsung OLED with deep blacks, AI upscaling, and a massive $500 discount."
+    },
+    {
+        category: "earbuds",
+        tag: "Best Budget",
+        title: "Apple AirPods 4",
+        price: "$79.99",
+        img: "https://pisces.bbystatic.com/image2/BestBuy_US/images/products/6824/6824412_sd.jpg",
+        link: "https://www.bestbuy.com/site/apple-airpods-4/6824412.p",
+        desc: "The newest AirPods with improved sound, comfort, and insane holiday pricing."
+    },
+    {
+        category: "earbuds",
+        tag: "Premium ANC",
+        title: "AirPods Pro 3",
+        price: "$219.99",
+        img: "https://m.media-amazon.com/images/I/61SUj2aKoEL._AC_SL1500_.jpg",
+        link: "https://www.amazon.com/dp/B0XXXXXXX",
+        desc: "Apple’s top-tier noise canceling earbuds with upgraded ANC and spatial audio."
+    },
+    {
+        category: "gaming",
+        tag: "Console Deal",
+        title: "PlayStation 5 Slim",
+        price: "$449.00",
+        img: "https://pisces.bbystatic.com/image2/BestBuy_US/images/products/6570/6570600_sd.jpg",
+        link: "https://www.bestbuy.com/site/playstation-5-slim-console/6570600.p",
+        desc: "The new PS5 Slim model with a sleek form factor and rare Black Friday discount."
+    },
+    {
+        category: "laptops",
+        tag: "Laptop Deal",
+        title: "MacBook Air M4",
+        price: "$749.00",
+        img: "https://pisces.bbystatic.com/image2/BestBuy_US/images/products/6553/6553995_sd.jpg",
+        link: "https://www.bestbuy.com/site/apple-macbook-air-13-m4/6553995.p",
+        desc: "Apple’s latest ultra-portable laptop featuring the blazing-fast M4 chip."
+    },
+    {
+        category: "smartwatch",
+        tag: "Fitness + iPhone",
+        title: "Apple Watch SE 3",
+        price: "$199.00",
+        img: "https://m.media-amazon.com/images/I/71fqHBByO7L._AC_SL1500_.jpg",
+        link: "https://www.amazon.com/dp/B0XXXXXXX",
+        desc: "Perfect smartwatch for fitness, notifications, and iPhone pairing."
+    }
+];
+
+function loadDeals(filter = "all", search = "") {
+    const grid = document.getElementById("dealGrid");
+    grid.innerHTML = "";
+
+    deals
+        .filter(d =>
+            (filter === "all" || d.category === filter) &&
+            d.title.toLowerCase().includes(search.toLowerCase())
+        )
+        .forEach((d, index) => {
+            grid.innerHTML += `
+                <div class="deal-card" onclick="openModal(${index})">
+                    <span class="tag">${d.tag}</span>
+                    <img src="${d.img}">
+                    <h3>${d.title}</h3>
+                    <div class="price">${d.price}</div>
+                </div>
+            `;
+        });
+}
+
+document.querySelectorAll(".cat-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+        document.querySelector(".active").classList.remove("active");
+        btn.classList.add("active");
+        loadDeals(btn.dataset.category, document.getElementById("searchBar").value);
+    });
+});
+
+document.getElementById("searchBar").addEventListener("input", e => {
+    const filter = document.querySelector(".active").dataset.category;
+    loadDeals(filter, e.target.value);
+});
+
+function openModal(i) {
+    const d = deals[i];
+    document.getElementById("modalImg").src = d.img;
+    document.getElementById("modalTitle").innerText = d.title;
+    document.getElementById("modalPrice").innerText = d.price;
+    document.getElementById("modalDesc").innerText = d.desc;
+    document.getElementById("modalLink").href = d.link;
+    document.getElementById("modal").style.display = "block";
+}
+
+document.getElementById("modalClose").onclick = () =>
+    document.getElementById("modal").style.display = "none";
+
+window.onclick = e => {
+    if (e.target === document.getElementById("modal")) {
+        document.getElementById("modal").style.display = "none";
+    }
+};
+
+loadDeals();
+</script>
+
+</body>
+</html>
