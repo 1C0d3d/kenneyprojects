@@ -9,7 +9,7 @@
     body {
         margin: 0;
         font-family: Arial, sans-serif;
-        background: #0d0d0d;
+        background: #050505;
         color: white;
     }
 
@@ -17,38 +17,58 @@
         background: linear-gradient(90deg, #ff003c, #ff006e);
         padding: 25px;
         text-align: center;
-        font-size: 32px;
+        font-size: 28px;
         font-weight: bold;
     }
 
+    .top-bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 10px 20px 0 20px;
+        align-items: center;
+        justify-content: center;
+    }
+
     #searchBar {
-        width: 90%;
-        margin: 20px auto;
-        display: block;
-        padding: 12px;
-        font-size: 18px;
-        border: none;
+        flex: 1 1 220px;
+        max-width: 400px;
+        padding: 10px;
+        font-size: 16px;
         border-radius: 8px;
+        border: none;
+    }
+
+    #sortSelect {
+        flex: 0 0 180px;
+        padding: 10px;
+        font-size: 16px;
+        border-radius: 8px;
+        border: none;
+        background: #1a1a1a;
+        color: white;
     }
 
     .categories {
         display: flex;
         overflow-x: auto;
-        gap: 12px;
-        padding: 15px;
-        background: #1a1a1a;
+        gap: 10px;
+        padding: 12px 20px 16px 20px;
+        background: #111;
     }
 
     .cat-btn {
-        padding: 10px 20px;
+        padding: 8px 18px;
         background: #333;
         border-radius: 20px;
         cursor: pointer;
-        transition: .2s;
+        transition: .15s;
         white-space: nowrap;
+        font-size: 14px;
     }
 
-    .cat-btn:hover, .active {
+    .cat-btn:hover,
+    .cat-btn.active {
         background: #ff006e;
     }
 
@@ -56,44 +76,51 @@
         padding: 20px;
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-        gap: 20px;
+        gap: 18px;
     }
 
     .deal-card {
-        background: #1c1c1c;
-        padding: 15px;
+        background: #181818;
+        padding: 14px;
         border-radius: 12px;
-        transition: .3s;
         cursor: pointer;
         border: 1px solid #333;
+        transition: transform .2s, box-shadow .2s, border-color .2s;
     }
 
     .deal-card:hover {
-        transform: scale(1.05);
-        box-shadow: 0 0 18px #ff006e;
+        transform: translateY(-3px);
+        box-shadow: 0 0 18px rgba(255, 0, 110, 0.6);
+        border-color: #ff006e;
     }
 
     .deal-card img {
         width: 100%;
-        height: 180px;
+        height: 170px;
         object-fit: cover;
         border-radius: 10px;
+        margin-bottom: 10px;
+    }
+
+    .tag {
+        background: #ff003c;
+        padding: 4px 9px;
+        border-radius: 5px;
+        font-size: 12px;
+        display: inline-block;
+        margin-bottom: 6px;
+    }
+
+    h3 {
+        font-size: 16px;
+        margin: 5px 0 3px 0;
     }
 
     .price {
         color: #00ff90;
         font-size: 18px;
         font-weight: bold;
-        margin-top: 6px;
-    }
-
-    .tag {
-        background: #ff003c;
-        padding: 4px 10px;
-        border-radius: 6px;
-        display: inline-block;
-        font-size: 13px;
-        margin-bottom: 8px;
+        margin-top: 4px;
     }
 
     /* Modal */
@@ -101,57 +128,64 @@
         display: none;
         position: fixed;
         z-index: 10;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
+        inset: 0;
         background: rgba(0,0,0,0.85);
         backdrop-filter: blur(4px);
     }
 
     .modal-content {
         background: #1f1f1f;
-        margin: 8% auto;
-        padding: 20px;
-        width: 90%;
-        max-width: 450px;
-        border-radius: 12px;
+        margin: 7% auto;
+        padding: 20px 18px 24px 18px;
+        width: 92%;
+        max-width: 480px;
+        border-radius: 14px;
         text-align: center;
-        animation: pop .25s ease-out;
+        animation: pop .2s ease-out;
+        position: relative;
     }
 
     @keyframes pop {
-        0% { transform: scale(0.8); opacity: 0; }
+        0% { transform: scale(0.85); opacity: 0; }
         100% { transform: scale(1); opacity: 1; }
     }
 
     .modal-content img {
         width: 100%;
         border-radius: 12px;
-        margin-bottom: 15px;
+        margin-bottom: 14px;
     }
 
     .close {
-        float: right;
-        font-size: 25px;
+        position: absolute;
+        right: 14px;
+        top: 8px;
+        font-size: 26px;
         cursor: pointer;
-        color: #ff006e;
+        color: #ff4f8c;
     }
 
     .buy-btn {
         display: inline-block;
         margin-top: 12px;
-        padding: 12px 22px;
+        padding: 11px 22px;
         background: #ff006e;
         color: white;
-        font-size: 17px;
+        font-size: 16px;
         border-radius: 10px;
         text-decoration: none;
-        transition: .2s;
+        transition: .15s;
     }
 
     .buy-btn:hover {
-        background: #ff338c;
+        background: #ff3b8a;
+    }
+
+    @media (max-width: 600px) {
+        header {
+            font-size: 22px;
+            padding: 18px;
+        }
     }
 </style>
 </head>
@@ -159,15 +193,23 @@
 
 <header>🔥 Black Friday Deals 2025 🔥</header>
 
-<input type="text" id="searchBar" placeholder="Search deals...">
+<div class="top-bar">
+    <input type="text" id="searchBar" placeholder="Search deals (e.g. PS5, OLED, AirPods)...">
+    <select id="sortSelect">
+        <option value="featured">Sort: Featured</option>
+        <option value="low">Price: Low to High</option>
+        <option value="high">Price: High to Low</option>
+    </select>
+</div>
 
 <div class="categories">
     <div class="cat-btn active" data-category="all">All Deals</div>
     <div class="cat-btn" data-category="tv">TVs</div>
-    <div class="cat-btn" data-category="earbuds">Earbuds</div>
+    <div class="cat-btn" data-category="laptop">Laptops</div>
+    <div class="cat-btn" data-category="phone">Phones</div>
     <div class="cat-btn" data-category="gaming">Gaming</div>
-    <div class="cat-btn" data-category="laptops">Laptops</div>
-    <div class="cat-btn" data-category="smartwatch">Smartwatches</div>
+    <div class="cat-btn" data-category="audio">Audio</div>
+    <div class="cat-btn" data-category="wearable">Wearables</div>
 </div>
 
 <div class="deal-grid" id="dealGrid"></div>
@@ -178,68 +220,275 @@
         <span class="close" id="modalClose">&times;</span>
         <img id="modalImg" src="">
         <h2 id="modalTitle"></h2>
-        <p id="modalPrice" style="color:#00ff90;font-size:20px;font-weight:bold"></p>
-        <p id="modalDesc" style="line-height:1.4;color:#ddd"></p>
-
-        <a id="modalLink" class="buy-btn" href="#" target="_blank">Buy Now</a>
+        <p id="modalPrice" style="color:#00ff90;font-size:20px;font-weight:bold;margin:5px 0 8px 0;"></p>
+        <p id="modalDesc" style="line-height:1.4;color:#ddd;font-size:14px;margin-bottom:10px;"></p>
+        <a id="modalLink" class="buy-btn" href="#" target="_blank" rel="noopener noreferrer">View Live Deal</a>
     </div>
 </div>
 
 <script>
+// 25 realistic products across categories
 const deals = [
+    // TVs (5)
     {
         category: "tv",
-        tag: "Best Overall Deal",
-        title: "Samsung 65\" S84F OLED TV",
-        price: "$899.99",
-        img: "https://pisces.bbystatic.com/image2/BestBuy_US/images/products/6599/6599139_sd.jpg",
-        link: "https://www.bestbuy.com/site/samsung-65-class-s84f-oled-4k-smart-tv/6599139.p",
-        desc: "A 65-inch Samsung OLED with deep blacks, AI upscaling, and a massive $500 discount."
+        tag: "OLED Value",
+        title: "LG OLED B5 65\" 4K TV",
+        price: 996.99,
+        priceText: "$996.99",
+        img: "https://via.placeholder.com/400x250?text=LG+OLED+B5+65in",
+        link: "https://www.google.com/search?q=LG+OLED+B5+65+Black+Friday+2025+deal",
+        desc: "65-inch LG OLED B5 with perfect blacks, Dolby Vision, and strong Black Friday pricing."
     },
     {
-        category: "earbuds",
-        tag: "Best Budget",
-        title: "Apple AirPods 4",
-        price: "$79.99",
-        img: "https://pisces.bbystatic.com/image2/BestBuy_US/images/products/6824/6824412_sd.jpg",
-        link: "https://www.bestbuy.com/site/apple-airpods-4/6824412.p",
-        desc: "The newest AirPods with improved sound, comfort, and insane holiday pricing."
+        category: "tv",
+        tag: "Budget 4K",
+        title: "Amazon Fire TV Omni 65\" 4K",
+        price: 449.99,
+        priceText: "$449.99",
+        img: "https://via.placeholder.com/400x250?text=Fire+TV+Omni+65in",
+        link: "https://www.google.com/search?q=Amazon+Fire+TV+Omni+65+Black+Friday+2025+deal",
+        desc: "Affordable 65-inch Fire TV with built-in Alexa and Dolby Vision support."
     },
     {
-        category: "earbuds",
-        tag: "Premium ANC",
-        title: "AirPods Pro 3",
-        price: "$219.99",
-        img: "https://m.media-amazon.com/images/I/61SUj2aKoEL._AC_SL1500_.jpg",
-        link: "https://www.amazon.com/dp/B0XXXXXXX",
-        desc: "Apple’s top-tier noise canceling earbuds with upgraded ANC and spatial audio."
+        category: "tv",
+        tag: "OLED Evo",
+        title: "LG OLED C4 65\" 4K TV",
+        price: 1296.99,
+        priceText: "$1,296.99",
+        img: "https://via.placeholder.com/400x250?text=LG+OLED+C4+65in",
+        link: "https://www.google.com/search?q=LG+OLED+C4+65+Black+Friday+2025+deal",
+        desc: "2025 LG OLED C4 with evo panel, great for movies and gaming with HDMI 2.1."
+    },
+    {
+        category: "tv",
+        tag: "QD-OLED",
+        title: "Samsung S90F 65\" QD-OLED TV",
+        price: 1398.00,
+        priceText: "$1,398.00",
+        img: "https://via.placeholder.com/400x250?text=Samsung+S90F+65in",
+        link: "https://www.google.com/search?q=Samsung+S90F+65+Black+Friday+2025+deal",
+        desc: "Samsung QD-OLED with vivid colors, 144Hz refresh, and HDMI 2.1 for consoles."
+    },
+    {
+        category: "tv",
+        tag: "Mini-LED",
+        title: "TCL QM7K 65\" 4K Mini-LED TV",
+        price: 798.00,
+        priceText: "$798.00",
+        img: "https://via.placeholder.com/400x250?text=TCL+QM7K+65in",
+        link: "https://www.google.com/search?q=TCL+QM7K+65+Black+Friday+2025+deal",
+        desc: "Bright Mini-LED TV from TCL with good gaming features and strong price drops."
+    },
+
+    // Laptops (5)
+    {
+        category: "laptop",
+        tag: "M4 Air",
+        title: "MacBook Air 13\" M4 (256GB)",
+        price: 799.00,
+        priceText: "$799.00",
+        img: "https://via.placeholder.com/400x250?text=MacBook+Air+13+M4",
+        link: "https://www.google.com/search?q=MacBook+Air+13+M4+Black+Friday+2025+deal",
+        desc: "New M4 MacBook Air 13-inch, fanless, portable, and a popular Black Friday pick."
+    },
+    {
+        category: "laptop",
+        tag: "Big Screen",
+        title: "MacBook Air 15\" M4 (256GB)",
+        price: 999.00,
+        priceText: "$999.00",
+        img: "https://via.placeholder.com/400x250?text=MacBook+Air+15+M4",
+        link: "https://www.google.com/search?q=MacBook+Air+15+M4+Black+Friday+2025+deal",
+        desc: "15-inch M4 MacBook Air, ideal for productivity and content work."
+    },
+    {
+        category: "laptop",
+        tag: "Best Value",
+        title: "MacBook Air 13\" M2 (256GB)",
+        price: 679.99,
+        priceText: "$679.99",
+        img: "https://via.placeholder.com/400x250?text=MacBook+Air+13+M2",
+        link: "https://www.google.com/search?q=MacBook+Air+13+M2+Black+Friday+2025+deal",
+        desc: "Previous-gen M2 Air, now heavily discounted but still fast enough for most tasks."
+    },
+    {
+        category: "laptop",
+        tag: "Gaming",
+        title: "ASUS TUF Gaming A15 (RTX 4060)",
+        price: 899.99,
+        priceText: "$899.99",
+        img: "https://via.placeholder.com/400x250?text=ASUS+TUF+A15",
+        link: "https://www.google.com/search?q=ASUS+TUF+Gaming+A15+RTX+4060+Black+Friday+2025+deal",
+        desc: "AMD-powered gaming laptop with RTX 4060, 144Hz display, and solid cooling."
+    },
+    {
+        category: "laptop",
+        tag: "Gaming",
+        title: "Lenovo Legion 5 (RTX 4070)",
+        price: 1099.99,
+        priceText: "$1,099.99",
+        img: "https://via.placeholder.com/400x250?text=Lenovo+Legion+5",
+        link: "https://www.google.com/search?q=Lenovo+Legion+5+RTX+4070+Black+Friday+2025+deal",
+        desc: "Legion 5 with RTX 4070, good keyboard and strong 1080p/1440p gaming performance."
+    },
+
+    // Phones (4)
+    {
+        category: "phone",
+        tag: "Flagship",
+        title: "Apple iPhone 16 (128GB)",
+        price: 699.00,
+        priceText: "$699.00",
+        img: "https://via.placeholder.com/400x250?text=iPhone+16",
+        link: "https://www.google.com/search?q=iPhone+16+Black+Friday+2025+deal",
+        desc: "Base iPhone 16 with A18 chip, strong cameras, and carrier gift-card deals."
+    },
+    {
+        category: "phone",
+        tag: "Pro Camera",
+        title: "Apple iPhone 16 Pro (128GB)",
+        price: 999.00,
+        priceText: "$999.00",
+        img: "https://via.placeholder.com/400x250?text=iPhone+16+Pro",
+        link: "https://www.google.com/search?q=iPhone+16+Pro+Black+Friday+2025+deal",
+        desc: "Pro-level triple camera, better zoom, and premium display with strong trade-in promos."
+    },
+    {
+        category: "phone",
+        tag: "Android Flagship",
+        title: "Samsung Galaxy S24 (256GB)",
+        price: 699.99,
+        priceText: "$699.99",
+        img: "https://via.placeholder.com/400x250?text=Galaxy+S24",
+        link: "https://www.google.com/search?q=Samsung+Galaxy+S24+Black+Friday+2025+deal",
+        desc: "Galaxy S24 with bright OLED, great cameras, and big carrier bill credits."
+    },
+    {
+        category: "phone",
+        tag: "Clean Android",
+        title: "Google Pixel 9 (128GB)",
+        price: 599.99,
+        priceText: "$599.99",
+        img: "https://via.placeholder.com/400x250?text=Pixel+9",
+        link: "https://www.google.com/search?q=Google+Pixel+9+Black+Friday+2025+deal",
+        desc: "Pixel 9 with Google AI features and top-tier computational photography."
+    },
+
+    // Gaming (4)
+    {
+        category: "gaming",
+        tag: "Console",
+        title: "PlayStation 5 Slim (Disc)",
+        price: 449.00,
+        priceText: "$449.00",
+        img: "https://via.placeholder.com/400x250?text=PS5+Slim+Disc",
+        link: "https://www.google.com/search?q=PlayStation+5+Slim+Disc+Black+Friday+2025+deal",
+        desc: "PS5 Slim Disc edition with up to $100 off and bundles including hit games."
     },
     {
         category: "gaming",
-        tag: "Console Deal",
-        title: "PlayStation 5 Slim",
-        price: "$449.00",
-        img: "https://pisces.bbystatic.com/image2/BestBuy_US/images/products/6570/6570600_sd.jpg",
-        link: "https://www.bestbuy.com/site/playstation-5-slim-console/6570600.p",
-        desc: "The new PS5 Slim model with a sleek form factor and rare Black Friday discount."
+        tag: "Pro 4K",
+        title: "PlayStation 5 Pro",
+        price: 649.00,
+        priceText: "$649.00",
+        img: "https://via.placeholder.com/400x250?text=PS5+Pro",
+        link: "https://www.google.com/search?q=PlayStation+5+Pro+Black+Friday+2025+deal",
+        desc: "Upgraded PS5 Pro with better 4K performance and premium Black Friday bundles."
     },
     {
-        category: "laptops",
-        tag: "Laptop Deal",
-        title: "MacBook Air M4",
-        price: "$749.00",
-        img: "https://pisces.bbystatic.com/image2/BestBuy_US/images/products/6553/6553995_sd.jpg",
-        link: "https://www.bestbuy.com/site/apple-macbook-air-13-m4/6553995.p",
-        desc: "Apple’s latest ultra-portable laptop featuring the blazing-fast M4 chip."
+        category: "gaming",
+        tag: "Xbox",
+        title: "Xbox Series X 1TB",
+        price: 399.00,
+        priceText: "$399.00",
+        img: "https://via.placeholder.com/400x250?text=Xbox+Series+X",
+        link: "https://www.google.com/search?q=Xbox+Series+X+Black+Friday+2025+deal",
+        desc: "Xbox Series X with Game Pass offers and rare price cuts around Black Friday."
     },
     {
-        category: "smartwatch",
-        tag: "Fitness + iPhone",
-        title: "Apple Watch SE 3",
-        price: "$199.00",
-        img: "https://m.media-amazon.com/images/I/71fqHBByO7L._AC_SL1500_.jpg",
-        link: "https://www.amazon.com/dp/B0XXXXXXX",
-        desc: "Perfect smartwatch for fitness, notifications, and iPhone pairing."
+        category: "gaming",
+        tag: "Portable",
+        title: "Nintendo Switch OLED",
+        price: 289.00,
+        priceText: "$289.00",
+        img: "https://via.placeholder.com/400x250?text=Switch+OLED",
+        link: "https://www.google.com/search?q=Nintendo+Switch+OLED+Black+Friday+2025+deal",
+        desc: "Switch OLED with Mario and Zelda bundles for families and portable gaming."
+    },
+
+    // Audio (4)
+    {
+        category: "audio",
+        tag: "Best Budget",
+        title: "Apple AirPods 4",
+        price: 69.00,
+        priceText: "$69.00",
+        img: "https://via.placeholder.com/400x250?text=AirPods+4",
+        link: "https://www.google.com/search?q=AirPods+4+Black+Friday+2025+deal",
+        desc: "Entry-level AirPods 4 hitting record-low prices at Walmart and Amazon."
+    },
+    {
+        category: "audio",
+        tag: "ANC Version",
+        title: "Apple AirPods 4 with ANC",
+        price: 100.00,
+        priceText: "$100.00",
+        img: "https://via.placeholder.com/400x250?text=AirPods+4+ANC",
+        link: "https://www.google.com/search?q=AirPods+4+ANC+Black+Friday+2025+deal",
+        desc: "ANC model of AirPods 4 with better noise cancellation and improved audio."
+    },
+    {
+        category: "audio",
+        tag: "Premium ANC",
+        title: "Apple AirPods Pro 3",
+        price: 219.99,
+        priceText: "$219.99",
+        img: "https://via.placeholder.com/400x250?text=AirPods+Pro+3",
+        link: "https://www.google.com/search?q=AirPods+Pro+3+Black+Friday+2025+deal",
+        desc: "Apple’s top-tier ANC earbuds with spatial audio and all-time-low Black Friday pricing."
+    },
+    {
+        category: "audio",
+        tag: "Over-Ear",
+        title: "Sony WH-1000XM5",
+        price: 279.99,
+        priceText: "$279.99",
+        img: "https://via.placeholder.com/400x250?text=Sony+WH-1000XM5",
+        link: "https://www.google.com/search?q=Sony+WH-1000XM5+Black+Friday+2025+deal",
+        desc: "Popular over-ear ANC headphones from Sony with big discounts at major retailers."
+    },
+
+    // Wearables (3)
+    {
+        category: "wearable",
+        tag: "Best Value",
+        title: "Apple Watch SE 3 (40mm GPS)",
+        price: 199.99,
+        priceText: "$199.99",
+        img: "https://via.placeholder.com/400x250?text=Apple+Watch+SE+3+40mm",
+        link: "https://www.google.com/search?q=Apple+Watch+SE+3+40mm+Black+Friday+2025+deal",
+        desc: "Newest SE 3 with always-on display and S10 chip, heavily discounted for Black Friday."
+    },
+    {
+        category: "wearable",
+        tag: "Series 10",
+        title: "Apple Watch Series 10 (42mm)",
+        price: 249.00,
+        priceText: "$249.00",
+        img: "https://via.placeholder.com/400x250?text=Apple+Watch+Series+10",
+        link: "https://www.google.com/search?q=Apple+Watch+Series+10+Black+Friday+2025+deal",
+        desc: "Series 10 model with upgraded health sensors and strong holiday pricing."
+    },
+    {
+        category: "wearable",
+        tag: "Android Watch",
+        title: "Samsung Galaxy Watch7",
+        price: 229.99,
+        priceText: "$229.99",
+        img: "https://via.placeholder.com/400x250?text=Galaxy+Watch7",
+        link: "https://www.google.com/search?q=Samsung+Galaxy+Watch7+Black+Friday+2025+deal",
+        desc: "Samsung Galaxy Watch7 for Android users with fitness tracking and phone integration."
     }
 ];
 
@@ -247,41 +496,57 @@ function loadDeals(filter = "all", search = "") {
     const grid = document.getElementById("dealGrid");
     grid.innerHTML = "";
 
-    deals
-        .filter(d =>
-            (filter === "all" || d.category === filter) &&
-            d.title.toLowerCase().includes(search.toLowerCase())
-        )
-        .forEach((d, index) => {
-            grid.innerHTML += `
-                <div class="deal-card" onclick="openModal(${index})">
-                    <span class="tag">${d.tag}</span>
-                    <img src="${d.img}">
-                    <h3>${d.title}</h3>
-                    <div class="price">${d.price}</div>
-                </div>
-            `;
-        });
+    const sortMode = document.getElementById("sortSelect").value;
+
+    let filtered = deals.filter(d =>
+        (filter === "all" || d.category === filter) &&
+        d.title.toLowerCase().includes(search.toLowerCase())
+    );
+
+    if (sortMode === "low") {
+        filtered.sort((a, b) => a.price - b.price);
+    } else if (sortMode === "high") {
+        filtered.sort((a, b) => b.price - a.price);
+    }
+
+    filtered.forEach((d, index) => {
+        grid.innerHTML += `
+            <div class="deal-card" onclick="openModal(${index})">
+                <span class="tag">${d.tag}</span>
+                <img src="${d.img}" alt="${d.title}">
+                <h3>${d.title}</h3>
+                <div class="price">${d.priceText}</div>
+            </div>
+        `;
+    });
 }
 
 document.querySelectorAll(".cat-btn").forEach(btn => {
     btn.addEventListener("click", () => {
-        document.querySelector(".active").classList.remove("active");
+        document.querySelector(".cat-btn.active").classList.remove("active");
         btn.classList.add("active");
-        loadDeals(btn.dataset.category, document.getElementById("searchBar").value);
+        const filter = btn.dataset.category;
+        const search = document.getElementById("searchBar").value;
+        loadDeals(filter, search);
     });
 });
 
 document.getElementById("searchBar").addEventListener("input", e => {
-    const filter = document.querySelector(".active").dataset.category;
+    const filter = document.querySelector(".cat-btn.active").dataset.category;
     loadDeals(filter, e.target.value);
+});
+
+document.getElementById("sortSelect").addEventListener("change", () => {
+    const filter = document.querySelector(".cat-btn.active").dataset.category;
+    const search = document.getElementById("searchBar").value;
+    loadDeals(filter, search);
 });
 
 function openModal(i) {
     const d = deals[i];
     document.getElementById("modalImg").src = d.img;
     document.getElementById("modalTitle").innerText = d.title;
-    document.getElementById("modalPrice").innerText = d.price;
+    document.getElementById("modalPrice").innerText = d.priceText;
     document.getElementById("modalDesc").innerText = d.desc;
     document.getElementById("modalLink").href = d.link;
     document.getElementById("modal").style.display = "block";
@@ -296,6 +561,7 @@ window.onclick = e => {
     }
 };
 
+// initial render
 loadDeals();
 </script>
 
