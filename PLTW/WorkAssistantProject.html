@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Work Assistant Project</title>
+
+<style>
+  :root {
+    --text: #e9ecf5;
+    --muted: #8c94a8;
+    --accent: #4f8cff;
+    --dark-bg: #05060a;
+    --panel-bg: rgba(10, 12, 18, 0.78);
+    --border: rgba(255,255,255,0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: system-ui, sans-serif;
+    background: var(--dark-bg);
+    color: var(--text);
+    overflow: hidden;
+  }
+
+  /* HEADER */
+  header {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%;
+    padding: 18px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 50;
+    backdrop-filter: blur(10px);
+    background: rgba(5,7,12,0.65);
+    border-bottom: 1px solid var(--border);
+  }
+
+  header.shrink { padding: 10px 30px; }
+
+  header h1 { font-size: 20px; }
+  header p { font-size: 11px; color: var(--muted); }
+
+  nav select {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: var(--text);
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 14px;
+  }
+
+  /* SLIDES */
+  .slide {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100vw;
+    height: 100vh;
+    padding: 17vh 7vw 10vh 7vw;
+    opacity: 0;
+    transform: translateY(80px) scale(0.96);
+    transition: opacity 0.85s ease, transform 0.85s ease;
+    pointer-events: none;
+    overflow-y: auto;              /* <-- IMPORTANT FIX */
+    scrollbar-width: thin;
+  }
+
+  .slide::-webkit-scrollbar { width: 6px; }
+  .slide::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.15);
+    border-radius: 10px;
+  }
+
+  .slide.active {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+  }
+
+  .slide h2 {
+    font-size: 60px;
+    margin-bottom: 16px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .textbox {
+    background: var(--panel-bg);
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    font-size: 30px;
+    line-height: 1.55;
+  }
+
+  /* IMAGES */
+  .image-row {
+    margin-top: 18px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .image-box {
+    flex: 1 1 340px;
+    background: rgba(255,255,255,0.05);
+    padding: 14px;
+    border-radius: 12px;
+    min-height: 200px;
+    border: 1px dashed rgba(120,160,255,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .image-box img {
+    max-width: 100%;
+    max-height: 70vh;   /* <-- PREVENT CROPPING */
+    object-fit: contain;
+    border-radius: 12px;
+  }
+
+  /* ARROWS */
+  .arrow {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 42px;
+    color: var(--accent);
+    opacity: 0.75;
+    cursor: pointer;
+    z-index: 60;
+    transition: 0.25s ease;
+    user-select: none;
+  }
+
+  .arrow:hover {
+    opacity: 1;
+    transform: translateX(-50%) scale(1.22);
+  }
+
+  .arrow-up { top: 70px; }
+  .arrow-down { bottom: 70px; }
+
+  /* FOOTER */
+  footer {
+    position: fixed;
+    bottom: 12px;
+    width: 100%;
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+    z-index: 10;
+  }
+
+  /* MOBILE */
+  @media (max-width: 700px) {
+    header { flex-direction: column; gap: 6px; text-align: center; }
+    .arrow { font-size: 32px; }
+    .slide { padding: 12vh 6vw 12vh 6vw; }
+  }
+
+  .video-wrapper {
+  margin-top: 18px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 12px;
+  border: 1px solid rgba(120, 160, 255, 0.4);
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.video-player {
+  width: 100%;
+  max-width: 900px;
+  border-radius: 10px;
+  outline: none;
+  background: #000;
+}
+
+</style>
+</head>
+
+<body>
+
+<header id="header">
+  <div>
+    <h1>Work Assistant Project</h1>
+    <p>Part & Parcel Delivery Co. • Conveyor System for employee saftey and productivity</p>
+  </div>
+
+  <nav>
+    <select id="sectionSelect">
+      <option value="0">Design Overview</option>
+      <option value="1">Problem Statement</option>
+      <option value="2">Design Statement</option>
+      <option value="3">Sketches</option>
+      <option value="4">Criteria & Constraints</option>
+      <option value="5">Build Process</option>
+      <option value="6">Testing Results</option>
+      <option value="7">Final Prototype</option>
+      <option value="8">Budget & Spending</option>
+      <option value="9">Ergonomic Improvements</option>
+      <option value="10">Final Reflections</option>
+      <option value="11">Links For Project Files</option>
+    </select>
+  </nav>
+</header>
+
+<!-- FLOATING ARROWS -->
+<div class="arrow arrow-up" id="arrowUp">▲</div>
+<div class="arrow arrow-down" id="arrowDown">▼</div>
+
+
+<!-- ============ SLIDES ============ -->
+<div class="slide active">
+  <h2>Design Overview</h2>
+  <div class="textbox">
+    Our Conveyor / Rail System, helps with the ergonomic handling of packages in the Part and Pacel warehouse. By reducing the need for lifting and carrying for longer distances, our system helps reduce strain on the employees' backs and joints, thereby decreasing the risk of work-related injuries. This not only enhances employee well-being but also boosts overall productivity and efficiency in package handling operations. Because packages can be moved quickly from the employee's location straight into the delivery vehicle(s).
+  </div>
+
+  <ul style="margin-top:16px; color:var(--muted); font-size:23px;">
+    <li>Client: Part & Parcel Delivery Company</li>
+    <li>Target Consumer: Delivery employees</li>
+    <li>Our Team: Eric K., Carson M., Carson G., Connor M.</li>
+  </ul>
+</div>
+
+<div class="slide">
+  <h2>Problem Statement</h2>
+  <div class="textbox">
+    P&P Delivery employees handle packages all day and face repetative lifting, carrying, and strenuous work. These strains are causing poor efficiency and employee injury. Workers of P&P need a device that moves packages quicky and safely without constant bending or unnatural lifitng required of workers in order to prevent workplace injury.
+  </div>
+</div>
+
+<div class="slide">
+  <h2>Design Statement</h2>
+  <div class="textbox">We will design and prototype a pitch for a device, that will reduce and relive strain on workers at P&P, that is efficient and safe for employees, and that also reduces the required lifting and moving of packages within the warehouse to prevent injury. We will do so in a two week time frame by the deadline of December 12, 2025 and within a budget of $50.</div>
+</div>
+
+<div class="slide">
+  <h2>Sketches</h2>
+
+  <div class="image-row">
+    <div class="image-box"><img src="2d_sketch.JPEG"></div>
+    <div class="image-box"><img src="3d_sketch.JPEG"></div>
+  </div>
+
+  <div style="height: 40px;"></div> <!-- EXTRA SPACE TO PREVENT CROPPING -->
+</div>
+
+<div class="slide">
+  <h2>Criteria & Constraints</h2>
+  <h3 style="margin-top:16px;">Criteria</h3>
+  <div class="textbox">1. Must result in more than one ergonomic Improvement <br> 2. Doesn't reduce employee productivity or efficiency <br> 3. Must be made out of VEQ Parts <br> 4. Must be safe for employees to use in a warehouse environment</div>
+  <h3 style="margin-top:16px;">Constraints</h3>
+  <div class="textbox">1. Must be completed by December 12, 2025 <br> 2. Maximimum budget of $50 <br> 3. Uses classroom materials (VEX PARTS) <br> 4. Under 10 pounds</div>
+</div>
+
+<div class="slide">
+  <h2>Build Process</h2>
+  <div class="textbox">Our build process is quite simple. "" </div>
+</div>
+
+<div class="slide">
+  <h2>Testing Results</h2>
+  <div class="textbox">
+    [INSERT TEXT — HOW YOU TESTED, DATA SUMMARY, WHAT WORKED, WHAT DIDN'T]
+  </div>
+
+  <div class="video-wrapper">
+    <video class="video-player" controls>
+      <!-- change this to your actual video file -->
+      <source src="testing_results.MOV" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+  </div>
+</div>
+
+<div class="slide">
+  <h2>Final Prototype</h2>
+  <div class="textbox">[INSERT TEXT]</div>
+</div>
+
+<div class="slide">
+  <h2>Budget & Spending</h2>
+  <div class="textbox">In Total we spent </div>
+  <div class="image-row">
+    <div class="image-box">[INSERT IMAGE]</div>
+  </div>
+</div>
+
+<div class="slide">
+  <h2>Ergonomic Improvements</h2>
+  <div class="textbox">[INSERT TEXT]</div>
+</div>
+
+<div class="slide">
+  <h2>Final Reflections</h2>
+  <div class="textbox">[INSERT TEXT]</div>
+</div>
+
+<div class="slide">
+  <h2>Links For Project Files</h2>
+  <div class="textbox">[INSERT TEXT]</div>
+</div>
+
+<footer>
+  Made by: <strong>Eric Kenney, Carson McDowell, Carson Gulk, Connor Munyan</strong>
+</footer>
+
+<script>
+let currentSlide = 0;
+const slides = document.querySelectorAll(".slide");
+const selector = document.getElementById("sectionSelect");
+const arrowUp = document.getElementById("arrowUp");
+const arrowDown = document.getElementById("arrowDown");
+let isAnimating = false;
+
+function goToSlide(index) {
+  if (index < 0 || index >= slides.length) return;
+  if (isAnimating) return;
+
+  isAnimating = true;
+
+  slides[currentSlide].classList.remove("active");
+  slides[index].classList.add("active");
+
+  selector.value = index;
+  currentSlide = index;
+
+  setTimeout(() => isAnimating = false, 900);
+}
+
+selector.addEventListener("change", () => {
+  goToSlide(parseInt(selector.value));
+});
+
+arrowUp.onclick = () => goToSlide(currentSlide - 1);
+arrowDown.onclick = () => goToSlide(currentSlide + 1);
+
+window.addEventListener("wheel", (e) => {
+  if (isAnimating) return;
+  if (e.deltaY > 0) goToSlide(currentSlide + 1);
+  else goToSlide(currentSlide - 1);
+});
+
+window.addEventListener("keydown", (e) => {
+  if (isAnimating) return;
+  if (e.key === "ArrowDown") goToSlide(currentSlide + 1);
+  if (e.key === "ArrowUp") goToSlide(currentSlide - 1);
+});
+
+let startY = 0;
+window.addEventListener("touchstart", (e) => startY = e.touches[0].clientY);
+window.addEventListener("touchend", (e) => {
+  let endY = e.changedTouches[0].clientY;
+  if (isAnimating) return;
+
+  if (startY - endY > 50) goToSlide(currentSlide + 1);
+  if (endY - startY > 50) goToSlide(currentSlide - 1);
+});
+</script>
+
+</body>
+</html>
