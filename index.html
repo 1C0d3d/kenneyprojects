@@ -46,11 +46,6 @@
     .hero{display:grid; gap:18px; padding: clamp(28px, 8vw, 64px) 0 24px 0; text-align:center}
     .title{font-size: clamp(28px, 6vw, 56px); line-height:1.05; letter-spacing:-.02em}
     .title strong{background: linear-gradient(90deg,#fff, #c7d2fe 30%, #93c5fd 65%, #fff); -webkit-background-clip:text; background-clip:text; color:transparent; text-shadow:0 6px 40px rgba(96,165,250,.3)}
-    .subtitle{color:var(--sub); max-width:70ch; margin:0 auto}
-    .cta{display:flex; gap:12px; justify-content:center; margin-top:8px}
-    .btn{display:inline-flex; align-items:center; gap:10px; padding:12px 16px; border-radius:12px; font-weight:700; border:1px solid var(--border); background:var(--card); box-shadow:var(--glow)}
-    .btn.primary{border:0; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color:#0a0d12}
-    .btn:hover{transform: translateY(-2px); transition: .15s ease}
 
     /* Grid */
     .grid{display:grid; grid-template-columns:repeat(12, 1fr); gap:18px}
@@ -74,7 +69,6 @@
     /* Light mode */
     @media (prefers-color-scheme: light){
       :root{ --bg:#f8fafc; --fg:#0b1220; --sub:#475569; --card:rgba(255,255,255,.8); --border:rgba(2,6,23,.08) }
-      .btn.primary{color:#fff}
     }
     /* Focus styles */
     :focus-visible{outline: 2px solid var(--accent); outline-offset:2px; border-radius:10px}
@@ -98,12 +92,8 @@
 
   <main class="container" role="main">
     <section class="hero">
-      <h1 class="title">Build. Learn. Play. <strong>Kenney Projects</strong></h1>
-      <p class="subtitle">A tidy hub for everything I make: small web and desktop games, research write‑ups, open‑source code projects, and a little bit about the person behind it.</p>
-      <div class="cta">
-        <a class="btn primary" href="/games" aria-label="Explore games">Explore Games</a>
-        <a class="btn" href="/projects.html" aria-label="Browse code projects">Browse Projects</a>
-      </div>
+      <!--  Only a single headline -->
+      <h1 class="title">Come back later</h1>
     </section>
 
     <section aria-labelledby="quick-links" style="margin-top:8px">
