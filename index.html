@@ -81,46 +81,47 @@
         <span class="logo" aria-hidden="true"></span>
         <span>Kenney Projects</span>
       </a>
+      <!-- Links now disabled -->
       <nav class="links" aria-label="Primary">
-        <a href="games.html">Games</a>
-        <a href="/papers">School papers +</a>
-        <a href="projects.html"> Other Code Projects</a>
-        <a href="bio.html">About owner</a>
+        <a href="#" class="disabled-link">temporarily disabled</a>
+        <a href="#" class="disabled-link">temporarily disabled</a>
+        <a href="#" class="disabled-link">temporarily disabled</a>
+        <a href="#" class="disabled-link">temporarily disabled</a>
       </nav>
     </div>
   </header>
 
   <main class="container" role="main">
     <section class="hero">
-      <!--  Only a single headline -->
       <h1 class="title">Come back later</h1>
     </section>
 
     <section aria-labelledby="quick-links" style="margin-top:8px">
       <h2 id="quick-links" style="position:absolute; left:-9999px">Quick links</h2>
       <div class="grid">
-        <a class="card" href="/games" aria-label="Go to Games">
+        <!-- Each card link disabled -->
+        <a class="card disabled-link" href="#" aria-label="Go to Games">
           <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M6 12h12M7 8h3M14 16h3"/><rect x="3" y="6" width="18" height="12" rx="3"/></svg>
-          <h3>Games</h3>
-          <p>Play prototypes and finished titles, right in your browser.</p>
+          <h3>temporarily disabled</h3>
+          <p>temporarily disabled</p>
         </a>
 
-        <a class="card" href="/papers" aria-label="Go to Research Papers">
+        <a class="card disabled-link" href="#" aria-label="Go to Research Papers">
           <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/></svg>
-          <h3>Research Papers</h3>
-          <p>Concise write‑ups and references on topics I’m exploring.</p>
+          <h3>temporarily disabled</h3>
+          <p>temporarily disabled</p>
         </a>
 
-        <a class="card" href="/projects.html" aria-label="Go to Code Projects">
+        <a class="card disabled-link" href="#" aria-label="Go to Code Projects">
           <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M8 16l-4-4 4-4M16 8l4 4-4 4"/></svg>
-          <h3>Code Projects</h3>
-          <p>Open‑source snippets, utilities, and full apps with docs.</p>
+          <h3>temporarily disabled</h3>
+          <p>temporarily disabled</p>
         </a>
 
-        <a class="card" href="/bio" aria-label="Go to About">
+        <a class="card disabled-link" href="#" aria-label="Go to About">
           <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="7" r="3"/><path d="M5 21a7 7 0 0 1 14 0"/></svg>
-          <h3>About</h3>
-          <p>Who I am, and how to reach me.</p>
+          <h3>temporarily disabled</h3>
+          <p>temporarily disabled</p>
         </a>
       </div>
     </section>
@@ -129,11 +130,19 @@
   <footer>
     <div class="container foot">
       <span>© <span id="year"></span> Kenney Projects</span>
-      <span><a href="/support">see support page</a></span>
+      <span><a href="#" class="disabled-link">see support page</a></span>
     </div>
   </footer>
 
   <script>
+    // Prevent navigation and give a quick alert
+    document.querySelectorAll('.disabled-link').forEach(el => {
+      el.addEventListener('click', e => {
+        e.preventDefault();
+        alert('This link is temporarily disabled.');
+      });
+    });
+
     // Set current year
     document.getElementById('year').textContent = new Date().getFullYear();
   </script>
