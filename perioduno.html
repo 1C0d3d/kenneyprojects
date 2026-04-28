@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>APUSH — Period 1: 1491–1607</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f7f2e8;
+  --ink: #1a1208;
+  --red: #8b1a0a;
+  --brown: #5c3317;
+  --gold: #b8860b;
+  --sand: #e8dcc8;
+  --muted: #7a6a55;
+  --border: #c8b89a;
+  --accent: #2c4a1e;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'IBM Plex Mono', monospace;
+  min-height: 100vh;
+  position: relative;
+}
+
+/* aged paper texture */
+body::before {
+  content:'';
+  position:fixed;
+  inset:0;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+  pointer-events:none;
+  z-index:0;
+}
+
+/* decorative corner marks */
+body::after {
+  content:'';
+  position:fixed;
+  inset:0;
+  border:12px solid transparent;
+  border-image: repeating-linear-gradient(90deg, var(--brown) 0, var(--brown) 8px, transparent 8px, transparent 16px) 12;
+  opacity:0.15;
+  pointer-events:none;
+  z-index:1;
+}
+
+a { color: var(--red); text-decoration:none; }
+
+/* NAV */
+nav {
+  position:sticky;
+  top:0;
+  z-index:100;
+  background: var(--ink);
+  padding: 14px 32px;
+  display:flex;
+  align-items:center;
+  gap:24px;
+  border-bottom: 3px solid var(--red);
+}
+
+.nav-back {
+  font-size:11px;
+  letter-spacing:0.25em;
+  text-transform:uppercase;
+  color: var(--sand);
+  opacity:0.6;
+  transition:opacity 0.2s;
+}
+.nav-back:hover { opacity:1; color: var(--sand); }
+
+.nav-title {
+  font-family:'Playfair Display', serif;
+  font-size:16px;
+  color: var(--sand);
+  letter-spacing:0.05em;
+}
+
+.nav-badge {
+  margin-left:auto;
+  font-size:9px;
+  letter-spacing:0.3em;
+  text-transform:uppercase;
+  color: var(--gold);
+  border:1px solid var(--gold);
+  padding:4px 10px;
+}
+
+/* HERO */
+.hero {
+  position:relative;
+  z-index:2;
+  padding:80px 40px 60px;
+  max-width:960px;
+  margin:0 auto;
+}
+
+.period-eyebrow {
+  font-size:10px;
+  letter-spacing:0.5em;
+  text-transform:uppercase;
+  color: var(--muted);
+  margin-bottom:20px;
+  display:flex;
+  align-items:center;
+  gap:16px;
+}
+
+.period-eyebrow::before {
+  content:'';
+  width:40px;
+  height:1px;
+  background:var(--red);
+  display:inline-block;
+}
+
+.hero-title {
+  font-family:'Playfair Display', serif;
+  font-size:clamp(52px, 9vw, 100px);
+  font-weight:900;
+  line-height:0.9;
+  letter-spacing:-0.02em;
+  color: var(--ink);
+  margin-bottom:16px;
+  animation: titleIn 0.8s cubic-bezier(0.16,1,0.3,1) both;
+}
+
+@keyframes titleIn {
+  from { opacity:0; transform:translateY(24px); }
+  to { opacity:1; transform:translateY(0); }
+}
+
+.hero-title span { color: var(--red); }
+
+.hero-dates {
+  font-family:'Playfair Display', serif;
+  font-style:italic;
+  font-size:clamp(24px, 4vw, 42px);
+  color: var(--brown);
+  margin-bottom:30px;
+  animation: titleIn 0.8s 0.15s cubic-bezier(0.16,1,0.3,1) both;
+}
+
+.hero-tagline {
+  font-size:12px;
+  line-height:1.8;
+  color: var(--muted);
+  max-width:540px;
+  border-left:3px solid var(--red);
+  padding-left:20px;
+  animation: titleIn 0.8s 0.3s cubic-bezier(0.16,1,0.3,1) both;
+}
+
+/* three Gs */
+.three-gs {
+  display:flex;
+  gap:2px;
+  margin-top:40px;
+  animation: titleIn 0.8s 0.4s cubic-bezier(0.16,1,0.3,1) both;
+}
+
+.g-block {
+  flex:1;
+  background: var(--ink);
+  color: var(--sand);
+  padding:20px;
+  text-align:center;
+  transition: background 0.25s, transform 0.25s;
+  cursor:default;
+}
+.g-block:hover { background: var(--red); transform:translateY(-4px); }
+.g-block .g-letter {
+  font-family:'Playfair Display', serif;
+  font-size:48px;
+  font-weight:900;
+  display:block;
+  line-height:1;
+}
+.g-block .g-word {
+  font-size:9px;
+  letter-spacing:0.3em;
+  text-transform:uppercase;
+  opacity:0.6;
+  margin-top:6px;
+  display:block;
+}
+
+/* DIVIDER */
+.divider {
+  max-width:960px;
+  margin:0 auto;
+  padding:0 40px;
+  position:relative;
+  z-index:2;
+}
+
+.divider hr {
+  border:none;
+  border-top:1px solid var(--border);
+  margin:40px 0;
+}
+
+/* SECTIONS */
+.sections {
+  max-width:960px;
+  margin:0 auto;
+  padding:0 40px 100px;
+  position:relative;
+  z-index:2;
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+
+/* ACCORDION */
+.acc {
+  border:1px solid var(--border);
+  overflow:hidden;
+  background: rgba(255,255,255,0.4);
+  transition: box-shadow 0.3s;
+}
+.acc:hover { box-shadow: 4px 4px 0 var(--brown); }
+
+.acc-trigger {
+  width:100%;
+  background:none;
+  border:none;
+  cursor:pointer;
+  padding:22px 28px;
+  display:flex;
+  align-items:center;
+  gap:16px;
+  text-align:left;
+  transition: background 0.2s;
+}
+.acc-trigger:hover { background: var(--sand); }
+.acc[data-open] .acc-trigger { background: var(--ink); }
+.acc[data-open] .acc-trigger .acc-num,
+.acc[data-open] .acc-trigger .acc-title { color: var(--sand); }
+.acc[data-open] .acc-trigger .acc-icon { color: var(--gold); transform:rotate(45deg); }
+
+.acc-num {
+  font-family:'Playfair Display', serif;
+  font-size:28px;
+  font-weight:900;
+  color: var(--red);
+  min-width:36px;
+  line-height:1;
+}
+
+.acc-title {
+  font-family:'Playfair Display', serif;
+  font-size:18px;
+  font-weight:700;
+  color: var(--ink);
+  flex:1;
+}
+
+.acc-badge {
+  font-size:9px;
+  letter-spacing:0.25em;
+  text-transform:uppercase;
+  color: var(--muted);
+  border:1px solid var(--border);
+  padding:3px 8px;
+  margin-left:auto;
+  margin-right:16px;
+}
+.acc[data-open] .acc-badge { border-color: rgba(245,240,232,0.3); color: rgba(245,240,232,0.5); }
+
+.acc-icon {
+  font-size:24px;
+  color: var(--muted);
+  transition: transform 0.35s cubic-bezier(0.16,1,0.3,1), color 0.2s;
+  line-height:1;
+  width:24px;
+  text-align:center;
+  flex-shrink:0;
+}
+
+.acc-body {
+  max-height:0;
+  overflow:hidden;
+  transition: max-height 0.5s cubic-bezier(0.16,1,0.3,1);
+}
+.acc[data-open] .acc-body { max-height:9000px; }
+
+.acc-inner {
+  padding:32px 28px 36px;
+  border-top:1px solid var(--border);
+}
+
+/* CONTENT STYLES */
+.content-text {
+  font-size:13px;
+  line-height:1.9;
+  color: var(--ink);
+}
+
+.content-text p { margin-bottom:16px; }
+.content-text p:last-child { margin-bottom:0; }
+
+.content-text strong { color: var(--red); font-weight:500; }
+
+h3.sub {
+  font-family:'Playfair Display', serif;
+  font-size:16px;
+  font-weight:700;
+  color: var(--brown);
+  margin:28px 0 12px;
+  letter-spacing:0.03em;
+  border-bottom:1px solid var(--border);
+  padding-bottom:6px;
+}
+h3.sub:first-child { margin-top:0; }
+
+/* BUZZWORD GRID */
+.bz-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(260px,1fr));
+  gap:12px;
+  margin-top:8px;
+}
+
+.bz-card {
+  background: var(--sand);
+  border:1px solid var(--border);
+  padding:16px;
+  position:relative;
+  overflow:hidden;
+  transition:transform 0.2s, box-shadow 0.2s;
+}
+.bz-card:hover { transform:translateY(-2px); box-shadow:3px 3px 0 var(--brown); }
+
+.bz-term {
+  font-family:'Playfair Display', serif;
+  font-size:14px;
+  font-weight:700;
+  color: var(--red);
+  margin-bottom:6px;
+}
+.bz-def {
+  font-size:11px;
+  line-height:1.7;
+  color: var(--muted);
+}
+
+/* TIMELINE */
+.timeline {
+  position:relative;
+  padding-left:28px;
+  margin-top:8px;
+}
+.timeline::before {
+  content:'';
+  position:absolute;
+  left:6px;
+  top:0;
+  bottom:0;
+  width:2px;
+  background: var(--border);
+}
+
+.tl-item {
+  position:relative;
+  margin-bottom:24px;
+  animation:none;
+}
+.tl-item::before {
+  content:'';
+  position:absolute;
+  left:-28px;
+  top:4px;
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background: var(--red);
+  border:2px solid var(--bg);
+  box-shadow:0 0 0 2px var(--red);
+}
+
+.tl-year {
+  font-family:'Playfair Display', serif;
+  font-size:15px;
+  font-weight:700;
+  color: var(--brown);
+  margin-bottom:2px;
+}
+.tl-event {
+  font-size:12px;
+  font-weight:500;
+  color: var(--ink);
+  margin-bottom:3px;
+}
+.tl-sig {
+  font-size:11px;
+  color: var(--muted);
+  line-height:1.6;
+}
+
+/* REGIONAL TABLE */
+.region-table {
+  width:100%;
+  border-collapse:collapse;
+  font-size:11px;
+  margin-top:8px;
+}
+.region-table th {
+  background: var(--ink);
+  color: var(--sand);
+  padding:10px 14px;
+  text-align:left;
+  letter-spacing:0.15em;
+  text-transform:uppercase;
+  font-size:9px;
+  font-weight:500;
+}
+.region-table td {
+  padding:10px 14px;
+  border-bottom:1px solid var(--border);
+  vertical-align:top;
+  line-height:1.6;
+}
+.region-table tr:nth-child(even) td { background:rgba(0,0,0,0.03); }
+.region-table tr:hover td { background: var(--sand); }
+.region-table td:first-child { font-weight:500; color: var(--red); }
+
+/* MCQ */
+.mcq-question {
+  font-size:13px;
+  line-height:1.8;
+  color: var(--ink);
+  margin-bottom:20px;
+  padding:16px;
+  background: var(--sand);
+  border-left:4px solid var(--brown);
+}
+
+.mcq-source {
+  font-size:11px;
+  font-style:italic;
+  color: var(--muted);
+  margin-bottom:16px;
+  padding:12px;
+  border:1px dashed var(--border);
+  line-height:1.7;
+}
+
+.choices {
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  margin-bottom:20px;
+}
+
+.choice-btn {
+  display:flex;
+  align-items:flex-start;
+  gap:12px;
+  padding:12px 16px;
+  background:rgba(255,255,255,0.5);
+  border:1px solid var(--border);
+  cursor:pointer;
+  text-align:left;
+  font-family:'IBM Plex Mono', monospace;
+  font-size:12px;
+  line-height:1.6;
+  color: var(--ink);
+  transition:background 0.15s, border-color 0.15s;
+}
+.choice-btn:hover:not(.locked) { background: var(--sand); border-color: var(--brown); }
+.choice-btn.correct { background:#d4edda; border-color:#2c4a1e; color:#1a3a12; }
+.choice-btn.wrong { background:#f8d7da; border-color:#8b1a0a; color:#5a0a05; }
+.choice-btn.locked { cursor:default; }
+
+.choice-letter {
+  font-weight:700;
+  color: var(--red);
+  flex-shrink:0;
+  min-width:20px;
+}
+.choice-btn.correct .choice-letter { color:#2c4a1e; }
+.choice-btn.wrong .choice-letter { color:#8b1a0a; }
+
+.reveal-btn {
+  background: var(--ink);
+  color: var(--sand);
+  border:none;
+  padding:12px 24px;
+  font-family:'IBM Plex Mono', monospace;
+  font-size:11px;
+  letter-spacing:0.2em;
+  text-transform:uppercase;
+  cursor:pointer;
+  transition:background 0.2s;
+  margin-bottom:16px;
+}
+.reveal-btn:hover { background: var(--red); }
+.reveal-btn:disabled { opacity:0.4; cursor:default; background: var(--ink); }
+
+.explanation {
+  display:none;
+  background: var(--sand);
+  border:1px solid var(--border);
+  border-left:4px solid var(--accent);
+  padding:16px;
+  font-size:12px;
+  line-height:1.8;
+  color: var(--ink);
+}
+.explanation.show { display:block; }
+.explanation strong { color: var(--accent); }
+
+/* DBQ / LEQ / SAQ */
+.prompt-box {
+  background: var(--sand);
+  border:1px solid var(--border);
+  border-left:5px solid var(--brown);
+  padding:20px 20px 20px 24px;
+  margin-bottom:20px;
+}
+
+.prompt-label {
+  font-size:9px;
+  letter-spacing:0.4em;
+  text-transform:uppercase;
+  color: var(--muted);
+  margin-bottom:8px;
+}
+
+.prompt-text {
+  font-family:'Playfair Display', serif;
+  font-size:15px;
+  font-style:italic;
+  line-height:1.7;
+  color: var(--ink);
+}
+
+.doc-block {
+  border:1px solid var(--border);
+  margin-bottom:12px;
+  overflow:hidden;
+}
+.doc-header {
+  background: var(--brown);
+  color: var(--sand);
+  font-size:10px;
+  letter-spacing:0.2em;
+  text-transform:uppercase;
+  padding:8px 14px;
+  display:flex;
+  gap:16px;
+}
+.doc-body {
+  padding:14px;
+  font-size:11px;
+  line-height:1.8;
+  font-style:italic;
+  color: var(--muted);
+}
+
+.scoring-guide {
+  background:rgba(44,74,30,0.06);
+  border:1px solid rgba(44,74,30,0.2);
+  padding:16px;
+  font-size:11px;
+  line-height:1.8;
+  margin-top:16px;
+}
+.scoring-guide .sg-title {
+  font-weight:700;
+  color: var(--accent);
+  font-size:10px;
+  letter-spacing:0.2em;
+  text-transform:uppercase;
+  margin-bottom:10px;
+}
+.scoring-guide ul { padding-left:16px; color: var(--muted); }
+.scoring-guide li { margin-bottom:4px; }
+
+.tips-row {
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:8px;
+  margin-top:12px;
+}
+.tip {
+  background: var(--sand);
+  border:1px solid var(--border);
+  padding:12px;
+  font-size:11px;
+  line-height:1.6;
+  color: var(--muted);
+}
+.tip strong { color: var(--ink); display:block; margin-bottom:4px; font-size:10px; letter-spacing:0.1em; text-transform:uppercase; }
+
+.saq-parts {
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  margin-bottom:20px;
+}
+.saq-part {
+  border:1px solid var(--border);
+  padding:16px;
+  background:rgba(255,255,255,0.5);
+}
+.saq-part-label {
+  font-size:9px;
+  letter-spacing:0.3em;
+  text-transform:uppercase;
+  color: var(--red);
+  margin-bottom:6px;
+}
+.saq-part-text {
+  font-size:12px;
+  line-height:1.7;
+  color: var(--ink);
+}
+
+textarea {
+  width:100%;
+  min-height:100px;
+  background:rgba(255,255,255,0.7);
+  border:1px solid var(--border);
+  font-family:'IBM Plex Mono', monospace;
+  font-size:12px;
+  line-height:1.7;
+  color: var(--ink);
+  padding:12px;
+  resize:vertical;
+  margin-top:8px;
+  transition:border-color 0.2s;
+}
+textarea:focus { outline:none; border-color: var(--brown); }
+
+/* BACK LINK */
+.back-link-wrap {
+  max-width:960px;
+  margin:0 auto;
+  padding:0 40px 40px;
+  position:relative;
+  z-index:2;
+  text-align:right;
+}
+
+@media(max-width:600px){
+  .hero { padding:50px 20px 40px; }
+  .sections { padding:0 16px 60px; }
+  .divider { padding:0 20px; }
+  nav { padding:14px 20px; }
+  .acc-inner { padding:20px 16px 24px; }
+  .three-gs { flex-direction:column; gap:2px; }
+  .bz-grid { grid-template-columns:1fr; }
+  .acc-badge { display:none; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-back">&larr; All Periods</a>
+  <span class="nav-title">APUSH Study Guide</span>
+  <span class="nav-badge">Period 1</span>
+</nav>
+
+<div class="hero">
+  <div class="period-eyebrow">Period 1 of 9</div>
+  <h1 class="hero-title">Contact &amp; <span>Conquest</span></h1>
+  <div class="hero-dates">1491 &ndash; 1607</div>
+  <p class="hero-tagline">
+    The world before Columbus — and the chaos after. Native American civilizations meet European ambition, disease reshapes entire continents, and the Atlantic becomes a highway for exploitation.
+  </p>
+
+  <div class="three-gs">
+    <div class="g-block">
+      <span class="g-letter">G</span>
+      <span class="g-word">Gold</span>
+    </div>
+    <div class="g-block">
+      <span class="g-letter">G</span>
+      <span class="g-word">Glory</span>
+    </div>
+    <div class="g-block">
+      <span class="g-letter">G</span>
+      <span class="g-word">God</span>
+    </div>
+  </div>
+</div>
+
+<div class="divider"><hr></div>
+
+<div class="sections">
+
+  <!-- 1. SUMMARY -->
+  <div class="acc" id="acc1">
+    <button class="acc-trigger" onclick="toggle('acc1')">
+      <span class="acc-num">1</span>
+      <span class="acc-title">Period Summary</span>
+      <span class="acc-badge">Overview</span>
+      <span class="acc-icon">+</span>
+    </button>
+    <div class="acc-body">
+      <div class="acc-inner content-text">
+        <h3 class="sub">Before Contact</h3>
+        <p>Before 1492, the Americas were not empty. Hundreds of distinct Native American societies occupied the continent, each one shaped by its environment. Maize — corn — is arguably the most important plant in pre-contact North America. Its cultivation spread northward from Mexico over centuries and turned nomadic groups into settled ones, which made everything else possible: larger populations, trade networks, social hierarchies, and eventually the complex confederacies that Europeans would stumble into.</p>
+        <p>The Iroquois Confederacy in the Northeast, the Pueblo peoples of the Southwest, the Mississippian mound builders of the interior — these were not primitive societies. They had political structures, trade routes spanning hundreds of miles, and religious systems that rivaled anything in Europe in terms of complexity. The exam loves to test whether you understand this. "Pre-contact" does not mean "prehistoric."</p>
+
+        <h3 class="sub">Columbus and the Columbian Exchange</h3>
+        <p>1492 is not just a date on a test — it's the moment two hemispheres that had been biologically isolated for tens of thousands of years suddenly got plugged into the same system. The Columbian Exchange moved plants, animals, and diseases across the Atlantic in both directions. <strong>Potatoes and corn</strong> went to Europe and eventually fed population explosions there. <strong>Horses and cattle</strong> went to the Americas and transformed Native life on the Great Plains. And <strong>smallpox</strong> — along with measles, typhus, and influenza — went to the Americas and killed somewhere between 50 and 90 percent of indigenous populations in certain regions. That last part is the one that made European colonization possible.</p>
+
+        <h3 class="sub">Spanish Empire</h3>
+        <p>Spain moved fast. By the early 1500s they had Caribbean islands, then Mexico (the Aztec Empire fell to Hernán Cortés in 1521), then Peru (Inca Empire, Francisco Pizarro, 1532). The pattern was consistent: a small group of Spanish conquistadors + Indigenous allies who hated the dominant power + European disease doing most of the actual work = conquest.</p>
+        <p>The <strong>Encomienda System</strong> was how Spain extracted wealth. The crown granted a Spanish settler the right to indigenous labor from a specific area. In theory, the settler was supposed to Christianize and "protect" the natives. In practice it was forced labor, and it was brutal. Bartolomé de las Casas documented the abuses and spent decades arguing in Spain that indigenous people had souls and rights. The <strong>Valladolid Debate of 1550</strong> was the formal showdown between his position and that of Juan Ginés de Sepúlveda, who argued natives were "natural slaves." Spain eventually issued the New Laws of 1542 attempting to reform the system, but enforcement was weak and the abuses continued.</p>
+        <p>As the indigenous population collapsed from disease and overwork, Spain turned to West Africa for labor. This is the beginning of the transatlantic slave trade within the colonial context — not peripheral to Period 1, but central to understanding why it unfolds the way it does.</p>
+
+        <h3 class="sub">The Casta System</h3>
+        <p>Spanish colonial society developed a rigid racial hierarchy based on ancestry. <strong>Peninsulares</strong> (born in Spain) at the top. Then <strong>Criollos/Creoles</strong> (Spanish descent, born in the Americas). Then <strong>Mestizos</strong> (Spanish + indigenous). Then <strong>Mulattoes</strong> (Spanish + African). Then indigenous people and enslaved Africans at the bottom. This system mattered because it determined legal rights, land ownership, and social status. It also planted the seeds of resentment that would fuel Latin American independence movements centuries later.</p>
+
+        <h3 class="sub">England and France: Slow Starters</h3>
+        <p>England and France were busy with their own religious wars and internal politics while Spain was building an empire. England's first attempt at colonization — Roanoke in 1587, Sir Walter Raleigh's project — disappeared completely. No one knows what happened. Jamestown in 1607, which is technically Period 2, marks the actual beginning of permanent English presence in North America, and even that nearly failed multiple times.</p>
+        <p>France focused more on the fur trade than on settlement, which meant they tended to build relationships with Native groups rather than just trying to conquer them. This gave France a different kind of presence in North America — less territorial, more network-based, and ultimately more sustainable in the short term.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. BUZZWORDS & KEY EVENTS -->
+  <div class="acc" id="acc2">
+    <button class="acc-trigger" onclick="toggle('acc2')">
+      <span class="acc-num">2</span>
+      <span class="acc-title">Buzzwords &amp; Key Events</span>
+      <span class="acc-badge">Vocab + Timeline</span>
+      <span class="acc-icon">+</span>
+    </button>
+    <div class="acc-body">
+      <div class="acc-inner">
+
+        <h3 class="sub">Essential Terms</h3>
+        <div class="bz-grid">
+          <div class="bz-card">
+            <div class="bz-term">Maize (Corn)</div>
+            <div class="bz-def">The crop that enabled nomadic tribes to settle permanently. Spread north from Mexico. Made larger populations and social hierarchies possible.</div>
+          </div>
+          <div class="bz-card">
+            <div class="bz-term">Columbian Exchange</div>
+            <div class="bz-def">Massive transfer of plants, animals, and diseases between Old and New Worlds after 1492. Disease alone may have killed 50–90% of some indigenous populations.</div>
+          </div>
+          <div class="bz-card">
+            <div class="bz-term">Encomienda System</div>
+            <div class="bz-def">Spanish labor system: crown grants settler the right to indigenous labor. Supposed to Christianize natives. Was basically slavery.</div>
+          </div>
+          <div class="bz-card">
+            <div class="bz-term">Casta System</div>
+            <div class="bz-def">Rigid racial hierarchy in Spanish colonies. Peninsulares → Creoles → Mestizos → Mulattoes → Indigenous/African. Determined legal rights and land.</div>
+          </div>
+          <div class="bz-card">
+            <div class="bz-term">Mercantilism</div>
+            <div class="bz-def">Economic theory: national power = wealth. Colonies exist to enrich the mother country. Drives all European colonial policy in this period.</div>
+          </div>
+          <div class="bz-card">
+            <div class="bz-term">Sovereignty</div>
+            <div class="bz-def">The right to govern yourself. Native Americans had it. Europeans didn't recognize it. The core conflict of the entire period.</div>
+          </div>
+          <div class="bz-card">
+            <div class="bz-term">Bartolomé de las Casas</div>
+            <div class="bz-def">Spanish friar who documented Spanish atrocities against indigenous people. Argued natives had souls and rights. Drove the Valladolid Debate.</div>
+          </div>
+          <div class="bz-card">
+            <div class="bz-term">Iroquois Confederacy</div>
+            <div class="bz-def">Political alliance of five (later six) nations in the Northeast: Mohawk, Oneida, Onondaga, Cayuga, Seneca. A sophisticated system of governance that some historians say influenced the U.S. Constitution.</div>
+          </div>
+          <div class="bz-card">
+            <div class="bz-term">Treaty of Tordesillas (1494)</div>
+            <div class="bz-def">Pope divides the New World between Spain and Portugal along a line. Spain gets most of the Americas. Portugal gets Brazil and Africa. Other European powers ignore it.</div>
+          </div>
+          <div class="bz-card">
+            <div class="bz-term">Syncretism</div>
+            <div class="bz-def">Blending of cultures — especially religious — when two groups meet. Native peoples often blended Catholic imagery with indigenous beliefs. Spain called it heresy. Historians call it adaptation.</div>
+          </div>
+          <div class="bz-card">
+            <div class="bz-term">Three Gs</div>
+            <div class="bz-def">Gold (wealth/resources), Glory (national prestige and personal fame), God (spreading Christianity). The three motivations driving Spanish and later European exploration.</div>
+          </div>
+          <div class="bz-card">
+            <div class="bz-term">Valladolid Debate (1550)</div>
+            <div class="bz-def">Las Casas vs. Sepúlveda. Are indigenous people fully human with rights, or natural slaves? Spain's answer shaped colonial law — even if enforcement was weak.</div>
+          </div>
+        </div>
+
+        <h3 class="sub">Regional Profiles</h3>
+        <table class="region-table">
+          <thead>
+            <tr>
+              <th>Region</th>
+              <th>Environment</th>
+              <th>Lifestyle</th>
+              <th>Example Group</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Southwest</td>
+              <td>Arid / desert</td>
+              <td>Settled, irrigation farming, adobe pueblos</td>
+              <td>Pueblo peoples</td>
+            </tr>
+            <tr>
+              <td>Great Plains</td>
+              <td>Grasslands</td>
+              <td>Nomadic, followed buffalo herds</td>
+              <td>Sioux, Cheyenne</td>
+            </tr>
+            <tr>
+              <td>Northeast</td>
+              <td>Forested</td>
+              <td>Semi-settled, farming + hunting, longhouses</td>
+              <td>Iroquois Confederacy</td>
+            </tr>
+            <tr>
+              <td>Pacific Northwest</td>
+              <td>Coastal / temperate</td>
+              <td>Permanent villages, fishing (salmon) primary</td>
+              <td>Chinook</td>
+            </tr>
+            <tr>
+              <td>Southeast</td>
+              <td>Warm / humid</td>
+              <td>Agricultural, mound-building ceremonial sites</td>
+              <td>Mississippian cultures</td>
+            </tr>
+            <tr>
+              <td>Great Basin</td>
+              <td>Harsh / dry</td>
+              <td>Nomadic foragers, no maize cultivation</td>
+              <td>Paiute, Shoshone</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3 class="sub">Key Events Timeline</h3>
+        <div class="timeline">
+          <div class="tl-item">
+            <div class="tl-year">1491 (and before)</div>
+            <div class="tl-event">Pre-Contact Americas</div>
+            <div class="tl-sig">Hundreds of distinct Native societies. Maize cultivation spreading north. Iroquois Confederacy forming. Nothing "primitive" about it.</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-year">1492</div>
+            <div class="tl-event">Columbus Arrives</div>
+            <div class="tl-sig">First sustained contact. Columbian Exchange begins. Caribbean Taíno people are the first to feel European colonization's full weight.</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-year">1494</div>
+            <div class="tl-event">Treaty of Tordesillas</div>
+            <div class="tl-sig">Pope divides the New World between Spain and Portugal. England, France, and the Dutch will later ignore this completely.</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-year">1512</div>
+            <div class="tl-event">Laws of Burgos</div>
+            <div class="tl-sig">First Spanish legal code regulating treatment of indigenous people. Attempted reforms. Largely unenforced. More symbolic than effective.</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-year">1521</div>
+            <div class="tl-event">Fall of the Aztec Empire</div>
+            <div class="tl-sig">Cortés conquers Tenochtitlán with help from Indigenous allies and disease. Establishes the template for Spanish conquest elsewhere.</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-year">1542</div>
+            <div class="tl-event">New Laws of 1542</div>
+            <div class="tl-sig">Las Casas's advocacy yields partial results. Laws attempt to abolish the Encomienda system. Spanish colonists largely ignore them. Spain backs down.</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-year">1550</div>
+            <div class="tl-event">Valladolid Debate</div>
+            <div class="tl-sig">Las Casas vs. Sepúlveda on the humanity and rights of Native Americans. No clear winner, but the debate shaped Spanish colonial law for decades.</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-year">1587</div>
+            <div class="tl-event">Roanoke Colony</div>
+            <div class="tl-sig">England's first serious colonization attempt. Sir Walter Raleigh. Everyone disappears. Only clue: the word "CROATOAN" carved into a post.</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-year">1607</div>
+            <div class="tl-event">Jamestown Founded</div>
+            <div class="tl-sig">Period 1 ends here. First permanent English settlement in North America. Period 2 begins.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. MCQ -->
+  <div class="acc" id="acc3">
+    <button class="acc-trigger" onclick="toggle('acc3')">
+      <span class="acc-num">3</span>
+      <span class="acc-title">Practice MCQ</span>
+      <span class="acc-badge">5 Questions</span>
+      <span class="acc-icon">+</span>
+    </button>
+    <div class="acc-body">
+      <div class="acc-inner" id="mcq-container">
+        <!-- rendered by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. DBQ -->
+  <div class="acc" id="acc4">
+    <button class="acc-trigger" onclick="toggle('acc4')">
+      <span class="acc-num">4</span>
+      <span class="acc-title">Practice DBQ</span>
+      <span class="acc-badge">Document-Based</span>
+      <span class="acc-icon">+</span>
+    </button>
+    <div class="acc-body">
+      <div class="acc-inner">
+
+        <div class="prompt-box">
+          <div class="prompt-label">DBQ Prompt</div>
+          <div class="prompt-text">Evaluate the extent to which the Spanish colonization of the Americas in the late 15th and 16th centuries transformed the lives of indigenous peoples.</div>
+        </div>
+
+        <h3 class="sub">Document 1</h3>
+        <div class="doc-block">
+          <div class="doc-header">
+            <span>Source: Bartolomé de las Casas</span>
+            <span>A Short Account of the Destruction of the Indies, 1542</span>
+          </div>
+          <div class="doc-body">"The Spaniards have shown not the slightest consideration for these people, treating them (and I speak from first-hand experience, having been there from the outset) not as brute animals — indeed, I would to God they had done so and had shown them the consideration they afford their animals — so much as piles of dung in the middle of the road."</div>
+        </div>
+
+        <h3 class="sub">Document 2</h3>
+        <div class="doc-block">
+          <div class="doc-header">
+            <span>Source: Hernán Cortés</span>
+            <span>Letter to King Charles I of Spain, 1520</span>
+          </div>
+          <div class="doc-body">"This great city of Tenochtitlan is built on the salt lake... The city has many squares where markets are held and trading is carried on. There is one square twice as big as that of Salamanca, with arcades all around, where more than sixty thousand people come each day to buy and sell..."</div>
+        </div>
+
+        <h3 class="sub">Document 3</h3>
+        <div class="doc-block">
+          <div class="doc-header">
+            <span>Source: Laws of Burgos</span>
+            <span>Issued by the Spanish Crown, 1512</span>
+          </div>
+          <div class="doc-body">"We order and command that henceforth no person or persons shall dare to beat any Indian with sticks, or whip him, or call him dog, or address him by any name other than his proper name alone; and if an Indian deserves to be punished for something he has done, the said person having him in charge shall bring him to the visitor for him to punish as he sees fit."</div>
+        </div>
+
+        <h3 class="sub">Document 4</h3>
+        <div class="doc-block">
+          <div class="doc-header">
+            <span>Source: Indigenous Oral Account (recorded by Spanish missionaries)</span>
+            <span>Nahuatl Lament, c. 1528 — Mexico</span>
+          </div>
+          <div class="doc-body">"Weep, weep for Tenochtitlan, where we once saw water and solid ground. The walls are black, our city is in ruin. Our shields gave it no protection. We have chewed on hard lumps of mud, lumps of mud and salty sedge and wormwood."</div>
+        </div>
+
+        <h3 class="sub">Document 5</h3>
+        <div class="doc-block">
+          <div class="doc-header">
+            <span>Source: Juan Ginés de Sepúlveda</span>
+            <span>Democrates Alter, c. 1544</span>
+          </div>
+          <div class="doc-body">"The Spanish have a perfect right to rule these barbarians of the New World and the adjacent islands, who in prudence, skill, virtues, and humanity are as inferior to the Spanish as children to adults, or women to men, for there exists between the two as great a difference as between savage and cruel races and the most merciful of peoples."</div>
+        </div>
+
+        <div class="scoring-guide">
+          <div class="sg-title">Scoring Breakdown (7 points possible)</div>
+          <ul>
+            <li><strong>Thesis (1 pt)</strong> — Makes a historically defensible claim that responds to the prompt. Must do more than restate the prompt.</li>
+            <li><strong>Contextualization (1 pt)</strong> — Describes a broader context accurately related to the prompt. Must relate it to the argument. Pre-contact Native societies, European competition, or Columbian Exchange work here.</li>
+            <li><strong>Evidence: Document Content (2 pts)</strong> — Uses content from at least 3 docs to address the topic (1 pt), or uses content from at least 6 docs to support your argument (2 pts).</li>
+            <li><strong>Evidence: Outside Evidence (1 pt)</strong> — Uses relevant historical evidence not in the documents to support your argument. The Encomienda System replacing itself with the asiento system, or specific disease mortality rates, are strong outside evidence choices.</li>
+            <li><strong>Analysis: Sourcing (1 pt)</strong> — For at least 3 documents, explains how or why the document's point of view, purpose, historical situation, or audience is relevant to the argument.</li>
+            <li><strong>Complexity (1 pt)</strong> — Demonstrates a complex understanding. Comparing transformations across different regions, or explaining why indigenous response varied, earns this point.</li>
+          </ul>
+        </div>
+
+        <h3 class="sub">Argument Planning</h3>
+        <div class="tips-row">
+          <div class="tip"><strong>Strong Thesis Frame</strong>While Spanish colonization brought devastating population collapse and forced labor through the Encomienda System, indigenous peoples were not passive — they adapted, resisted, and negotiated within a system designed to destroy them.</div>
+          <div class="tip"><strong>Contextualization Idea</strong>Open with the diversity of pre-contact Native societies and how European ignorance of this diversity shaped every policy that followed.</div>
+          <div class="tip"><strong>Complexity Strategy</strong>Compare Spanish policy toward indigenous peoples (documented in Las Casas and the Laws of Burgos) with the actual lived experience shown in the Nahuatl lament. The gap between law and practice is the argument.</div>
+        </div>
+
+        <p style="margin-top:20px; font-size:11px; color:var(--muted);">Write your thesis and full essay plan below — or go straight to drafting.</p>
+        <textarea placeholder="Your thesis and outline here..."></textarea>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. LEQ -->
+  <div class="acc" id="acc5">
+    <button class="acc-trigger" onclick="toggle('acc5')">
+      <span class="acc-num">5</span>
+      <span class="acc-title">Practice LEQ</span>
+      <span class="acc-badge">Long Essay</span>
+      <span class="acc-icon">+</span>
+    </button>
+    <div class="acc-body">
+      <div class="acc-inner">
+
+        <div class="prompt-box">
+          <div class="prompt-label">LEQ Prompt</div>
+          <div class="prompt-text">Evaluate the extent to which the Columbian Exchange transformed Native American societies between 1492 and 1607.</div>
+        </div>
+
+        <h3 class="sub">Scoring Breakdown (6 points possible)</h3>
+        <div class="scoring-guide">
+          <ul>
+            <li><strong>Thesis (1 pt)</strong> — A historically defensible thesis that makes a claim and establishes a line of reasoning. "The Columbian Exchange transformed Native American societies significantly, primarily through devastating population collapse from disease, but also through the introduction of new animals and trade goods that some groups turned to their advantage."</li>
+            <li><strong>Contextualization (1 pt)</strong> — Must describe the broader context and explain how it relates to the argument. European motivations (Three Gs), the economic theory of mercantilism, and the pre-contact state of Native societies all work here.</li>
+            <li><strong>Evidence (2 pts)</strong> — 1 pt for specific relevant historical evidence. 2 pts for using that evidence to support the argument. Names, dates, specific outcomes matter here.</li>
+            <li><strong>Analysis: Historical Reasoning (1 pt)</strong> — Uses comparison, causation, or continuity and change over time to frame the argument. Causation is the obvious move here: disease → population collapse → labor shortage → African slavery.</li>
+            <li><strong>Complexity (1 pt)</strong> — Demonstrates sophisticated understanding. One good move: argue that the Exchange's effects were uneven — catastrophic for some groups, but transformative in other ways (horses on the Plains, metal tools in trade networks).</li>
+          </ul>
+        </div>
+
+        <h3 class="sub">Evidence to Use</h3>
+        <div class="tips-row">
+          <div class="tip"><strong>Disease</strong>Smallpox, measles, typhus. Some estimates say 50–90% population loss in Caribbean within decades of contact. Aztec empire weakened by epidemic before Cortés even arrived.</div>
+          <div class="tip"><strong>Animals</strong>Horses reach the Great Plains and transform Plains cultures that had previously been semi-settled. By the 1700s, nations like the Comanche are built around horse culture. The Columbian Exchange gave them the horse.</div>
+          <div class="tip"><strong>Labor Systems</strong>Population collapse → Encomienda breaks down → Spanish shift to African slave trade. The Columbian Exchange's disease effects directly caused the asiento system.</div>
+          <div class="tip"><strong>Trade Goods</strong>Metal tools and European goods enter Native trade networks and become status items. Some groups gained power by controlling access to European goods. Exchange isn't purely negative.</div>
+        </div>
+
+        <h3 class="sub">Your Essay</h3>
+        <p style="font-size:11px; color:var(--muted); margin-bottom:10px;">Shoot for ~4-5 paragraphs. Intro (thesis + context), 2-3 body paragraphs with specific evidence, no formal conclusion necessary — end on your strongest point.</p>
+        <textarea style="min-height:300px;" placeholder="Write your LEQ here..."></textarea>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. SAQ -->
+  <div class="acc" id="acc6">
+    <button class="acc-trigger" onclick="toggle('acc6')">
+      <span class="acc-num">6</span>
+      <span class="acc-title">Practice SAQ</span>
+      <span class="acc-badge">Short Answer</span>
+      <span class="acc-icon">+</span>
+    </button>
+    <div class="acc-body">
+      <div class="acc-inner">
+
+        <div class="prompt-box">
+          <div class="prompt-label">SAQ Prompt — No Thesis Required</div>
+          <div class="prompt-text">Use the following excerpt and your knowledge of United States history to answer parts A, B, and C.</div>
+        </div>
+
+        <div class="doc-block" style="margin-bottom:20px;">
+          <div class="doc-header">
+            <span>Source: Bartolomé de las Casas</span>
+            <span>A Short Account of the Destruction of the Indies, 1542</span>
+          </div>
+          <div class="doc-body">"The reason the Christians have murdered on such a vast scale and killed anyone and everyone in their way is purely and simply greed. They have set out to line their pockets with gold and to amass private fortunes as quickly as possible so that they can then assume a status entirely at odds with that into which they were born. Their insatiable greed and overweening ambition know no bounds."</div>
+        </div>
+
+        <div class="saq-parts">
+          <div class="saq-part">
+            <div class="saq-part-label">Part A</div>
+            <div class="saq-part-text">Briefly explain ONE specific historical development that supports Las Casas's argument about Spanish motivations for colonization.</div>
+            <textarea placeholder="Your response to Part A (~3-5 sentences)..."></textarea>
+          </div>
+          <div class="saq-part">
+            <div class="saq-part-label">Part B</div>
+            <div class="saq-part-text">Briefly explain ONE specific development that complicates or challenges Las Casas's characterization of Spanish colonization as purely driven by greed.</div>
+            <textarea placeholder="Your response to Part B (~3-5 sentences)..."></textarea>
+          </div>
+          <div class="saq-part">
+            <div class="saq-part-label">Part C</div>
+            <div class="saq-part-text">Briefly explain ONE way in which Native American peoples responded to Spanish colonization in the period 1492–1607.</div>
+            <textarea placeholder="Your response to Part C (~3-5 sentences)..."></textarea>
+          </div>
+        </div>
+
+        <div class="scoring-guide">
+          <div class="sg-title">SAQ Tips (3 points — 1 per part)</div>
+          <ul>
+            <li>No thesis. No intro. Just answer the question directly and specifically.</li>
+            <li><strong>Part A ideas:</strong> The Encomienda System's forced labor structure, the Spanish casta system designed to extract wealth from colonial subjects, conquistadors like Cortés explicitly seeking gold and tribute.</li>
+            <li><strong>Part B ideas:</strong> Missionary activity (Franciscans, Jesuits), the Valladolid Debate showing genuine religious debate within Spain, the Laws of Burgos attempting (if failing) to protect native people, Spain's stated goal of Christianization as a legitimate motivation beyond greed.</li>
+            <li><strong>Part C ideas:</strong> Pueblo peoples' resistance through syncretism (blending Catholic and indigenous religious practices), diplomatic negotiation and trade as adaptation strategies, armed resistance in smaller scale conflicts, or the alliances some groups made with Spanish against rival indigenous nations.</li>
+            <li>Each part needs a specific example with historical context. Vague answers don't score.</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function toggle(id) {
+  const el = document.getElementById(id);
+  const isOpen = el.hasAttribute('data-open');
+  // close all
+  document.querySelectorAll('.acc[data-open]').forEach(a => a.removeAttribute('data-open'));
+  if (!isOpen) {
+    el.setAttribute('data-open','');
+    el.scrollIntoView({ behavior:'smooth', block:'nearest' });
+  }
+}
+
+// MCQ DATA
+const mcqs = [
+  {
+    q: "Which of the following best explains why Native American populations declined so dramatically in the decades following European contact?",
+    choices: [
+      "European military technology was overwhelmingly superior to indigenous weaponry",
+      "Native Americans lacked immunity to diseases carried by European explorers and settlers",
+      "The encomienda system immediately enslaved most of the indigenous population",
+      "European settlers deliberately destroyed Native American agricultural systems"
+    ],
+    correct: 1,
+    explanation: "<strong>B is correct.</strong> Disease — especially smallpox — is the primary driver of indigenous population collapse. Native peoples had no prior exposure to Old World diseases and thus no immunity. Military technology and the encomienda system were significant, but disease killed far more people and made the other forms of conquest possible. Choice D misrepresents the historical record."
+  },
+  {
+    q: "The Encomienda System established by the Spanish in the Americas is best understood as",
+    choices: [
+      "a form of mercantile trade agreement between Spain and indigenous leaders",
+      "a religious mission system designed to convert Native Americans to Christianity",
+      "a labor system that granted settlers rights to indigenous labor under the guise of Christianization",
+      "a land distribution system that gave equal plots to Spanish settlers and indigenous people"
+    ],
+    correct: 2,
+    explanation: "<strong>C is correct.</strong> The Encomienda system was fundamentally about extracting labor. The Christianization component was the official justification — what Spain told itself and the world — but in practice it was forced labor. Bartolomé de las Casas documented its brutality extensively. The system was legally distinct from chattel slavery but functioned similarly."
+  },
+  {
+    q: "The Columbian Exchange most directly resulted in which of the following long-term consequences?",
+    choices: [
+      "The rapid industrialization of Spanish colonial economies",
+      "The introduction of enslaved Africans to the Americas to replace collapsed indigenous labor",
+      "A diplomatic alliance between Spain and Portugal against England",
+      "The establishment of democratic governance in Spanish colonies"
+    ],
+    correct: 1,
+    explanation: "<strong>B is correct.</strong> This is the key chain of causation APUSH loves: Columbian Exchange → disease → indigenous population collapse → Encomienda labor breaks down → Spain turns to West African enslaved labor. The transatlantic slave trade grows directly from this sequence. The other choices are either wrong or don't follow from the Exchange."
+  },
+  {
+    q: "The diversity of pre-contact Native American societies was primarily shaped by",
+    choices: [
+      "trade relationships with European explorers before 1492",
+      "their natural environment and available resources",
+      "a shared religious tradition across North America",
+      "migration patterns driven by conflict with neighboring groups"
+    ],
+    correct: 1,
+    explanation: "<strong>B is correct.</strong> Environment is the key variable in pre-contact Native American life. The Pueblo peoples of the Southwest developed irrigation agriculture because they had to — the desert demanded it. The Sioux followed buffalo because the Plains gave them buffalo. Pacific Northwest peoples fished because salmon runs were their primary resource. Form follows environment."
+  },
+  {
+    q: "The Valladolid Debate of 1550 is significant in APUSH Period 1 primarily because it",
+    choices: [
+      "resulted in the complete abolition of the Encomienda System",
+      "demonstrated that some within Spanish society questioned the morality of colonization",
+      "established a military alliance between Spain and indigenous peoples",
+      "convinced the Spanish Crown to end all colonial expansion"
+    ],
+    correct: 1,
+    explanation: "<strong>B is correct.</strong> The Valladolid Debate shows internal dissent within Spanish colonialism — not everyone accepted that conquest and exploitation were just. Las Casas lost the debate in practical terms (the Encomienda continued), but the debate itself matters as evidence that Spanish society was not monolithic on these questions. Choice A is wrong — the Encomienda was not abolished. Choices C and D are historically inaccurate."
+  }
+];
+
+function buildMCQ() {
+  const container = document.getElementById('mcq-container');
+  let html = '';
+  mcqs.forEach((q, qi) => {
+    html += `<div style="margin-bottom:40px; padding-bottom:40px; border-bottom:1px solid var(--border);">`;
+    html += `<div class="mcq-question"><strong>Q${qi+1}.</strong> ${q.q}</div>`;
+    html += `<div class="choices">`;
+    q.choices.forEach((c, ci) => {
+      const letters = ['A','B','C','D'];
+      html += `<button class="choice-btn" id="q${qi}c${ci}" onclick="pickChoice(${qi},${ci})">\
+        <span class="choice-letter">${letters[ci]}</span>\
+        <span>${c}</span></button>`;
+    });
+    html += `</div>`;
+    html += `<button class="reveal-btn" id="reveal${qi}" onclick="reveal(${qi})" disabled>Reveal Answer</button>`;
+    html += `<div class="explanation" id="exp${qi}">${q.explanation}</div>`;
+    html += `</div>`;
+  });
+  container.innerHTML = html;
+}
+
+const selected = {};
+
+function pickChoice(qi, ci) {
+  if (selected[`q${qi}`] === 'locked') return;
+  selected[`q${qi}`] = ci;
+  const letters = ['A','B','C','D'];
+  mcqs[qi].choices.forEach((_, i) => {
+    const btn = document.getElementById(`q${qi}c${i}`);
+    btn.classList.remove('correct','wrong');
+    if (i === ci) {
+      btn.style.background = 'var(--sand)';
+      btn.style.borderColor = 'var(--brown)';
+    } else {
+      btn.style.background = '';
+      btn.style.borderColor = '';
+    }
+  });
+  document.getElementById(`reveal${qi}`).disabled = false;
+}
+
+function reveal(qi) {
+  if (selected[`q${qi}`] === 'locked') return;
+  const userPick = selected[`q${qi}`];
+  if (userPick === undefined) return;
+  selected[`q${qi}`] = 'locked';
+  mcqs[qi].choices.forEach((_, i) => {
+    const btn = document.getElementById(`q${qi}c${i}`);
+    btn.style.background = '';
+    btn.style.borderColor = '';
+    btn.classList.add('locked');
+    if (i === mcqs[qi].correct) btn.classList.add('correct');
+    else if (i === userPick && i !== mcqs[qi].correct) btn.classList.add('wrong');
+  });
+  document.getElementById(`exp${qi}`).classList.add('show');
+  document.getElementById(`reveal${qi}`).disabled = true;
+}
+
+buildMCQ();
+</script>
+</body>
+</html>
