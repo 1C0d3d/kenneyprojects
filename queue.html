@@ -208,6 +208,7 @@ font-family: ‘Cormorant Garamond’, serif;
     </div>
     <div class="controls">
       <span class="count" id="countText">0 requests</span>
+      <button class="btn" onclick="seedTest()">+ Test entry</button>
       <button class="btn" onclick="loadRequests()">Refresh</button>
       <button class="btn btn-danger" onclick="clearAll()">Clear all</button>
     </div>
@@ -229,7 +230,7 @@ font-family: ‘Cormorant Garamond’, serif;
 
 <script>
   const STORAGE_KEY = 'party_requests_v1';
-  let doneSet = new Set(JSON.parse(localStorage.getItem('done_requests') || '[]'));
+  let doneSet = new Set((JSON.parse(localStorage.getItem('done_requests') || '[]')).map(String));
 
   function saveDone() {
     localStorage.setItem('done_requests', JSON.stringify([...doneSet]));
@@ -252,7 +253,7 @@ font-family: ‘Cormorant Garamond’, serif;
     }
 
     list.innerHTML = requests.map((r, i) => {
-      const done = doneSet.has(r.ts);
+      const done = doneSet.has(String(r.ts));
       return `
         <div class="row ${done ? 'done' : ''}">
           <div class="row-num">${i + 1}</div>
@@ -268,7 +269,8 @@ font-family: ‘Cormorant Garamond’, serif;
   }
 
   function toggleDone(ts) {
-    doneSet.has(ts) ? doneSet.delete(ts) : doneSet.add(ts);
+    const key = String(ts);
+    doneSet.has(key) ? doneSet.delete(key) : doneSet.add(key);
     saveDone();
     loadRequests();
   }
@@ -276,7 +278,7 @@ font-family: ‘Cormorant Garamond’, serif;
   function removeRequest(ts) {
     let r = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
     localStorage.setItem(STORAGE_KEY, JSON.stringify(r.filter(x => x.ts !== ts)));
-    doneSet.delete(ts);
+    doneSet.delete(String(ts));
     saveDone();
     loadRequests();
   }
@@ -286,6 +288,13 @@ font-family: ‘Cormorant Garamond’, serif;
     localStorage.removeItem(STORAGE_KEY);
     doneSet.clear();
     saveDone();
+    loadRequests();
+  }
+
+  function seedTest() {
+    const r = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    r.push({ artist: 'Frank Sinatra', song: 'Fly Me to the Moon', ts: Date.now() });
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(r));
     loadRequests();
   }
 
