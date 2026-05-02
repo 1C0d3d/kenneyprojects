@@ -8,163 +8,183 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #faf8f5;
+    --surface: #fff;
+    --text: #1c1a18;
+    --muted: #9a9490;
+    --border: #e0dbd4;
+    --accent: #7a5c3e;
+  }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 24px;
+  }
+  .container { width: 100%; max-width: 400px; }
+  .header { text-align: center; margin-bottom: 48px; }
+  .occasion {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 15px;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+    margin-bottom: 10px;
+  }
+  h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 400;
+    font-size: 42px;
+    line-height: 1.1;
+    color: var(--text);
+  }
+  .divider {
+    width: 32px; height: 1px;
+    background: var(--accent);
+    margin: 18px auto 0;
+    opacity: 0.5;
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 36px 32px;
+    border-radius: 2px;
+  }
+  .field { margin-bottom: 24px; }
+  label {
+    display: block;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+    font-weight: 400;
+  }
+  input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+    padding: 6px 0 10px;
+    outline: none;
+    transition: border-color 0.2s;
+    border-radius: 0;
+    -webkit-appearance: none;
+  }
+  input:focus { border-bottom-color: var(--accent); }
+  input::placeholder { color: var(--border); font-style: italic; }
+  .submit-btn {
+    width: 100%;
+    margin-top: 8px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+    font-size: 13px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    padding: 15px;
+    cursor: pointer;
+    transition: background 0.15s;
+    border-radius: 1px;
+  }
+  .submit-btn:hover { background: #6a4e35; }
+  .submit-btn:disabled { opacity: 0.5; cursor: default; }
+  .note {
+    text-align: center;
+    margin-top: 20px;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .success { display: none; text-align: center; padding: 36px 0; }
+  .success-icon { font-size: 28px; margin-bottom: 14px; color: var(--accent); opacity: 0.6; }
+  .success h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 400;
+    font-size: 28px;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .success p {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 15px;
+    color: var(--muted);
+    margin-bottom: 24px;
+  }
+  .another-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 12px 24px;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .another-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .error-msg {
+    text-align: center;
+    margin-top: 12px;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 13px;
+    color: #c0392b;
+    display: none;
+  }
 
-:root {
-–bg: #faf8f5;
-–surface: #fff;
-–text: #1c1a18;
-–muted: #9a9490;
-–border: #e0dbd4;
-–accent: #7a5c3e;
-}
-
-body {
-background: var(–bg);
-color: var(–text);
+/* ── CONFIG NOTICE ── */
+.config-banner {
+background: #fff8e1;
+border: 1px solid #ffe082;
+padding: 16px 20px;
+margin-bottom: 24px;
+border-radius: 2px;
+font-size: 12px;
+line-height: 1.7;
+color: #5a4a00;
 font-family: ‘Jost’, sans-serif;
-font-weight: 300;
-min-height: 100vh;
-display: flex;
-flex-direction: column;
-align-items: center;
-justify-content: center;
-padding: 40px 24px;
 }
-
-.container { width: 100%; max-width: 400px; }
-
-.header { text-align: center; margin-bottom: 48px; }
-
-.occasion {
-font-family: ‘Cormorant Garamond’, serif;
-font-style: italic;
-font-size: 15px;
-color: var(–muted);
-letter-spacing: 0.05em;
-margin-bottom: 10px;
-}
-
-h1 {
-font-family: ‘Cormorant Garamond’, serif;
-font-weight: 400;
-font-size: 42px;
-line-height: 1.1;
-color: var(–text);
-}
-
-.divider {
-width: 32px;
-height: 1px;
-background: var(–accent);
-margin: 18px auto 0;
-opacity: 0.5;
-}
-
-.card {
-background: var(–surface);
-border: 1px solid var(–border);
-padding: 36px 32px;
+.config-banner strong { font-weight: 400; letter-spacing: 0.05em; }
+.config-banner code {
+background: #fff3cd;
+padding: 1px 5px;
+font-family: monospace;
+font-size: 11px;
 border-radius: 2px;
 }
-
-.field { margin-bottom: 24px; }
-
-label {
-display: block;
-font-size: 11px;
-letter-spacing: 0.12em;
-text-transform: uppercase;
-color: var(–muted);
-margin-bottom: 10px;
-font-weight: 400;
-}
-
-input {
-width: 100%;
-background: transparent;
-border: none;
-border-bottom: 1px solid var(–border);
-color: var(–text);
-font-family: ‘Cormorant Garamond’, serif;
-font-size: 20px;
-padding: 6px 0 10px;
-outline: none;
-transition: border-color 0.2s;
-border-radius: 0;
--webkit-appearance: none;
-}
-
-input:focus { border-bottom-color: var(–accent); }
-input::placeholder { color: var(–border); font-style: italic; }
-
-.submit-btn {
-width: 100%;
-margin-top: 8px;
-background: var(–accent);
-color: #fff;
-border: none;
-font-family: ‘Jost’, sans-serif;
-font-weight: 300;
-font-size: 13px;
-letter-spacing: 0.18em;
-text-transform: uppercase;
-padding: 15px;
-cursor: pointer;
-transition: background 0.15s;
-border-radius: 1px;
-}
-
-.submit-btn:hover { background: #6a4e35; }
-
-.note {
-text-align: center;
-margin-top: 20px;
-font-family: ‘Cormorant Garamond’, serif;
-font-style: italic;
-font-size: 13px;
-color: var(–muted);
-}
-
-.success { display: none; text-align: center; padding: 36px 0; }
-
-.success-icon { font-size: 28px; margin-bottom: 14px; color: var(–accent); opacity: 0.6; }
-
-.success h2 {
-font-family: ‘Cormorant Garamond’, serif;
-font-weight: 400;
-font-size: 28px;
-color: var(–text);
-margin-bottom: 6px;
-}
-
-.success p {
-font-family: ‘Cormorant Garamond’, serif;
-font-style: italic;
-font-size: 15px;
-color: var(–muted);
-margin-bottom: 24px;
-}
-
-.another-btn {
-background: none;
-border: 1px solid var(–border);
-color: var(–muted);
-font-family: ‘Jost’, sans-serif;
-font-weight: 300;
-font-size: 12px;
-letter-spacing: 0.15em;
-text-transform: uppercase;
-padding: 12px 24px;
-cursor: pointer;
-transition: border-color 0.15s, color 0.15s;
-}
-
-.another-btn:hover { border-color: var(–accent); color: var(–accent); }
 </style>
 
 </head>
 <body>
 <div class="container">
+
+  <!-- SETUP INSTRUCTIONS (visible until you fill in your config) -->
+
+  <div class="config-banner" id="configBanner">
+    <strong>⚙ One-time setup</strong><br>
+    1. Go to <a href="https://console.firebase.google.com" target="_blank">console.firebase.google.com</a> → create a project<br>
+    2. Add a Web app → copy your config values<br>
+    3. Go to Firestore Database → create database (start in test mode)<br>
+    4. Replace the <code>FIREBASE_CONFIG</code> values in both HTML files
+  </div>
+
   <div class="header">
     <p class="occasion">♩ Happy Birthday</p>
     <h1>Request a Song</h1>
@@ -181,7 +201,8 @@ transition: border-color 0.15s, color 0.15s;
         <label>Song &nbsp;<span style="font-size:10px;opacity:0.5">optional</span></label>
         <input type="text" id="song" placeholder="Any song in particular?" autocomplete="off" />
       </div>
-      <button class="submit-btn" onclick="submitRequest()">Send Request</button>
+      <button class="submit-btn" id="submitBtn" onclick="submitRequest()">Send Request</button>
+      <p class="error-msg" id="errorMsg">Something went wrong. Please try again.</p>
     </div>
 
 ```
@@ -198,12 +219,31 @@ transition: border-color 0.15s, color 0.15s;
   <p class="note">Requests are not guaranteed.</p>
 </div>
 
-<script>
-  const STORAGE_KEY = 'party_requests_v1';
+<!-- Firebase SDK -->
 
-  function submitRequest() {
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
+  import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
+
+  const FIREBASE_CONFIG = {
+    apiKey: "AIzaSyD_USJ_3gpIaQVi25kjeXeVW-U7PJUnBkg",
+    authDomain: "name-af162.firebaseapp.com",
+    projectId: "name-af162",
+    storageBucket: "name-af162.firebasestorage.app",
+    messagingSenderId: "52429198912",
+    appId: "1:52429198912:web:1ccf4552755f1adacb71a5"
+  };
+
+  const configured = true;
+  document.getElementById('configBanner').style.display = 'none';
+
+  const app = configured ? initializeApp(FIREBASE_CONFIG) : null;
+  const db  = configured ? getFirestore(app) : null;
+
+  window.submitRequest = async function() {
     const artist = document.getElementById('artist').value.trim();
-    const song = document.getElementById('song').value.trim();
+    const song   = document.getElementById('song').value.trim();
+
     if (!artist) {
       const el = document.getElementById('artist');
       el.focus();
@@ -211,21 +251,47 @@ transition: border-color 0.15s, color 0.15s;
       setTimeout(() => el.style.borderBottomColor = '', 1000);
       return;
     }
-    const requests = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-    requests.push({ artist, song: song || '—', ts: Date.now() });
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(requests));
-    document.getElementById('formView').style.display = 'none';
-    document.getElementById('successView').style.display = 'block';
-  }
 
-  function resetForm() {
+    if (!configured) {
+      alert('Firebase is not configured yet. See the setup instructions above.');
+      return;
+    }
+
+    const btn = document.getElementById('submitBtn');
+    const errMsg = document.getElementById('errorMsg');
+    btn.disabled = true;
+    btn.textContent = 'Sending…';
+    errMsg.style.display = 'none';
+
+    try {
+      await addDoc(collection(db, 'requests'), {
+        artist,
+        song: song || '',
+        ts: serverTimestamp()
+      });
+      document.getElementById('formView').style.display = 'none';
+      document.getElementById('successView').style.display = 'block';
+    } catch (e) {
+      console.error(e);
+      errMsg.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Send Request';
+    }
+  };
+
+  window.resetForm = function() {
     document.getElementById('artist').value = '';
     document.getElementById('song').value = '';
     document.getElementById('successView').style.display = 'none';
     document.getElementById('formView').style.display = 'block';
-  }
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = false;
+    btn.textContent = 'Send Request';
+  };
 
-  document.addEventListener('keydown', e => { if (e.key === 'Enter') submitRequest(); });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter') window.submitRequest();
+  });
 </script>
 
 </body>
