@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>APUSH — Period 2: 1607–1754</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f7f2e8;
+  --ink: #1a1208;
+  --red: #8b1a0a;
+  --brown: #5c3317;
+  --gold: #b8860b;
+  --sand: #e8dcc8;
+  --muted: #7a6a55;
+  --border: #c8b89a;
+  --accent: #2c4a1e;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--bg); color:var(--ink); font-family:'IBM Plex Mono',monospace; min-height:100vh; position:relative; }
+body::before { content:''; position:fixed; inset:0; background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E"); pointer-events:none; z-index:0; }
+body::after { content:''; position:fixed; inset:0; border:12px solid transparent; border-image:repeating-linear-gradient(90deg,var(--brown) 0,var(--brown) 8px,transparent 8px,transparent 16px) 12; opacity:0.15; pointer-events:none; z-index:1; }
+a { color:var(--red); text-decoration:none; }
+nav { position:sticky; top:0; z-index:100; background:var(--ink); padding:14px 32px; display:flex; align-items:center; gap:24px; border-bottom:3px solid var(--red); }
+.nav-back { font-size:11px; letter-spacing:0.25em; text-transform:uppercase; color:var(--sand); opacity:0.6; transition:opacity 0.2s; }
+.nav-back:hover { opacity:1; }
+.nav-title { font-family:'Playfair Display',serif; font-size:16px; color:var(--sand); letter-spacing:0.05em; }
+.nav-badge { margin-left:auto; font-size:9px; letter-spacing:0.3em; text-transform:uppercase; color:var(--gold); border:1px solid var(--gold); padding:4px 10px; }
+.hero { position:relative; z-index:2; padding:80px 40px 60px; max-width:960px; margin:0 auto; }
+.period-eyebrow { font-size:10px; letter-spacing:0.5em; text-transform:uppercase; color:var(--muted); margin-bottom:20px; display:flex; align-items:center; gap:16px; }
+.period-eyebrow::before { content:''; width:40px; height:1px; background:var(--red); display:inline-block; }
+.hero-title { font-family:'Playfair Display',serif; font-size:clamp(52px,9vw,100px); font-weight:900; line-height:0.9; letter-spacing:-0.02em; color:var(--ink); margin-bottom:16px; animation:titleIn 0.8s cubic-bezier(0.16,1,0.3,1) both; }
+@keyframes titleIn { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+.hero-title span { color:var(--red); }
+.hero-dates { font-family:'Playfair Display',serif; font-style:italic; font-size:clamp(24px,4vw,42px); color:var(--brown); margin-bottom:30px; animation:titleIn 0.8s 0.15s cubic-bezier(0.16,1,0.3,1) both; }
+.hero-tagline { font-size:12px; line-height:1.8; color:var(--muted); max-width:540px; border-left:3px solid var(--red); padding-left:20px; animation:titleIn 0.8s 0.3s cubic-bezier(0.16,1,0.3,1) both; }
+.four-regions { display:grid; grid-template-columns:repeat(4,1fr); gap:2px; margin-top:40px; animation:titleIn 0.8s 0.4s cubic-bezier(0.16,1,0.3,1) both; }
+.region-block { background:var(--ink); color:var(--sand); padding:20px 16px; text-align:center; transition:background 0.25s,transform 0.25s; cursor:default; }
+.region-block:hover { background:var(--red); transform:translateY(-4px); }
+.region-block .r-name { font-family:'Playfair Display',serif; font-size:14px; font-weight:700; display:block; line-height:1.2; margin-bottom:6px; }
+.region-block .r-crop { font-size:9px; letter-spacing:0.25em; text-transform:uppercase; opacity:0.55; display:block; }
+.divider { max-width:960px; margin:0 auto; padding:0 40px; position:relative; z-index:2; }
+.divider hr { border:none; border-top:1px solid var(--border); margin:40px 0; }
+.sections { max-width:960px; margin:0 auto; padding:0 40px 100px; position:relative; z-index:2; display:flex; flex-direction:column; gap:4px; }
+.acc { border:1px solid var(--border); overflow:hidden; background:rgba(255,255,255,0.4); transition:box-shadow 0.3s; }
+.acc:hover { box-shadow:4px 4px 0 var(--brown); }
+.acc-trigger { width:100%; background:none; border:none; cursor:pointer; padding:22px 28px; display:flex; align-items:center; gap:16px; text-align:left; transition:background 0.2s; }
+.acc-trigger:hover { background:var(--sand); }
+.acc[data-open] .acc-trigger { background:var(--ink); }
+.acc[data-open] .acc-trigger .acc-num, .acc[data-open] .acc-trigger .acc-title { color:var(--sand); }
+.acc[data-open] .acc-trigger .acc-icon { color:var(--gold); transform:rotate(45deg); }
+.acc-num { font-family:'Playfair Display',serif; font-size:28px; font-weight:900; color:var(--red); min-width:36px; line-height:1; }
+.acc-title { font-family:'Playfair Display',serif; font-size:18px; font-weight:700; color:var(--ink); flex:1; }
+.acc-badge { font-size:9px; letter-spacing:0.25em; text-transform:uppercase; color:var(--muted); border:1px solid var(--border); padding:3px 8px; margin-left:auto; margin-right:16px; }
+.acc[data-open] .acc-badge { border-color:rgba(245,240,232,0.3); color:rgba(245,240,232,0.5); }
+.acc-icon { font-size:24px; color:var(--muted); transition:transform 0.35s cubic-bezier(0.16,1,0.3,1),color 0.2s; line-height:1; width:24px; text-align:center; flex-shrink:0; }
+.acc-body { max-height:0; overflow:hidden; transition:max-height 0.5s cubic-bezier(0.16,1,0.3,1); }
+.acc[data-open] .acc-body { max-height:9000px; }
+.acc-inner { padding:32px 28px 36px; }
+.content-text { font-size:13px; line-height:1.9; color:var(--ink); }
+.content-text p { margin-bottom:16px; }
+.content-text p:last-child { margin-bottom:0; }
+.content-text strong { color:var(--red); font-weight:500; }
+h3.sub { font-family:'Playfair Display',serif; font-size:16px; font-weight:700; color:var(--brown); margin:28px 0 12px; letter-spacing:0.03em; border-bottom:1px solid var(--border); padding-bottom:6px; }
+h3.sub:first-child { margin-top:0; }
+.bz-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:12px; margin-top:8px; }
+.bz-card { background:var(--sand); border:1px solid var(--border); padding:16px; transition:transform 0.2s,box-shadow 0.2s; }
+.bz-card:hover { transform:translateY(-2px); box-shadow:3px 3px 0 var(--brown); }
+.bz-term { font-family:'Playfair Display',serif; font-size:14px; font-weight:700; color:var(--red); margin-bottom:6px; }
+.bz-def { font-size:11px; line-height:1.7; color:var(--muted); }
+.region-table { width:100%; border-collapse:collapse; font-size:11px; margin-top:8px; }
+.region-table th { background:var(--ink); color:var(--sand); padding:10px 14px; text-align:left; letter-spacing:0.15em; text-transform:uppercase; font-size:9px; font-weight:500; }
+.region-table td { padding:10px 14px; border-bottom:1px solid var(--border); vertical-align:top; line-height:1.6; }
+.region-table tr:nth-child(even) td { background:rgba(0,0,0,0.03); }
+.region-table tr:hover td { background:var(--sand); }
+.region-table td:first-child { font-weight:500; color:var(--red); }
+.timeline { position:relative; padding-left:28px; margin-top:8px; }
+.timeline::before { content:''; position:absolute; left:6px; top:0; bottom:0; width:2px; background:var(--border); }
+.tl-item { position:relative; margin-bottom:24px; }
+.tl-item::before { content:''; position:absolute; left:-28px; top:4px; width:10px; height:10px; border-radius:50%; background:var(--red); border:2px solid var(--bg); box-shadow:0 0 0 2px var(--red); }
+.tl-year { font-family:'Playfair Display',serif; font-size:15px; font-weight:700; color:var(--brown); margin-bottom:2px; }
+.tl-event { font-size:12px; font-weight:500; color:var(--ink); margin-bottom:3px; }
+.tl-sig { font-size:11px; color:var(--muted); line-height:1.6; }
+.mcq-question { font-size:13px; line-height:1.8; color:var(--ink); margin-bottom:20px; padding:16px; background:var(--sand); border-left:4px solid var(--brown); }
+.choices { display:flex; flex-direction:column; gap:8px; margin-bottom:20px; }
+.choice-btn { display:flex; align-items:flex-start; gap:12px; padding:12px 16px; background:rgba(255,255,255,0.5); border:1px solid var(--border); cursor:pointer; text-align:left; font-family:'IBM Plex Mono',monospace; font-size:12px; line-height:1.6; color:var(--ink); transition:background 0.15s,border-color 0.15s; }
+.choice-btn:hover:not(.locked) { background:var(--sand); border-color:var(--brown); }
+.choice-btn.correct { background:#d4edda; border-color:#2c4a1e; color:#1a3a12; }
+.choice-btn.wrong { background:#f8d7da; border-color:#8b1a0a; color:#5a0a05; }
+.choice-btn.locked { cursor:default; }
+.choice-letter { font-weight:700; color:var(--red); flex-shrink:0; min-width:20px; }
+.choice-btn.correct .choice-letter { color:#2c4a1e; }
+.choice-btn.wrong .choice-letter { color:#8b1a0a; }
+.reveal-btn { background:var(--ink); color:var(--sand); border:none; padding:12px 24px; font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.2em; text-transform:uppercase; cursor:pointer; transition:background 0.2s; margin-bottom:16px; }
+.reveal-btn:hover { background:var(--red); }
+.reveal-btn:disabled { opacity:0.4; cursor:default; background:var(--ink); }
+.explanation { display:none; background:var(--sand); border:1px solid var(--border); border-left:4px solid var(--accent); padding:16px; font-size:12px; line-height:1.8; color:var(--ink); }
+.explanation.show { display:block; }
+.explanation strong { color:var(--accent); }
+.prompt-box { background:var(--sand); border:1px solid var(--border); border-left:5px solid var(--brown); padding:20px 20px 20px 24px; margin-bottom:20px; }
+.prompt-label { font-size:9px; letter-spacing:0.4em; text-transform:uppercase; color:var(--muted); margin-bottom:8px; }
+.prompt-text { font-family:'Playfair Display',serif; font-size:15px; font-style:italic; line-height:1.7; color:var(--ink); }
+.doc-block { border:1px solid var(--border); margin-bottom:12px; overflow:hidden; }
+.doc-header { background:var(--brown); color:var(--sand); font-size:10px; letter-spacing:0.2em; text-transform:uppercase; padding:8px 14px; display:flex; gap:16px; flex-wrap:wrap; }
+.doc-body { padding:14px; font-size:11px; line-height:1.8; font-style:italic; color:var(--muted); }
+.scoring-guide { background:rgba(44,74,30,0.06); border:1px solid rgba(44,74,30,0.2); padding:16px; font-size:11px; line-height:1.8; margin-top:16px; }
+.scoring-guide .sg-title { font-weight:700; color:var(--accent); font-size:10px; letter-spacing:0.2em; text-transform:uppercase; margin-bottom:10px; }
+.scoring-guide ul { padding-left:16px; color:var(--muted); }
+.scoring-guide li { margin-bottom:4px; }
+.tips-row { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:8px; margin-top:12px; }
+.tip { background:var(--sand); border:1px solid var(--border); padding:12px; font-size:11px; line-height:1.6; color:var(--muted); }
+.tip strong { color:var(--ink); display:block; margin-bottom:4px; font-size:10px; letter-spacing:0.1em; text-transform:uppercase; }
+.saq-parts { display:flex; flex-direction:column; gap:12px; margin-bottom:20px; }
+.saq-part { border:1px solid var(--border); padding:16px; background:rgba(255,255,255,0.5); }
+.saq-part-label { font-size:9px; letter-spacing:0.3em; text-transform:uppercase; color:var(--red); margin-bottom:6px; }
+.saq-part-text { font-size:12px; line-height:1.7; color:var(--ink); }
+textarea { width:100%; min-height:100px; background:rgba(255,255,255,0.7); border:1px solid var(--border); font-family:'IBM Plex Mono',monospace; font-size:12px; line-height:1.7; color:var(--ink); padding:12px; resize:vertical; margin-top:8px; transition:border-color 0.2s; }
+textarea:focus { outline:none; border-color:var(--brown); }
+@media(max-width:600px){
+  .hero{padding:50px 20px 40px}
+  .sections{padding:0 16px 60px}
+  .divider{padding:0 20px}
+  nav{padding:14px 20px}
+  .acc-inner{padding:20px 16px 24px}
+  .four-regions{grid-template-columns:repeat(2,1fr)}
+  .bz-grid{grid-template-columns:1fr}
+  .acc-badge{display:none}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="apush-homepage.html" class="nav-back">&larr; All Periods</a>
+  <span class="nav-title">APUSH Study Guide</span>
+  <span class="nav-badge">Period 2</span>
+</nav>
+
+<div class="hero">
+  <div class="period-eyebrow">Period 2 of 9</div>
+  <h1 class="hero-title">Colonial <span>America</span></h1>
+  <div class="hero-dates">1607 &ndash; 1754</div>
+  <p class="hero-tagline">Thirteen colonies take shape along the Atlantic coast, each one different from the last. Tobacco, Puritans, slaves, fur traders, and religious refugees all end up on the same continent — and somehow Britain thinks it can hold all of it together from 3,000 miles away.</p>
+  <div class="four-regions">
+    <div class="region-block"><span class="r-name">New England</span><span class="r-crop">Fish &amp; Lumber</span></div>
+    <div class="region-block"><span class="r-name">Middle Colonies</span><span class="r-crop">Grain &amp; Trade</span></div>
+    <div class="region-block"><span class="r-name">Chesapeake</span><span class="r-crop">Tobacco</span></div>
+    <div class="region-block"><span class="r-name">Deep South</span><span class="r-crop">Rice &amp; Indigo</span></div>
+  </div>
+</div>
+
+<div class="divider"><hr></div>
+
+<div class="sections">
+
+  <!-- 1. SUMMARY -->
+  <div class="acc" id="acc1">
+    <button class="acc-trigger" onclick="toggle('acc1')">
+      <span class="acc-num">1</span><span class="acc-title">Period Summary</span>
+      <span class="acc-badge">Overview</span><span class="acc-icon">+</span>
+    </button>
+    <div class="acc-body"><div class="acc-inner content-text">
+
+      <h3 class="sub">Why the English Were Different</h3>
+      <p>Spain came to extract. France came to trade. England came to stay. That's the core difference that shapes everything in Period 2. English colonists brought families, built towns, planted fields, and had no intention of going home. This produced a fundamentally different kind of colonization — more permanent, more demographically dense, and eventually much harder for Britain to control.</p>
+      <p>The <strong>Joint-Stock Company</strong> made it financially possible. The Virginia Company of London pooled investor money to fund Jamestown in 1607. When tobacco became profitable in the 1610s under John Rolfe, it saved the colony and locked the Chesapeake into a plantation economy that would define it for two centuries.</p>
+
+      <h3 class="sub">The Four Colonial Regions</h3>
+      <p><strong>New England</strong> (Massachusetts, Connecticut, Rhode Island, New Hampshire) was built by Puritans who wanted to create a model Christian community. John Winthrop's "City Upon a Hill" speech from 1630 is the founding document of that idea. The climate was too cold for large-scale agriculture, so the economy ran on fishing, lumber, and small-scale farming. Towns were tight-knit, literacy was high so people could read the Bible, and life expectancy was the best in the colonies.</p>
+      <p><strong>The Middle Colonies</strong> (New York, New Jersey, Pennsylvania, Delaware) were the most diverse. Pennsylvania, founded by Quaker William Penn in 1681, attracted Germans, Scots-Irish, Dutch, and English settlers because of its religious tolerance. The "breadbasket" colonies grew grain for export. If you remember one thing: religious tolerance plus diversity equals Middle Colonies.</p>
+      <p><strong>The Chesapeake</strong> (Virginia, Maryland) ran on tobacco, and tobacco ran on labor. Early on that labor came from <strong>indentured servants</strong> — poor English who traded 4–7 years of work for passage to America. The <strong>Headright System</strong> gave 50 acres to anyone who paid a servant's passage, which meant wealthy planters accumulated enormous tracts. Life expectancy was terrible. Malaria and disease killed so many early settlers that the Chesapeake had a persistently skewed male-to-female ratio for decades.</p>
+      <p><strong>The Deep South</strong> (Carolina, Georgia) developed last and went hardest on plantation agriculture. Rice and indigo required intensive labor in hot, wet conditions. Enslaved Africans from rice-growing regions of West Africa — the "Rice Coast" — were specifically sought for their agricultural expertise. South Carolina's enslaved population outnumbered white colonists by the early 1700s.</p>
+
+      <h3 class="sub">Bacon's Rebellion and the Shift to Slavery</h3>
+      <p>1676. Nathaniel Bacon leads a coalition of poor white farmers and freed indentured servants — newly landless, angry, and armed — in an uprising against Virginia's colonial government. They burn Jamestown. The rebellion fails when Bacon dies of dysentery, but it scares the planter class badly enough to rethink the whole labor system. Indentured servants who finished their contracts became a dangerous underclass. <strong>Enslaved Africans couldn't finish a contract and demand land.</strong> The shift from indentured servitude to chattel slavery accelerates sharply after 1676. This causation chain is one APUSH tests constantly.</p>
+
+      <h3 class="sub">The Great Awakening and the Enlightenment</h3>
+      <p>The <strong>First Great Awakening</strong> (1730s–40s) was a wave of emotional, populist religious revivalism led by Jonathan Edwards and George Whitefield. It challenged established church hierarchies, created new denominations like Baptists and Methodists, and taught ordinary people that they could question authority. That's a short step from questioning a minister to questioning a king.</p>
+      <p>The <strong>Enlightenment</strong> moved through print culture. John Locke's ideas about natural rights and the social contract circulated among educated colonists. Benjamin Franklin embodied the colonial Enlightenment — practical, rational, and deeply skeptical of inherited authority. Both movements together created the ideological conditions for revolution, even if that's technically Period 3.</p>
+
+      <h3 class="sub">Salutary Neglect and Self-Government</h3>
+      <p>Britain's policy of <strong>salutary neglect</strong> — not enforcing trade laws and leaving colonies alone — ran from roughly the 1690s to the 1760s. In that time, colonies built their own representative assemblies, developed their own legal traditions, and got very comfortable running their own affairs. When Britain tried to tighten control after the French and Indian War, colonists had decades of self-governance habits that made the new rules feel like tyranny. Salutary neglect is the direct setup for the Revolution.</p>
+
+      <h3 class="sub">Native Americans in Period 2</h3>
+      <p><strong>King Philip's War</strong> (1675–76) was the bloodiest conflict per capita in American history. Wampanoag leader Metacom organized a coalition against English expansion in New England. The war effectively ended organized Native resistance in the region. Meanwhile the <strong>Pueblo Revolt of 1680</strong> in New Mexico — led by Popé — successfully expelled the Spanish for 12 years. The only successful large-scale indigenous rebellion against European colonizers in North American history. Spain came back in 1692 but was more cautious afterward.</p>
+
+    </div></div>
+  </div>
+
+  <!-- 2. BUZZWORDS -->
+  <div class="acc" id="acc2">
+    <button class="acc-trigger" onclick="toggle('acc2')">
+      <span class="acc-num">2</span><span class="acc-title">Buzzwords &amp; Key Events</span>
+      <span class="acc-badge">Vocab + Timeline</span><span class="acc-icon">+</span>
+    </button>
+    <div class="acc-body"><div class="acc-inner">
+
+      <h3 class="sub">Essential Terms</h3>
+      <div class="bz-grid">
+        <div class="bz-card"><div class="bz-term">Joint-Stock Company</div><div class="bz-def">Investors pool money to fund colonial ventures. The Virginia Company funded Jamestown. Risk is shared — so is profit, if it ever comes.</div></div>
+        <div class="bz-card"><div class="bz-term">Indentured Servitude</div><div class="bz-def">Poor Europeans trade 4–7 years of labor for passage to America. Primary Chesapeake labor source before slavery takes over after 1676.</div></div>
+        <div class="bz-card"><div class="bz-term">Headright System</div><div class="bz-def">50 acres to anyone who paid for an immigrant's passage to Virginia. Wealthy planters accumulated massive landholdings. Deepened inequality from day one.</div></div>
+        <div class="bz-card"><div class="bz-term">Bacon's Rebellion (1676)</div><div class="bz-def">Poor whites and freed servants rebel in Virginia, burn Jamestown. Fail. But it terrifies planters into switching to enslaved African labor — who can't demand land at the end of a contract.</div></div>
+        <div class="bz-card"><div class="bz-term">Salutary Neglect</div><div class="bz-def">Britain doesn't enforce trade laws or interfere in colonial governance for ~70 years. Colonies get so used to self-rule that British control attempts later feel like tyranny.</div></div>
+        <div class="bz-card"><div class="bz-term">Puritans</div><div class="bz-def">English Calvinists who settled New England to build a "godly" community. Valued literacy, hard work, communal conformity. Intolerant of dissent — see Roger Williams, Anne Hutchinson.</div></div>
+        <div class="bz-card"><div class="bz-term">First Great Awakening</div><div class="bz-def">Religious revival of the 1730s–40s. Edwards, Whitefield. Broke church hierarchies, taught ordinary people to question authority. Gateway to revolutionary thinking.</div></div>
+        <div class="bz-card"><div class="bz-term">The Enlightenment</div><div class="bz-def">European philosophical movement: reason, natural rights, social contract. Locke's ideas circulate through colonial print culture. Gives educated colonists the vocabulary to argue against British rule.</div></div>
+        <div class="bz-card"><div class="bz-term">Middle Passage</div><div class="bz-def">Transatlantic leg of the slave trade. Africans packed into ships for weeks or months. Mortality rates 10–20%. Survivors arrived traumatized into a life of chattel slavery.</div></div>
+        <div class="bz-card"><div class="bz-term">Anglicization</div><div class="bz-def">Colonies become more culturally "British" through trade, print, and law. Paradoxically, this made colonists more aware of English rights — and more angry when Britain denied them.</div></div>
+        <div class="bz-card"><div class="bz-term">Mercantilism</div><div class="bz-def">Colonies exist to enrich the mother country. Navigation Acts required colonists to trade through Britain. Salutary neglect meant these weren't enforced — until they suddenly were.</div></div>
+        <div class="bz-card"><div class="bz-term">Roger Williams / Anne Hutchinson</div><div class="bz-def">Both banished from Massachusetts Bay for challenging Puritan authority. Williams founded Rhode Island with actual religious tolerance. Both show that Puritan conformity had real teeth.</div></div>
+      </div>
+
+      <h3 class="sub">The Four Colonial Regions</h3>
+      <table class="region-table">
+        <thead><tr><th>Region</th><th>Colonies</th><th>Economy</th><th>Labor</th><th>Society</th></tr></thead>
+        <tbody>
+          <tr><td>New England</td><td>MA, NH, RI, CT</td><td>Fishing, lumber, small farms</td><td>Family labor</td><td>Puritan; tight towns; best life expectancy</td></tr>
+          <tr><td>Middle Colonies</td><td>NY, NJ, PA, DE</td><td>Grain, trade</td><td>Mixed — free, indentured, some enslaved</td><td>Most diverse; Quakers in PA; religiously tolerant</td></tr>
+          <tr><td>Chesapeake</td><td>VA, MD</td><td>Tobacco</td><td>Indentured → enslaved African</td><td>Anglican; high death rate; skewed male population</td></tr>
+          <tr><td>Deep South</td><td>NC, SC, GA</td><td>Rice, indigo, sugar</td><td>Majority enslaved African</td><td>Large plantations; Black majority in SC by 1700s</td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="sub">Key Events Timeline</h3>
+      <div class="timeline">
+        <div class="tl-item"><div class="tl-year">1607</div><div class="tl-event">Jamestown Founded</div><div class="tl-sig">First permanent English settlement. Virginia Company funded it. Half the settlers die the first winter. Tobacco (1612) saves it.</div></div>
+        <div class="tl-item"><div class="tl-year">1619</div><div class="tl-event">Two Things at Once</div><div class="tl-sig">Virginia House of Burgesses — first representative assembly in English America. And the first Africans arrive in Virginia, initially as indentured servants, not yet as chattel slaves.</div></div>
+        <div class="tl-item"><div class="tl-year">1620</div><div class="tl-event">Mayflower Compact</div><div class="tl-sig">Pilgrims agree to govern themselves before leaving the ship. Early step toward self-governance and consent of the governed. Not Puritans — Separatists who wanted a clean break from the Church of England.</div></div>
+        <div class="tl-item"><div class="tl-year">1630</div><div class="tl-event">Winthrop's "City Upon a Hill"</div><div class="tl-sig">John Winthrop delivers his vision for Massachusetts Bay as a model Christian community. Sets the religious tone for New England. Referenced by politicians ever since.</div></div>
+        <div class="tl-item"><div class="tl-year">1636</div><div class="tl-event">Roger Williams Founds Rhode Island</div><div class="tl-sig">Banished from Massachusetts for arguing church and state should be separate. Rhode Island becomes the first colony with genuine religious tolerance.</div></div>
+        <div class="tl-item"><div class="tl-year">1675–76</div><div class="tl-event">King Philip's (Metacom's) War</div><div class="tl-sig">Bloodiest war per capita in American history. Wampanoag coalition vs. English colonists. Metacom killed and beheaded. Native resistance in New England effectively over.</div></div>
+        <div class="tl-item"><div class="tl-year">1676</div><div class="tl-event">Bacon's Rebellion</div><div class="tl-sig">Poor whites and landless freed servants rebel in Virginia. Burn Jamestown. Fail. Planters pivot to enslaved African labor permanently.</div></div>
+        <div class="tl-item"><div class="tl-year">1680</div><div class="tl-event">Pueblo Revolt</div><div class="tl-sig">Popé leads Pueblo peoples to expel the Spanish for 12 years — the only successful large-scale indigenous rebellion in North American history. Spain returns in 1692 but more carefully.</div></div>
+        <div class="tl-item"><div class="tl-year">1730s–40s</div><div class="tl-event">First Great Awakening</div><div class="tl-sig">Jonathan Edwards, George Whitefield. Emotional revival preaching. Breaks up established churches, teaches colonists to question hierarchies. Ideological setup for revolution.</div></div>
+        <div class="tl-item"><div class="tl-year">1754</div><div class="tl-event">Albany Plan + French &amp; Indian War Begins</div><div class="tl-sig">Franklin's failed plan to unite the colonies. The war starts and ends Period 2 — it changes everything about Britain's relationship with the colonies and launches Period 3.</div></div>
+      </div>
+
+    </div></div>
+  </div>
+
+  <!-- 3. MCQ -->
+  <div class="acc" id="acc3">
+    <button class="acc-trigger" onclick="toggle('acc3')">
+      <span class="acc-num">3</span><span class="acc-title">Practice MCQ</span>
+      <span class="acc-badge">5 Questions</span><span class="acc-icon">+</span>
+    </button>
+    <div class="acc-body"><div class="acc-inner" id="mcq-container"></div></div>
+  </div>
+
+  <!-- 4. DBQ -->
+  <div class="acc" id="acc4">
+    <button class="acc-trigger" onclick="toggle('acc4')">
+      <span class="acc-num">4</span><span class="acc-title">Practice DBQ</span>
+      <span class="acc-badge">Document-Based</span><span class="acc-icon">+</span>
+    </button>
+    <div class="acc-body"><div class="acc-inner">
+
+      <div class="prompt-box">
+        <div class="prompt-label">DBQ Prompt</div>
+        <div class="prompt-text">Evaluate the extent to which Bacon's Rebellion (1676) transformed the labor system of the Chesapeake colonies in the period 1650–1750.</div>
+      </div>
+
+      <h3 class="sub">Document 1</h3>
+      <div class="doc-block">
+        <div class="doc-header"><span>Source: William Berkeley, Governor of Virginia</span><span>Letter to the King, 1676</span></div>
+        <div class="doc-body">"How miserable that man is that Governes a People wher six parts of seaven at least are Poore Indebted Discontented and Armed... I am not able to tell your Majestie the condition of this unhappy Countrey."</div>
+      </div>
+
+      <h3 class="sub">Document 2</h3>
+      <div class="doc-block">
+        <div class="doc-header"><span>Source: Virginia Slave Codes</span><span>Virginia General Assembly, 1705</span></div>
+        <div class="doc-body">"All servants imported and brought into this country by sea or land, who were not Christians in their native country... shall be accounted and be slaves, and as such be here bought and sold notwithstanding a conversion to Christianity afterwards."</div>
+      </div>
+
+      <h3 class="sub">Document 3</h3>
+      <div class="doc-block">
+        <div class="doc-header"><span>Source: Nathaniel Bacon</span><span>Declaration of the People, 1676</span></div>
+        <div class="doc-body">"We appeal to the country itself what and of what nature their oppressions have been and by what cabal and mystery the designs of many of those whom we call great men have been transacted and carried on."</div>
+      </div>
+
+      <h3 class="sub">Document 4</h3>
+      <div class="doc-block">
+        <div class="doc-header"><span>Source: Edmund Morgan, Historian</span><span>American Slavery, American Freedom, 1975</span></div>
+        <div class="doc-body">"Virginians may have had an easier time with the substitution of black for white labor, because the substitution solved so many problems at once. It enabled the planters to keep their lands, replace a dangerous free population with a controllable enslaved one, and maintain the same profitable tobacco economy."</div>
+      </div>
+
+      <h3 class="sub">Document 5</h3>
+      <div class="doc-block">
+        <div class="doc-header"><span>Source: Royal African Company Records</span><span>English Trade Statistics, 1672–1713</span></div>
+        <div class="doc-body">"Slaves transported to Virginia and Maryland: 1672–1680: approximately 2,000. 1690–1700: approximately 10,000. 1700–1710: approximately 18,000. The numbers reflect the accelerating demand for bound African labor in the tobacco colonies following the decline of indentured servant immigration."</div>
+      </div>
+
+      <div class="scoring-guide">
+        <div class="sg-title">Scoring Breakdown (7 points possible)</div>
+        <ul>
+          <li><strong>Thesis (1 pt)</strong> — Go beyond "Bacon's Rebellion changed things." Argue the degree and mechanism: "Bacon's Rebellion substantially accelerated the Chesapeake's shift to chattel slavery by demonstrating the existential danger of a landless white underclass, but the transition was already underway before 1676."</li>
+          <li><strong>Contextualization (1 pt)</strong> — Describe the tobacco economy, the Headright System creating landless inequality, and the supply of indentured servants from England drying up in the 1670s. Connect it to the argument.</li>
+          <li><strong>Evidence: Documents (2 pts)</strong> — Use at least 3 docs to address the topic (1 pt), or 6+ docs to directly support your argument (2 pts). The trade statistics in Doc 5 are your best quantitative evidence.</li>
+          <li><strong>Outside Evidence (1 pt)</strong> — The 1662 Virginia law making slavery hereditary (partus sequitur ventrem), the Royal African Company's monopoly ending in 1698 opening the slave trade to all English merchants, or the Stono Rebellion (1739) showing the long-term social consequences.</li>
+          <li><strong>Sourcing (1 pt)</strong> — At least 3 documents need POV/purpose/audience/situation analysis. Morgan (Doc 4) is a historian writing retrospectively with a specific argument — consider what he emphasizes and why. Berkeley (Doc 1) writes to his king, which shapes what he reveals.</li>
+          <li><strong>Complexity (1 pt)</strong> — The 1662 hereditary slavery law predates Bacon's Rebellion. The shift to slavery was happening before 1676 — Bacon's Rebellion accelerated it but didn't start it. That nuance earns the complexity point.</li>
+        </ul>
+      </div>
+
+      <h3 class="sub">Planning Help</h3>
+      <div class="tips-row">
+        <div class="tip"><strong>Thesis Frame</strong>Bacon's Rebellion accelerated rather than initiated the shift from indentured to enslaved labor — the planter class was already moving that direction, but 1676 made the choice feel urgent and permanent.</div>
+        <div class="tip"><strong>Complexity Move</strong>The 1662 Virginia law making slavery hereditary predates the rebellion by 14 years. Bacon's Rebellion is a catalyst, not an origin point. Say that explicitly.</div>
+        <div class="tip"><strong>Outside Evidence</strong>1698: Royal African Company loses monopoly. Slave trade opens to all English merchants. Prices drop, volume skyrockets. This is what makes mass-scale enslaved labor economically feasible.</div>
+      </div>
+
+      <textarea placeholder="Your thesis and essay plan here..."></textarea>
+
+    </div></div>
+  </div>
+
+  <!-- 5. LEQ -->
+  <div class="acc" id="acc5">
+    <button class="acc-trigger" onclick="toggle('acc5')">
+      <span class="acc-num">5</span><span class="acc-title">Practice LEQ</span>
+      <span class="acc-badge">Long Essay</span><span class="acc-icon">+</span>
+    </button>
+    <div class="acc-body"><div class="acc-inner">
+
+      <div class="prompt-box">
+        <div class="prompt-label">LEQ Prompt</div>
+        <div class="prompt-text">Evaluate the extent to which the development of distinct regional identities in British North America between 1607 and 1754 was shaped by economic factors.</div>
+      </div>
+
+      <div class="scoring-guide">
+        <div class="sg-title">Scoring Breakdown (6 points possible)</div>
+        <ul>
+          <li><strong>Thesis (1 pt)</strong> — Economic factors were central but not the whole story. "While economic factors — particularly cash crop agriculture and trade — were the primary drivers of regional identity in colonial America, religious motivation and geographic environment also shaped each region's distinct character."</li>
+          <li><strong>Contextualization (1 pt)</strong> — England's mercantilist system, the joint-stock company model, and the 17th-century push for colonial expansion all provide context. Explain how this framework created the conditions for economic variation across regions.</li>
+          <li><strong>Evidence (2 pts)</strong> — Specific: tobacco plus Headright System in Chesapeake, grain economy of Middle Colonies, fishing/lumber in New England, rice/indigo in Carolina. Name specific colonies, specific crops, specific labor systems.</li>
+          <li><strong>Historical Reasoning (1 pt)</strong> — Comparison works naturally here. Compare how two or three regions developed differently based on economic conditions. Or use causation: how did tobacco's labor demands cause the Chesapeake's specific social structure?</li>
+          <li><strong>Complexity (1 pt)</strong> — Argue that economic and non-economic factors reinforced each other. Puritanism shaped New England's commercial culture. The Deep South's racial slave majority was both an economic choice and a social system that took on its own logic.</li>
+        </ul>
+      </div>
+
+      <h3 class="sub">Evidence to Use</h3>
+      <div class="tips-row">
+        <div class="tip"><strong>Chesapeake</strong>Tobacco → Headright System → land inequality → indentured servitude → Bacon's Rebellion → chattel slavery. The whole arc driven by one crop's labor demands.</div>
+        <div class="tip"><strong>New England</strong>Poor soil and cold climate — no cash crops. Economy goes fishing, lumber, small farms, merchant trade. Puritan communal values reinforced small-farm, town-meeting economy. Religion and economy aligned.</div>
+        <div class="tip"><strong>Middle Colonies</strong>Fertile land plus navigable rivers equals grain surplus equals trade economy. Religious tolerance attracted diverse settlers who brought diverse skills. Quaker pacifism shaped trade-not-war foreign relations.</div>
+        <div class="tip"><strong>Deep South</strong>Rice and indigo in wet lowcountry demanded enslaved Africans from the Rice Coast — people with specific agricultural knowledge. Economy shapes demographics shapes society from the start.</div>
+      </div>
+
+      <p style="font-size:11px;color:var(--muted);margin:16px 0 4px;">4–5 paragraphs. Don't do a formal conclusion — end on your strongest evidence or your complexity point.</p>
+      <textarea style="min-height:300px;" placeholder="Write your LEQ here..."></textarea>
+
+    </div></div>
+  </div>
+
+  <!-- 6. SAQ -->
+  <div class="acc" id="acc6">
+    <button class="acc-trigger" onclick="toggle('acc6')">
+      <span class="acc-num">6</span><span class="acc-title">Practice SAQ</span>
+      <span class="acc-badge">Short Answer</span><span class="acc-icon">+</span>
+    </button>
+    <div class="acc-body"><div class="acc-inner">
+
+      <div class="prompt-box">
+        <div class="prompt-label">SAQ Prompt — No Thesis Required</div>
+        <div class="prompt-text">Use the following excerpt and your knowledge of United States history to answer parts A, B, and C.</div>
+      </div>
+
+      <div class="doc-block" style="margin-bottom:20px;">
+        <div class="doc-header"><span>Source: John Winthrop</span><span>"A Model of Christian Charity," 1630</span></div>
+        <div class="doc-body">"We must consider that we shall be as a city upon a hill. The eyes of all people are upon us. So that if we shall deal falsely with our God in this work we have undertaken, and so cause Him to withdraw His present help from us, we shall be made a story and a by-word through the world."</div>
+      </div>
+
+      <div class="saq-parts">
+        <div class="saq-part">
+          <div class="saq-part-label">Part A</div>
+          <div class="saq-part-text">Briefly explain ONE specific historical development that helps explain the context in which Winthrop delivered this speech in 1630.</div>
+          <textarea placeholder="Part A (~3-5 sentences)..."></textarea>
+        </div>
+        <div class="saq-part">
+          <div class="saq-part-label">Part B</div>
+          <div class="saq-part-text">Briefly explain ONE way in which Puritan New England society reflected the ideals expressed in Winthrop's speech during the period 1630–1700.</div>
+          <textarea placeholder="Part B (~3-5 sentences)..."></textarea>
+        </div>
+        <div class="saq-part">
+          <div class="saq-part-label">Part C</div>
+          <div class="saq-part-text">Briefly explain ONE way in which the development of New England society challenged or complicated Winthrop's vision of a unified, godly community.</div>
+          <textarea placeholder="Part C (~3-5 sentences)..."></textarea>
+        </div>
+      </div>
+
+      <div class="scoring-guide">
+        <div class="sg-title">SAQ Tips (3 points — 1 per part)</div>
+        <ul>
+          <li>No thesis. No intro. Start with the actual answer and back it up with specific evidence.</li>
+          <li><strong>Part A ideas:</strong> Archbishop Laud persecuting Puritans in England, Charles I dissolving Parliament, the Great Migration (1630–42) bringing ~20,000 Puritans to New England. Puritans felt England was beyond saving.</li>
+          <li><strong>Part B ideas:</strong> Harvard College (1636) founded to train ministers — commitment to scripture-literate community. Town meeting governance shows communal self-organization. The Half-Way Covenant (1662) shows efforts to maintain religious community as the second generation drifted.</li>
+          <li><strong>Part C ideas:</strong> Roger Williams and Anne Hutchinson both banished — conformity enforced through expulsion, not genuine unity. Salem Witch Trials (1692) showed communal anxiety tearing the community apart. The Half-Way Covenant itself shows religious cohesion weakening by mid-century.</li>
+          <li>Each part needs a specific example. A name, a date, a law, an event. Vague answers don't score.</li>
+        </ul>
+      </div>
+
+    </div></div>
+  </div>
+
+</div>
+
+<script>
+function toggle(id) {
+  const el = document.getElementById(id);
+  const isOpen = el.hasAttribute('data-open');
+  document.querySelectorAll('.acc[data-open]').forEach(a => a.removeAttribute('data-open'));
+  if (!isOpen) { el.setAttribute('data-open',''); el.scrollIntoView({behavior:'smooth',block:'nearest'}); }
+}
+
+const mcqs = [
+  {
+    q: "Bacon's Rebellion of 1676 is most significant in the context of APUSH Period 2 because it",
+    choices: ["Established the principle of representative government in Virginia","Led colonial planters to increasingly rely on enslaved African labor rather than indentured servants","Resulted in the permanent end of Native American resistance in the Chesapeake region","Caused Britain to implement stricter mercantilist trade policies in the colonies"],
+    correct: 1,
+    explanation: "<strong>B is correct.</strong> The causation chain is what APUSH tests. Bacon's Rebellion revealed that landless, armed, freed indentured servants were a dangerous underclass. Planters concluded that enslaved Africans — who couldn't complete a contract or legally organize — were a more controllable labor force. Virginia's slave codes hardened significantly in the decades after 1676."
+  },
+  {
+    q: "The policy of 'salutary neglect' in colonial British America most directly contributed to which of the following developments?",
+    choices: ["The rapid growth of the transatlantic slave trade in the 18th century","The development of colonial self-governing institutions and traditions","Increased tensions between New England colonies and Native American tribes","The spread of Enlightenment ideas through colonial newspapers and pamphlets"],
+    correct: 1,
+    explanation: "<strong>B is correct.</strong> Salutary neglect meant Britain didn't enforce trade laws or interfere in colonial governance for decades. Colonists built their own representative assemblies, courts, and local governments. By the time Britain tried to tighten control after 1763, colonists had been running their own affairs for generations and saw the new policies as attacks on established rights."
+  },
+  {
+    q: "Which of the following best explains why the Chesapeake region developed differently from New England in the 17th century?",
+    choices: ["New England colonists had stronger religious motivations while Chesapeake settlers sought only economic gain","The Chesapeake's tobacco economy created a plantation society reliant on bound labor while New England's environment favored small farms and fishing","Britain imposed stricter mercantilist restrictions on Chesapeake tobacco than on New England trade goods","New England colonists maintained better relations with Native Americans than Chesapeake planters"],
+    correct: 1,
+    explanation: "<strong>B is correct.</strong> Environment and cash crop economics drove regional differentiation. Tobacco's labor intensity plus Virginia's navigable rivers plus the Headright System equals plantation culture. New England's rocky soil and cold winters made large-scale agriculture impossible, pushing the economy toward fishing, lumber, and merchant trade — producing a very different society."
+  },
+  {
+    q: "The First Great Awakening of the 1730s and 1740s is considered significant in the lead-up to the American Revolution primarily because it",
+    choices: ["United the colonies under a single Protestant denomination for the first time","Encouraged colonists to question established religious and social authority","Created economic networks between colonies that bypassed British trade restrictions","Produced a generation of political leaders who would later lead the Revolution"],
+    correct: 1,
+    explanation: "<strong>B is correct.</strong> The Great Awakening's long-term political significance is about authority, not theology. Preachers like Whitefield challenged established church hierarchies. When ordinary colonists learned they could question a minister's authority based on personal religious experience, that habit transferred to political contexts. It's a cultural setup for revolution."
+  },
+  {
+    q: "The Mayflower Compact (1620) is significant in American political history primarily because it",
+    choices: ["Established freedom of religion as a principle of Plymouth Colony","Was the first written constitution in the Americas","Demonstrated the principle of self-governance through consent of the governed","Created a formal alliance between Plymouth colonists and the Wampanoag people"],
+    correct: 2,
+    explanation: "<strong>C is correct.</strong> The Mayflower Compact's significance is self-governance and consent. Before leaving the ship, the Pilgrims agreed among themselves to create just and equal laws for the general good of the colony. It wasn't a full constitution, but it was an early articulation that political authority comes from agreement among the governed — not from a king's decree."
+  }
+];
+
+const selected = {};
+
+function buildMCQ() {
+  const c = document.getElementById('mcq-container');
+  let h = '';
+  mcqs.forEach((q,qi) => {
+    h += `<div style="margin-bottom:40px;padding-bottom:40px;border-bottom:1px solid var(--border);">`;
+    h += `<div class="mcq-question"><strong>Q${qi+1}.</strong> ${q.q}</div>`;
+    h += `<div class="choices">`;
+    ['A','B','C','D'].forEach((l,ci) => {
+      h += `<button class="choice-btn" id="q${qi}c${ci}" onclick="pick(${qi},${ci})"><span class="choice-letter">${l}</span><span>${q.choices[ci]}</span></button>`;
+    });
+    h += `</div><button class="reveal-btn" id="rev${qi}" onclick="reveal(${qi})" disabled>Reveal Answer</button>`;
+    h += `<div class="explanation" id="exp${qi}">${q.explanation}</div></div>`;
+  });
+  c.innerHTML = h;
+}
+
+function pick(qi,ci) {
+  if(selected[qi]==='locked') return;
+  selected[qi]=ci;
+  mcqs[qi].choices.forEach((_,i)=>{
+    const b=document.getElementById(`q${qi}c${i}`);
+    b.classList.remove('correct','wrong');
+    b.style.background=i===ci?'var(--sand)':'';
+    b.style.borderColor=i===ci?'var(--brown)':'';
+  });
+  document.getElementById(`rev${qi}`).disabled=false;
+}
+
+function reveal(qi) {
+  if(selected[qi]==='locked') return;
+  const u=selected[qi];
+  if(u===undefined) return;
+  selected[qi]='locked';
+  mcqs[qi].choices.forEach((_,i)=>{
+    const b=document.getElementById(`q${qi}c${i}`);
+    b.style.background=''; b.style.borderColor='';
+    b.classList.add('locked');
+    if(i===mcqs[qi].correct) b.classList.add('correct');
+    else if(i===u&&i!==mcqs[qi].correct) b.classList.add('wrong');
+  });
+  document.getElementById(`exp${qi}`).classList.add('show');
+  document.getElementById(`rev${qi}`).disabled=true;
+}
+
+buildMCQ();
+</script>
+</body>
+</html>
